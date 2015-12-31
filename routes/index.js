@@ -1,3 +1,6 @@
+var express = require('express');
+var router = express.Router();
+
 var path = require('path');
 var signature = require('../signature');
 var config = require('../config.json');
@@ -23,3 +26,4 @@ router.get('/getSignature', function (req, res, next) {
 router.get('/log', function (req, res, next) {
   console.log(req.body);
 });
+module.exports = router;
