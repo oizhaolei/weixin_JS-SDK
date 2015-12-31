@@ -9,6 +9,64 @@
  * 邮件主题：【微信JS-SDK反馈】具体问题
  * 邮件内容说明：用简明的语言描述问题所在，并交代清楚遇到该问题的场景，可附上截屏图片，微信团队会尽快处理你的反馈。
  */
+// 使用 jq 动态加载 微信配置
+
+
+$.ajax({
+    url: '/getsignature',
+    type: 'post',
+    data: {
+        url: location.href.split('#')[0] // 将当前URL地址上传至服务器用于产生数字签名
+    }
+}).done(function(r) {
+    // 返回了数字签名对象
+    _log(r);
+
+    // 开始配置微信JS-SDK
+    wx.config({
+        appId: r.appId,
+        timestamp: r.timestamp,
+        nonceStr: r.nonceStr,
+        signature: r.signature,
+        jsApiList: [
+                    'checkJsApi',
+                    'onMenuShareTimeline',
+                    'onMenuShareAppMessage',
+                    'onMenuShareQQ',
+                    'onMenuShareWeibo',
+                    'hideMenuItems',
+                    'showMenuItems',
+                    'hideAllNonBaseMenuItem',
+                    'showAllNonBaseMenuItem',
+                    'translateVoice',
+                    'startRecord',
+                    'stopRecord',
+                    'onRecordEnd',
+                    'playVoice',
+                    'pauseVoice',
+                    'stopVoice',
+                    'uploadVoice',
+                    'downloadVoice',
+                    'chooseImage',
+                    'previewImage',
+                    'uploadImage',
+                    'downloadImage',
+                    'getNetworkType',
+                    'openLocation',
+                    'getLocation',
+                    'hideOptionMenu',
+                    'showOptionMenu',
+                    'closeWindow',
+                    'scanQRCode',
+                    'chooseWXPay',
+                    'openProductSpecificView',
+                    'addCard',
+                    'chooseCard',
+                    'openCard'
+        ]
+    });
+});
+
 wx.ready(function () {
   // 1 判断当前版本是否支持指定 JS 接口，支持批量判断
   document.querySelector('#checkJsApi').onclick = function () {

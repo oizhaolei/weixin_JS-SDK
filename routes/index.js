@@ -12,6 +12,7 @@ router.get('/getSignature', function (req, res, next) {
   var url = req.body.url;
   console.log(url);
   createSignature(url, function(error, result) {
+    console.log(result);
     if (error) {
       res.json({
         'error': error
