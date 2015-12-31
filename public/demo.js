@@ -18,7 +18,7 @@ wx.ready(function () {
         'previewImage'
       ],
       success: function (res) {
-        alert(JSON.stringify(res));
+        _log(JSON.stringify(res));
       }
     });
   };
@@ -32,19 +32,19 @@ wx.ready(function () {
       link: 'http://movie.douban.com/subject/25785114/',
       imgUrl: 'http://img3.douban.com/view/movie_poster_cover/spst/public/p2166127561.jpg',
       trigger: function (res) {
-        alert('用户点击发送给朋友');
+        _log('用户点击发送给朋友');
       },
       success: function (res) {
-        alert('已分享');
+        _log('已分享');
       },
       cancel: function (res) {
-        alert('已取消');
+        _log('已取消');
       },
       fail: function (res) {
-        alert(JSON.stringify(res));
+        _log(JSON.stringify(res));
       }
     });
-    alert('已注册获取“发送给朋友”状态事件');
+    _log('已注册获取“发送给朋友”状态事件');
   };
 
   // 2.2 监听“分享到朋友圈”按钮点击、自定义分享内容及分享结果接口
@@ -54,19 +54,19 @@ wx.ready(function () {
       link: 'http://movie.douban.com/subject/25785114/',
       imgUrl: 'http://img3.douban.com/view/movie_poster_cover/spst/public/p2166127561.jpg',
       trigger: function (res) {
-        alert('用户点击分享到朋友圈');
+        _log('用户点击分享到朋友圈');
       },
       success: function (res) {
-        alert('已分享');
+        _log('已分享');
       },
       cancel: function (res) {
-        alert('已取消');
+        _log('已取消');
       },
       fail: function (res) {
-        alert(JSON.stringify(res));
+        _log(JSON.stringify(res));
       }
     });
-    alert('已注册获取“分享到朋友圈”状态事件');
+    _log('已注册获取“分享到朋友圈”状态事件');
   };
 
   // 2.3 监听“分享到QQ”按钮点击、自定义分享内容及分享结果接口
@@ -77,22 +77,22 @@ wx.ready(function () {
       link: 'http://movie.douban.com/subject/25785114/',
       imgUrl: 'http://img3.douban.com/view/movie_poster_cover/spst/public/p2166127561.jpg',
       trigger: function (res) {
-        alert('用户点击分享到QQ');
+        _log('用户点击分享到QQ');
       },
       complete: function (res) {
-        alert(JSON.stringify(res));
+        _log(JSON.stringify(res));
       },
       success: function (res) {
-        alert('已分享');
+        _log('已分享');
       },
       cancel: function (res) {
-        alert('已取消');
+        _log('已取消');
       },
       fail: function (res) {
-        alert(JSON.stringify(res));
+        _log(JSON.stringify(res));
       }
     });
-    alert('已注册获取“分享到 QQ”状态事件');
+    _log('已注册获取“分享到 QQ”状态事件');
   };
   
   // 2.4 监听“分享到微博”按钮点击、自定义分享内容及分享结果接口
@@ -103,22 +103,22 @@ wx.ready(function () {
       link: 'http://movie.douban.com/subject/25785114/',
       imgUrl: 'http://img3.douban.com/view/movie_poster_cover/spst/public/p2166127561.jpg',
       trigger: function (res) {
-        alert('用户点击分享到微博');
+        _log('用户点击分享到微博');
       },
       complete: function (res) {
-        alert(JSON.stringify(res));
+        _log(JSON.stringify(res));
       },
       success: function (res) {
-        alert('已分享');
+        _log('已分享');
       },
       cancel: function (res) {
-        alert('已取消');
+        _log('已取消');
       },
       fail: function (res) {
-        alert(JSON.stringify(res));
+        _log(JSON.stringify(res));
       }
     });
-    alert('已注册获取“分享到微博”状态事件');
+    _log('已注册获取“分享到微博”状态事件');
   };
 
 
@@ -130,16 +130,16 @@ wx.ready(function () {
   // 3.1 识别音频并返回识别结果
   document.querySelector('#translateVoice').onclick = function () {
     if (voice.localId == '') {
-      alert('请先使用 startRecord 接口录制一段声音');
+      _log('请先使用 startRecord 接口录制一段声音');
       return;
     }
     wx.translateVoice({
       localId: voice.localId,
       complete: function (res) {
         if (res.hasOwnProperty('translateResult')) {
-          alert('识别结果：' + res.translateResult);
+          _log('识别结果：' + res.translateResult);
         } else {
-          alert('无法识别');
+          _log('无法识别');
         }
       }
     });
@@ -150,7 +150,7 @@ wx.ready(function () {
   document.querySelector('#startRecord').onclick = function () {
     wx.startRecord({
       cancel: function () {
-        alert('用户拒绝授权录音');
+        _log('用户拒绝授权录音');
       }
     });
   };
@@ -162,7 +162,7 @@ wx.ready(function () {
         voice.localId = res.localId;
       },
       fail: function (res) {
-        alert(JSON.stringify(res));
+        _log(JSON.stringify(res));
       }
     });
   };
@@ -171,14 +171,14 @@ wx.ready(function () {
   wx.onVoiceRecordEnd({
     complete: function (res) {
       voice.localId = res.localId;
-      alert('录音时间已超过一分钟');
+      _log('录音时间已超过一分钟');
     }
   });
 
   // 4.5 播放音频
   document.querySelector('#playVoice').onclick = function () {
     if (voice.localId == '') {
-      alert('请先使用 startRecord 接口录制一段声音');
+      _log('请先使用 startRecord 接口录制一段声音');
       return;
     }
     wx.playVoice({
@@ -203,20 +203,20 @@ wx.ready(function () {
   // 4.8 监听录音播放停止
   wx.onVoicePlayEnd({
     complete: function (res) {
-      alert('录音（' + res.localId + '）播放结束');
+      _log('录音（' + res.localId + '）播放结束');
     }
   });
 
   // 4.8 上传语音
   document.querySelector('#uploadVoice').onclick = function () {
     if (voice.localId == '') {
-      alert('请先使用 startRecord 接口录制一段声音');
+      _log('请先使用 startRecord 接口录制一段声音');
       return;
     }
     wx.uploadVoice({
       localId: voice.localId,
       success: function (res) {
-        alert('上传语音成功，serverId 为' + res.serverId);
+        _log('上传语音成功，serverId 为' + res.serverId);
         voice.serverId = res.serverId;
       }
     });
@@ -225,13 +225,13 @@ wx.ready(function () {
   // 4.9 下载语音
   document.querySelector('#downloadVoice').onclick = function () {
     if (voice.serverId == '') {
-      alert('请先使用 uploadVoice 上传声音');
+      _log('请先使用 uploadVoice 上传声音');
       return;
     }
     wx.downloadVoice({
       serverId: voice.serverId,
       success: function (res) {
-        alert('下载语音成功，localId 为' + res.localId);
+        _log('下载语音成功，localId 为' + res.localId);
         voice.localId = res.localId;
       }
     });
@@ -247,7 +247,7 @@ wx.ready(function () {
     wx.chooseImage({
       success: function (res) {
         images.localId = res.localIds;
-        alert('已选择 ' + res.localIds.length + ' 张图片');
+        _log('已选择 ' + res.localIds.length + ' 张图片');
       }
     });
   };
@@ -267,7 +267,7 @@ wx.ready(function () {
   // 5.3 上传图片
   document.querySelector('#uploadImage').onclick = function () {
     if (images.localId.length == 0) {
-      alert('请先使用 chooseImage 接口选择图片');
+      _log('请先使用 chooseImage 接口选择图片');
       return;
     }
     var i = 0, length = images.localId.length;
@@ -277,14 +277,14 @@ wx.ready(function () {
         localId: images.localId[i],
         success: function (res) {
           i++;
-          alert('已上传：' + i + '/' + length);
+          _log('已上传：' + i + '/' + length);
           images.serverId.push(res.serverId);
           if (i < length) {
             upload();
           }
         },
         fail: function (res) {
-          alert(JSON.stringify(res));
+          _log(JSON.stringify(res));
         }
       });
     }
@@ -294,7 +294,7 @@ wx.ready(function () {
   // 5.4 下载图片
   document.querySelector('#downloadImage').onclick = function () {
     if (images.serverId.length === 0) {
-      alert('请先使用 uploadImage 上传图片');
+      _log('请先使用 uploadImage 上传图片');
       return;
     }
     var i = 0, length = images.serverId.length;
@@ -304,7 +304,7 @@ wx.ready(function () {
         serverId: images.serverId[i],
         success: function (res) {
           i++;
-          alert('已下载：' + i + '/' + length);
+          _log('已下载：' + i + '/' + length);
           images.localId.push(res.localId);
           if (i < length) {
             download();
@@ -320,10 +320,10 @@ wx.ready(function () {
   document.querySelector('#getNetworkType').onclick = function () {
     wx.getNetworkType({
       success: function (res) {
-        alert(res.networkType);
+        _log(res.networkType);
       },
       fail: function (res) {
-        alert(JSON.stringify(res));
+        _log(JSON.stringify(res));
       }
     });
   };
@@ -345,10 +345,10 @@ wx.ready(function () {
   document.querySelector('#getLocation').onclick = function () {
     wx.getLocation({
       success: function (res) {
-        alert(JSON.stringify(res));
+        _log(JSON.stringify(res));
       },
       cancel: function (res) {
-        alert('用户拒绝授权获取地理位置');
+        _log('用户拒绝授权获取地理位置');
       }
     });
   };
@@ -373,10 +373,10 @@ wx.ready(function () {
         'menuItem:copyUrl' // 复制链接
       ],
       success: function (res) {
-        alert('已隐藏“阅读模式”，“分享到朋友圈”，“复制链接”等按钮');
+        _log('已隐藏“阅读模式”，“分享到朋友圈”，“复制链接”等按钮');
       },
       fail: function (res) {
-        alert(JSON.stringify(res));
+        _log(JSON.stringify(res));
       }
     });
   };
@@ -390,10 +390,10 @@ wx.ready(function () {
         'menuItem:copyUrl' // 复制链接
       ],
       success: function (res) {
-        alert('已显示“阅读模式”，“分享到朋友圈”，“复制链接”等按钮');
+        _log('已显示“阅读模式”，“分享到朋友圈”，“复制链接”等按钮');
       },
       fail: function (res) {
-        alert(JSON.stringify(res));
+        _log(JSON.stringify(res));
       }
     });
   };
@@ -402,7 +402,7 @@ wx.ready(function () {
   document.querySelector('#hideAllNonBaseMenuItem').onclick = function () {
     wx.hideAllNonBaseMenuItem({
       success: function () {
-        alert('已隐藏所有非基本菜单项');
+        _log('已隐藏所有非基本菜单项');
       }
     });
   };
@@ -411,7 +411,7 @@ wx.ready(function () {
   document.querySelector('#showAllNonBaseMenuItem').onclick = function () {
     wx.showAllNonBaseMenuItem({
       success: function () {
-        alert('已显示所有非基本菜单项');
+        _log('已显示所有非基本菜单项');
       }
     });
   };
@@ -434,7 +434,7 @@ wx.ready(function () {
       needResult: 1,
       desc: 'scanQRCode desc',
       success: function (res) {
-        alert(JSON.stringify(res));
+        _log(JSON.stringify(res));
       }
     });
   };
@@ -472,7 +472,7 @@ wx.ready(function () {
         }
       ],
       success: function (res) {
-        alert('已添加卡券：' + JSON.stringify(res.cardList));
+        _log('已添加卡券：' + JSON.stringify(res.cardList));
       }
     });
   };
@@ -484,14 +484,14 @@ wx.ready(function () {
       timestamp: 1417504553,
       nonceStr: 'k0hGdSXKZEj3Min5',
       success: function (res) {
-        alert('已选择卡券：' + JSON.stringify(res.cardList));
+        _log('已选择卡券：' + JSON.stringify(res.cardList));
       }
     });
   };
 
   // 12.3 查看卡券
   document.querySelector('#openCard').onclick = function () {
-    alert('您没有该公众号的卡券无法打开卡券。');
+    _log('您没有该公众号的卡券无法打开卡券。');
     wx.openCard({
       cardList: [
       ]
@@ -509,5 +509,16 @@ wx.ready(function () {
 });
 
 wx.error(function (res) {
-  alert(res.errMsg);
+  _log(res.errMsg);
 });
+
+
+function _log(msg) {
+  $.ajax({
+    url: '/log',
+    type: 'post',
+    data: {
+        msg: msg
+    }
+  });
+}

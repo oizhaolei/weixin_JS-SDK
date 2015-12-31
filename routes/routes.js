@@ -7,6 +7,7 @@ var createSignature = signature.getSignature(config);
 
 module.exports = function(app) {
     app.post('/getsignature', getSignature);
+    app.post('/log', log);
 };
 
 
@@ -22,4 +23,8 @@ function getSignature(req, res) {
             res.json(result);
         }
     });
+}
+
+function log(req, res) {
+    console.log(req.body);
 }
