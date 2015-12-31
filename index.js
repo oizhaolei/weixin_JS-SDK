@@ -6,8 +6,6 @@ var express = require('express'),
 var template = require('art-template');
 var signature = require('./signature');
 var config = require('./config')();
-console.log(config);
-
 
 var app = express();
 app.configure(function() {
