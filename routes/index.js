@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var logger = require('log4js').getLogger('routers/index');
 
 var path = require('path');
 var signature = require('../signature');
@@ -10,9 +11,10 @@ var createSignature = signature.getSignature(config);
 
 router.get('/getSignature', function (req, res, next) {
   var url = req.body.url;
-  console.log(url);
+  logger.info(url);
   createSignature(url, function(error, result) {
-    console.log(result);
+    logger.info(error);
+    logger.info(result);
     if (error) {
       res.json({
         'error': error
@@ -25,6 +27,6 @@ router.get('/getSignature', function (req, res, next) {
 
 
 router.get('/log', function (req, res, next) {
-  console.log(req.body);
+  logger.info(req.body);
 });
 module.exports = router;

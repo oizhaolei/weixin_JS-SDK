@@ -5,6 +5,7 @@ var async = require('async');
 var BufferHelp = require('bufferhelper');
 var iconv = require('iconv-lite');
 var fs = require('fs');
+var logger = require('log4js').getLogger('signature');
 
 
 var cache = {
@@ -13,13 +14,13 @@ var cache = {
 };
 
 function getSignature(config, url, cb) {
-    console.log('start getSignature');
+    logger.info('start getSignature');
     // 判断内存中是否有缓存
     if (!cache || !cache.ticket) {
-        console.log('readCache');
+        logger.info('readCache');
         readFile('cache.json', function(str) {
             if (str) {
-                console.log(str);
+                logger.info(str);
                 cache = JSON.parse(str);
             }
             tryGetSignature(config, url, cb);
@@ -32,11 +33,11 @@ function getSignature(config, url, cb) {
 
 function checkSignature(config) {
     return function(req, res, next) {
-        console.log('checkSignature');
+        logger.info('checkSignature');
         req.query = url.parse(req.url, true).query;
 
         if (req.query.getsignature) {
-            console.log('req.query.getsignature');
+            logger.info('req.query.getsignature');
             return next();
         }
 
@@ -47,11 +48,11 @@ function checkSignature(config) {
         var tmp = [config.appToken, req.query.timestamp, req.query.nonce].sort().join('');
         var signature = crypto.createHash('sha1').update(tmp).digest('hex');
         if (req.query.signature != signature) {
-            console.log('req.query.signature != signature');
+            logger.info('req.query.signature != signature');
             return res.end('Auth failed!'); // 指纹码不匹配时返回错误信息，禁止后面的消息接受及发送
         }
         if (req.query.echostr) {
-            console.log('req.query.echostr');
+            logger.info('req.query.echostr');
             return res.end(req.query.echostr); // 添加公众号接口地址时，返回查询字符串echostr表示验证通过
         }
         // 消息真实性验证通过，继续后面的处理
@@ -87,7 +88,7 @@ function getNewTicket(token, cb) {
         }
         else {
             try {
-                console.log(JSON.parse(body));
+                logger.info(JSON.parse(body));
                 var ticket = JSON.parse(body).ticket;
                 cb(null, ticket);
             }
@@ -104,7 +105,7 @@ function tryGetSignature(config, u, cb) {
     // 判断cache 是否过期
     if (!cache.ticket || (new Date().getTime() - cache.time) > 7000000) {
         async.waterfall([function(cb) {
-            console.log('start getNew Ticket', cache);
+            logger.info('start getNew Ticket', cache);
             getToken(config, cb);
         }, function(token, cb) {
             getNewTicket(token, cb);
@@ -117,12 +118,12 @@ function tryGetSignature(config, u, cb) {
                 cache.time = new Date().getTime();
                 // 文件保存
                 writeFile('cache.json', JSON.stringify(cache));
-                console.log(result);
+                logger.info(result);
 
                 var timestamp = getTimesTamp();
                 var noncestr = getNonceStr();
                 var str = 'jsapi_ticket=' + result + '&noncestr='+ noncestr+'&timestamp=' + timestamp + '&url=' + u;
-                console.log(str);
+                logger.info(str);
                 var signature = crypto.createHash('sha1').update(str).digest('hex');
                 cb(null, {
                     appId: config.appId,
@@ -134,11 +135,11 @@ function tryGetSignature(config, u, cb) {
         });
     }
     else {
-        console.log('缓存获取');
+        logger.info('缓存获取');
         var timestamp = getTimesTamp();
         var noncestr = getNonceStr();
         var str = 'jsapi_ticket=' + cache.ticket + '&noncestr=' + noncestr + '&timestamp=' + timestamp + '&url=' + u;
-        console.log(str);
+        logger.info(str);
         var signature = crypto.createHash('sha1').update(str).digest('hex');
         cb(null, {
             appId: config.appId,
