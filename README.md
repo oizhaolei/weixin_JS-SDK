@@ -4,5 +4,4 @@
 # 使用说明
  把 yourserver.com:port 加入到“公众号设置”的“JS接口安全域名”
  修改 `config.js`
- 修改 `public/test.html` 下 156行
  微信访问网址  `http://yourserver.com:port/test.html`
