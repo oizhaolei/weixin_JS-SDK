@@ -156,7 +156,7 @@
 
 
 $.ajax({
-    url: 'http://416973.dowei8.com:21119/getsignature' // 此处url请求地址需要替换成你自己实际项目中服务器数字签名服务地址
+    url: 'http://test.tttalk.org:3003/getsignature' // 此处url请求地址需要替换成你自己实际项目中服务器数字签名服务地址
         ,
     type: 'post',
     data: {
@@ -165,7 +165,7 @@ $.ajax({
 }).done(function(r) {
     // 返回了数字签名对象
     console.log(r);
-    console.log(r.appid);
+    console.log(r.appId);
     console.log(r.timestamp);
     console.log(r.nonceStr);
     console.log(r.signature);

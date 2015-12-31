@@ -11,7 +11,7 @@ console.log(config);
 
 var app = express();
 app.configure(function() {
-    app.set('port', process.env.PORT || 1342);
+    app.set('port', process.env.PORT || 3003);
 
     template.config('base', '');
     template.config('extname', '.html');
