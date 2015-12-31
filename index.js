@@ -1,31 +1,67 @@
-var express = require('express'),
-    routes = require('./routes/routes'),
-    http = require('http'),
-    path = require('path'),
-    fs = require('fs');
-var signature = require('./signature');
-var config = require('./config')();
+////set DEBUG=handle & node .\bin\www
+var config = require('./config.json');
 
+var express = require('express');
 var app = express();
-app.configure(function() {
-    app.set('port', process.env.PORT || 3003);
 
-    app.set('view engine', 'html');
-    app.use(express.favicon());
-    app.use(express.logger('dev'));
-    app.use(express.bodyParser());
-    app.use(express.methodOverride());
-    app.use(app.router);
-    app.use(express.static(path.join(__dirname, 'public')));
+var parseurl = require('parseurl');
 
+var path = require('path');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+
+app.use(cookieParser());
+
+
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(express.static(path.join(__dirname, 'public')));
+
+//auth: 访问 /account/* 的话，都需要 login
+app.use(function(req, res, next){
+  var pathname = parseurl(req).pathname;
+  logger.info(pathname);
+  next();
 });
 
-app.configure('development', function() {
-    app.use(express.errorHandler());
+var routes = require('./routes/index');
+app.use('/', routes);
+
+var weixin_routes = require('./routes/weixin');
+app.use('/weixin', weixin_routes);
+
+// catch 404 and forward to error handler
+app.use(function (req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
 });
 
-routes(app);
+// error handlers
 
-http.createServer(app).listen(app.get('port'), function() {
-    console.log("Express server listening on port " + app.get('port'));
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+  app.use(function (err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+      message: err.message,
+      error: err
+    });
+  });
+}
+
+// production error handler
+// no stacktraces leaked to user
+app.use(function (err, req, res, next) {
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    error: {}
+  });
 });
+
+
+module.exports = app;

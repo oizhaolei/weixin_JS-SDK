@@ -248,6 +248,7 @@ wx.ready(function () {
       success: function (res) {
         images.localId = res.localIds;
         _log('已选择 ' + res.localIds.length + ' 张图片');
+        _log(res.localIds);
       }
     });
   };
@@ -277,7 +278,7 @@ wx.ready(function () {
         localId: images.localId[i],
         success: function (res) {
           i++;
-          _log('已上传：' + i + '/' + length);
+          _log(res.serverId + ' 已上传：' + i + '/' + length);
           images.serverId.push(res.serverId);
           if (i < length) {
             upload();
