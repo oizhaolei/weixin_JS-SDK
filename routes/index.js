@@ -7,10 +7,10 @@ var signature = require('../signature');
 var config = require('../config.json');
 
 
-router.get('/getSignature', function (req, res, next) {
+router.all('/getSignature', function (req, res, next) {
   var url = req.body.url;
   logger.info(url);
-  getSignature(config, url, function(error, result) {
+  signature.getSignature(config, url, function(error, result) {
     logger.info(error);
     logger.info(result);
     if (error) {
@@ -24,7 +24,7 @@ router.get('/getSignature', function (req, res, next) {
 });
 
 
-router.get('/log', function (req, res, next) {
+router.post('/log', function (req, res, next) {
   logger.info(req.body);
 });
 module.exports = router;
