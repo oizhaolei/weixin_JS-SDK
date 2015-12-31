@@ -7,14 +7,12 @@ var app = express();
 var parseurl = require('parseurl');
 
 var path = require('path');
-var logger = require('morgan');
+var logger = require('log4js').getLogger('app');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 app.use(cookieParser());
 
-
-app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));

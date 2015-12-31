@@ -26,8 +26,8 @@
       ]
     },           {
       "type": "view",
-      "name": "主页",
-      "url": "http://test.tttalk.org:3003/"
+      "name": "Test主页",
+      "url": "http://test.tttalk.org:3003/test.html"
     }
   ]
 }
