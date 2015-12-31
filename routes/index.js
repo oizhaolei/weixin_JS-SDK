@@ -1,6 +1,6 @@
 var path = require('path');
 var signature = require('../signature');
-var config = require('../config')();
+var config = require('../config.json');
 
 var createSignature = signature.getSignature(config);
 
