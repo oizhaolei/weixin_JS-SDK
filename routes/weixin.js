@@ -1,7 +1,10 @@
+// 微信消息回调接口
+// 80端口
+
 var express = require('express');
 var router = express.Router();
 
-var weixin = require('weixin-api');
+var weixin = require('hbb-weixin-api');
 
 // config
 weixin.token = '62064bef9df47ed285cb428c4c';
@@ -80,6 +83,12 @@ weixin.textMsg(function(msg) {
 // 监听图片消息
 weixin.imageMsg(function(msg) {
     console.log("imageMsg received");
+    console.log(JSON.stringify(msg));
+});
+
+// 监听语音消息
+weixin.voiceMsg(function (msg) {
+    console.log("eventMsg received");
     console.log(JSON.stringify(msg));
 });
 
