@@ -188,8 +188,4 @@ function decodeBuffer(bf, encoding) {
 }
 
 exports.checkSignature = checkSignature;
-exports.getSignature = function(config) {
-    return function(url, cb) {
-        getSignature(config, url, cb);
-    }
-};
+exports.getSignature =  getSignature;
