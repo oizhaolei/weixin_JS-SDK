@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>微信JS-SDK Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0" />
+    <link rel="stylesheet" href="../../style.css" />
+</head>
+
+<body ontouchstart="">
+    <div class="wxapi_container">
+
+        <div class="lbox_close wxapi_form">
+            <h3 id="menu-pay">公众号支付测试</h3>
+            <span class="desc">1</span>
+            <button class="btn btn_primary" id="chooseWXPay">支付</button>
+        </div>
+    </div>
+</body>
+<script src="../../jweixin-1.0.0.js"></script>
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+<script>
+ $.ajax({
+     url: '/getsignature',
+     type: 'post',
+     data: {
+         url: location.href.split('#')[0] // 将当前URL地址上传至服务器用于产生数字签名
+     }
+ }).done(function(r) {
+     // 返回了数字签名对象
+     _log(r);
+
+     // 开始配置微信JS-SDK
+     wx.config({
+         debug : true,
+         appId: r.appId,
+         timestamp: r.timestamp,
+         nonceStr: r.nonceStr,
+         signature: r.signature,
+         jsApiList: [
+             'chooseWXPay'
+         ]
+     });
+ });
+
+ wx.ready(function () {
+     var wxpay = {{{ json payargs }}};
+     $('#chooseWXPay').click(function () {
+         wx.chooseWXPay(wxpay);
+     });
+ });
+
+ wx.error(function (res) {
+     _log(res);
+ });
+
+
+ function _log(msg) {
+     $.ajax({
+         url: '/log',
+         type: 'post',
+         data: {
+             msg: msg
+         }
+     });
+ }
+</script>
+
+</html>

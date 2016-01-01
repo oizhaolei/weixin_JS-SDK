@@ -1,17 +1,12 @@
 {
   "button": [
     {
-      "type": "click",
-      "name": "今日歌曲",
-      "key": "V1001_TODAY_MUSIC"
-    },
-    {
-      "name": "菜单",
+      "name": "精选",
       "sub_button": [
         {
           "type": "view",
           "name": "支付",
-          "key": "V1002_PAY"
+          "url": "http://test.tttalk.org:3003/wxpay/test-jsapi/"
         },
         {
           "type": "view",
@@ -24,9 +19,15 @@
           "key": "V1001_GOOD"
         }
       ]
-    },           {
+    },
+    {
       "type": "view",
-      "name": "Test主页",
+      "name": "主页",
+      "url": "http://test.tttalk.org:3003/"
+    },
+    {
+      "type": "view",
+      "name": "Test页",
       "url": "http://test.tttalk.org:3003/test.html"
     }
   ]

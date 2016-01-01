@@ -1,5 +1,7 @@
 // 微信消息回调接口
 // 80端口
+var config = require('../config.json');
+var logger = require('log4js').getLogger('routers/index');
 
 var express = require('express');
 var router = express.Router();
@@ -7,7 +9,7 @@ var router = express.Router();
 var weixin = require('hbb-weixin-api');
 
 // config
-weixin.token = '62064bef9df47ed285cb428c4c';
+weixin.token = config.appToken;
 
 // 监听文本消息
 weixin.textMsg(function(msg) {
@@ -88,8 +90,16 @@ weixin.imageMsg(function(msg) {
 
 // 监听语音消息
 weixin.voiceMsg(function (msg) {
-    console.log("eventMsg received");
+    console.log("voiceMsg received");
     console.log(JSON.stringify(msg));
+  var resMsg = {
+    fromUserName : msg.toUserName,
+    toUserName : msg.fromUserName,
+    msgType : "text",
+    content : "voiceMsg",
+    funcFlag : 0
+  };
+  weixin.sendMsg(resMsg);
 });
 
 // 监听位置消息
@@ -114,9 +124,9 @@ weixin.eventMsg(function(msg) {
 router.get('/', function (req, res, next) {
     // 签名成功
     if (weixin.checkSignature(req)) {
-        res.status(200).send(req.query.echostr);
+      res.status(200).send(req.query.echostr);
     } else {
-        res.send(200, 'fail');
+      res.status(200).send('fail');
     }
 });
 

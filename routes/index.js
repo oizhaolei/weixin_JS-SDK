@@ -1,10 +1,11 @@
+var config = require('../config.json');
+var logger = require('log4js').getLogger('routers/index');
+
 var express = require('express');
 var router = express.Router();
-var logger = require('log4js').getLogger('routers/index');
 
 var path = require('path');
 var signature = require('../signature');
-var config = require('../config.json');
 
 
 router.all('/getSignature', function (req, res, next) {
@@ -26,5 +27,9 @@ router.all('/getSignature', function (req, res, next) {
 
 router.post('/log', function (req, res, next) {
   logger.info(req.body);
+});
+
+router.get('/', function (req, res, next) {
+  res.render('index');
 });
 module.exports = router;

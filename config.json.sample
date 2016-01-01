@@ -1,6 +1,13 @@
 {
+  "host" : "",
+  "port" : 3003,
+
   "appId": "",
   "appSecret": "",
-  "appToken": "SHANG",
-  "session_secret" : "change"
+  "appToken": "",
+
+  "mch_id" : "",
+  "wxpay_api_secret" : "",
+
+  "session_secret" : ""
 }

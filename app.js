@@ -35,7 +35,9 @@ hbs.registerHelper('block', function(name) {
     blocks[name] = [];
     return val;
 });
-
+hbs.registerHelper('json', function(context) {
+    return JSON.stringify(context);
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -60,6 +62,9 @@ app.use('/', routes);
 
 var weixin_routes = require('./routes/weixin');
 app.use('/weixin', weixin_routes);
+
+var wxpay_routes = require('./routes/wxpay');
+app.use('/wxpay', wxpay_routes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
