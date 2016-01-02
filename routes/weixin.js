@@ -6,7 +6,7 @@ var logger = require('log4js').getLogger('routers/index');
 var express = require('express');
 var router = express.Router();
 
-var weixin = require('hbb-weixin-api');
+var weixin = require('weixin-api');
 
 // config
 weixin.token = config.appToken;
@@ -14,7 +14,7 @@ weixin.token = config.appToken;
 // 监听文本消息
 weixin.textMsg(function(msg) {
     console.log("textMsg received");
-    console.log(JSON.stringify(msg));
+    console.log(msg);
 
     var resMsg = {};
 
@@ -86,38 +86,35 @@ weixin.textMsg(function(msg) {
 weixin.imageMsg(function(msg) {
     console.log("imageMsg received");
     console.log(JSON.stringify(msg));
+    weixin.sendEmptyMsg();
 });
 
 // 监听语音消息
 weixin.voiceMsg(function (msg) {
     console.log("voiceMsg received");
     console.log(JSON.stringify(msg));
-  var resMsg = {
-    fromUserName : msg.toUserName,
-    toUserName : msg.fromUserName,
-    msgType : "text",
-    content : "voiceMsg",
-    funcFlag : 0
-  };
-  weixin.sendMsg(resMsg);
+    weixin.sendEmptyMsg();
 });
 
 // 监听位置消息
 weixin.locationMsg(function(msg) {
     console.log("locationMsg received");
     console.log(JSON.stringify(msg));
+    weixin.sendEmptyMsg();
 });
 
 // 监听链接消息
 weixin.urlMsg(function(msg) {
     console.log("urlMsg received");
     console.log(JSON.stringify(msg));
+    weixin.sendEmptyMsg();
 });
 
 // 监听事件消息
 weixin.eventMsg(function(msg) {
     console.log("eventMsg received");
     console.log(JSON.stringify(msg));
+    weixin.sendEmptyMsg();
 });
 
 // 接入验证
