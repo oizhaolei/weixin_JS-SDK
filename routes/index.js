@@ -7,7 +7,6 @@ var router = express.Router();
 var path = require('path');
 var signature = require('../signature');
 
-
 router.all('/getSignature', function (req, res, next) {
   var url = req.body.url;
   logger.info(url);
@@ -33,7 +32,26 @@ router.get('/oauth', function (req, res, next) {
   logger.info(req.query);
   signature.getOpenid(config, req.query.code, function(err, openid) {
     logger.info(openid);
-    res.redirect('/wxpay?openid=' + openid);
+    switch (req.query.action) {
+
+    case 'wxpay_1' :
+      res.redirect('/wxpay?fee=1&openid=' + openid);
+      break;
+
+    case 'wxpay_100' :
+      res.redirect('/wxpay?fee=100&openid=' + openid);
+      break;
+
+    case 'pay_history' :
+      res.redirect('/wxpay/pay_history?openid=' + openid);
+      break;
+
+    case 'fee_history' :
+      res.redirect('/wxpay/fee_history?openid=' + openid);
+      break;
+
+    }
+
   });
 });
 

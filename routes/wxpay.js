@@ -19,18 +19,22 @@ var wxpay = WXPay({
 router.get('/', function (req, res, next) {
   logger.info(req.query);
   var openid = req.query.openid;
-  wxpay.getBrandWCPayRequestParams({
+  var fee = req.query.fee;
+
+  var requestParams = {
     openid: openid,
-    body: '公众号支付测试',
-    detail: '公众号支付测试',
+    body: '充值',
+    detail: parseFloat(fee)/100 + '元',
     out_trade_no: '20150331'+Math.random().toString().substr(2, 10),
-    total_fee: 1,
+    total_fee: fee,
     spbill_create_ip: '192.168.2.210',
     notify_url: 'http://test.tttalk.org:3003/wxpay/noti'
-  }, function(err, result){
+  };
+  wxpay.getBrandWCPayRequestParams(requestParams, function(err, result){
     logger.info(err);
     logger.info(result);
     res.render('wxpay/jsapi/index', {
+      params : requestParams,
       payargs : result
     });
   });

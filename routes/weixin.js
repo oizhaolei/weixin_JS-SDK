@@ -76,44 +76,49 @@ weixin.textMsg(function(msg) {
                 articles : articles,
                 funcFlag : 0
             };
+            break;
+      default :
+            resMsg = {
+                msgType : "empty"
+            };
     }
 
-    console.log(JSON.stringify(resMsg));
+    console.log(resMsg);
     weixin.sendMsg(resMsg);
 });
 
 // 监听图片消息
 weixin.imageMsg(function(msg) {
     console.log("imageMsg received");
-    console.log(JSON.stringify(msg));
+    console.log(msg);
     weixin.sendEmptyMsg();
 });
 
 // 监听语音消息
 weixin.voiceMsg(function (msg) {
     console.log("voiceMsg received");
-    console.log(JSON.stringify(msg));
+    console.log(msg);
     weixin.sendEmptyMsg();
 });
 
 // 监听位置消息
 weixin.locationMsg(function(msg) {
     console.log("locationMsg received");
-    console.log(JSON.stringify(msg));
+    console.log(msg);
     weixin.sendEmptyMsg();
 });
 
 // 监听链接消息
 weixin.urlMsg(function(msg) {
     console.log("urlMsg received");
-    console.log(JSON.stringify(msg));
+    console.log(msg);
     weixin.sendEmptyMsg();
 });
 
 // 监听事件消息
 weixin.eventMsg(function(msg) {
     console.log("eventMsg received");
-    console.log(JSON.stringify(msg));
+    console.log(msg);
     weixin.sendEmptyMsg();
 });
 

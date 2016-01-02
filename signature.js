@@ -205,6 +205,6 @@ function decodeBuffer(bf, encoding) {
     return val;
 }
 
-exports.getOpenId = getOpenId;
+exports.getOpenid = getOpenid;
 exports.checkSignature = checkSignature;
 exports.getSignature =  getSignature;
