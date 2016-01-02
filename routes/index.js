@@ -29,6 +29,9 @@ router.post('/log', function (req, res, next) {
   logger.info(req.body);
 });
 
+router.get('/oauth', function (req, res, next) {
+  logger.info(req);
+});
 router.get('/', function (req, res, next) {
   res.render('index');
 });

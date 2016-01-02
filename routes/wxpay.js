@@ -16,7 +16,7 @@ var wxpay = WXPay({
 });
 
 // 接入验证
-router.get('/test-jsapi', function (req, res, next) {
+router.get('/', function (req, res, next) {
   logger.info(req.params);
   wxpay.getBrandWCPayRequestParams({
     openid: 'osQJkw2UHrHoPkvar90v1AK1R8pM',
@@ -25,7 +25,7 @@ router.get('/test-jsapi', function (req, res, next) {
     out_trade_no: '20150331'+Math.random().toString().substr(2, 10),
     total_fee: 1,
     spbill_create_ip: '192.168.2.210',
-    notify_url: 'http://test.tttalk.org:3003/wxpay/test-jsapi/noti'
+    notify_url: 'http://test.tttalk.org:3003/wxpay/noti'
   }, function(err, result){
     logger.info(err);
     logger.info(result);
@@ -34,12 +34,14 @@ router.get('/test-jsapi', function (req, res, next) {
     });
   });
 });
-router.post('/test-jsapi', function (req, res, next) {
+router.post('/', function (req, res, next) {
   logger.info(req.body);
 });
-router.all('/test-jsapi/noti', function (req, res, next) {
-  logger.info(req.params);
-  logger.info(req.body);
-});
+router.all('/noti', wxpay.useWXCallback(function(msg, req, res, next){
+    // 处理商户业务逻辑
+  logger.info(req);
+
+  res.status(200).send();
+}));
 
 module.exports = router;
