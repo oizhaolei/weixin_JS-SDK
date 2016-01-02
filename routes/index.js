@@ -31,11 +31,12 @@ router.post('/log', function (req, res, next) {
 
 router.get('/oauth', function (req, res, next) {
   logger.info(req.query);
-  signature.getOpenId(config, req.query.code, function(err, openId) {
-    logger.info(openId);
+  signature.getOpenid(config, req.query.code, function(err, openid) {
+    logger.info(openid);
+    res.redirect('/wxpay?openid=' + openid);
   });
-  res.redirect('/');
 });
+
 router.get('/', function (req, res, next) {
   res.render('index');
 });

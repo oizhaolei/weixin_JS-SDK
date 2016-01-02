@@ -5,8 +5,8 @@
       "sub_button": [
         {
           "type": "view",
-          "name": "支付",
-          "url": "http://test.tttalk.org:3003/wxpay/"
+          "name": "Test页",
+          "url": "http://test.tttalk.org:3003/test.html"
         },
         {
           "type": "view",
@@ -22,13 +22,13 @@
     },
     {
       "type": "view",
-      "name": "Oauth",
-      "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http%3a%2f%2ftest.tttalk.org%3a3003%2foauth%3faction%3dviewtest&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
+      "name": "支付",
+      "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://test.tttalk.org:3003/oauth?action=wxpay&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
     },
     {
       "type": "view",
-      "name": "Test页",
-      "url": "http://test.tttalk.org:3003/test.html"
+      "name": "主页",
+      "url": "http://test.tttalk.org:3003/"
     }
   ]
 }

@@ -17,9 +17,10 @@ var wxpay = WXPay({
 
 // 接入验证
 router.get('/', function (req, res, next) {
-  logger.info(req.params);
+  logger.info(req.query);
+  var openid = req.query.openid;
   wxpay.getBrandWCPayRequestParams({
-    openid: 'osQJkw2UHrHoPkvar90v1AK1R8pM',
+    openid: openid,
     body: '公众号支付测试',
     detail: '公众号支付测试',
     out_trade_no: '20150331'+Math.random().toString().substr(2, 10),

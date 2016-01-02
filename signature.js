@@ -99,7 +99,7 @@ function getNewTicket(token, cb) {
     });
 }
 
-function getOpenId(config, code, cb) {
+function getOpenid(config, code, cb) {
     request.get('https://api.weixin.qq.com/sns/oauth2/access_token?appid=' + config.appId + '&secret=' + config.appSecret + '&code=' + code + '&grant_type=authorization_code', function(error, res, body) {
         if (error) {
             cb('getOpenId error', error);
@@ -111,7 +111,7 @@ function getOpenId(config, code, cb) {
                 cb(null, openid);
             }
             catch (e) {
-                cb('getOpenId error', e);
+                cb('getOpenid error', e);
             }
         }
     });
