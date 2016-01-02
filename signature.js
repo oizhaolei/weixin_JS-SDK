@@ -99,6 +99,24 @@ function getNewTicket(token, cb) {
     });
 }
 
+function getOpenId(config, code, cb) {
+    request.get('https://api.weixin.qq.com/sns/oauth2/access_token?appid=' + config.appId + '&secret=' + config.appSecret + '&code=' + code + '&grant_type=authorization_code', function(error, res, body) {
+        if (error) {
+            cb('getOpenId error', error);
+        }
+        else {
+            try {
+                logger.info(JSON.parse(body));
+                var openid = JSON.parse(body).openid;
+                cb(null, openid);
+            }
+            catch (e) {
+                cb('getOpenId error', e);
+            }
+        }
+    });
+}
+
 
 
 function tryGetSignature(config, u, cb) {
@@ -187,5 +205,6 @@ function decodeBuffer(bf, encoding) {
     return val;
 }
 
+exports.getOpenId = getOpenId;
 exports.checkSignature = checkSignature;
 exports.getSignature =  getSignature;

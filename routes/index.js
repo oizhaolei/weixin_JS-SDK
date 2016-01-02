@@ -30,7 +30,11 @@ router.post('/log', function (req, res, next) {
 });
 
 router.get('/oauth', function (req, res, next) {
-  logger.info(req);
+  logger.info(req.query);
+  signature.getOpenId(config, req.query.code, function(err, openId) {
+    logger.info(openId);
+  });
+  res.redirect('/');
 });
 router.get('/', function (req, res, next) {
   res.render('index');
