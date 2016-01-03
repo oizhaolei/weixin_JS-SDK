@@ -18,7 +18,7 @@ function getSignature(config, url, cb) {
     // 判断内存中是否有缓存
     if (!cache || !cache.ticket) {
         logger.info('readCache');
-        readFile('cache.json', function(str) {
+        readFile(__dirname + '/../cache.json', function(str) {
             if (str) {
                 logger.info(str);
                 cache = JSON.parse(str);
@@ -135,7 +135,7 @@ function tryGetSignature(config, u, cb) {
                 cache.ticket = result;
                 cache.time = new Date().getTime();
                 // 文件保存
-                writeFile('cache.json', JSON.stringify(cache));
+                writeFile(__dirname + '/../cache.json', JSON.stringify(cache));
                 logger.info(result);
 
                 var timestamp = getTimesTamp();
