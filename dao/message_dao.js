@@ -17,7 +17,19 @@ MessageDao.prototype = {
     var args = [ from_lang, to_lang, content, username ];
     this.mainPool.query(sql, args, function(err, results){
       if (!err && results.affectedRows === 0) err = 'no data change';
-      if (err)     logger.error(err);
+      if (err) logger.error(err);
+
+      callback(err, results);
+    });
+    logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
+  },
+
+  translateMessage : function (to_content, id, callback) {
+    var sql = 'update tbl_message set to_content = ?, update_date=utc_timestamp(3) where id = ?' ;
+    var args = [ to_content, id ];
+    this.mainPool.query(sql, args, function(err, results){
+      if (!err && results.affectedRows === 0) err = 'no data change';
+      if (err) logger.error(err);
 
       callback(err, results);
     });
