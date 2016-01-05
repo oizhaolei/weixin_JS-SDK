@@ -20,78 +20,31 @@ weixin.textMsg(function(msg) {
 
   var resMsg = {};
 
-  switch (msg.content) {
-  case "text" :
-    // 返回文本消息
-    resMsg = {
-      fromUserName : msg.toUserName,
-      toUserName : msg.fromUserName,
-      msgType : "text",
-      content : "这是文本回复",
-      funcFlag : 0
-    };
-    break;
+  var from_lang = 'CN';
+  var to_lang = 'KR';
 
-  case "音乐" :
-    // 返回音乐消息
-    resMsg = {
-      fromUserName : msg.toUserName,
-      toUserName : msg.fromUserName,
-      msgType : "music",
-      title : "音乐标题",
-      description : "音乐描述",
-      musicUrl : "音乐url",
-      HQMusicUrl : "高质量音乐url",
-      funcFlag : 0
-    };
-    break;
-
-  case "图文" :
-
-    var articles = [];
-    articles[0] = {
-      title : "PHP依赖管理工具Composer入门",
-      description : "PHP依赖管理工具Composer入门",
-      picUrl : "http://weizhifeng.net/images/tech/composer.png",
-      url : "http://weizhifeng.net/manage-php-dependency-with-composer.html"
-    };
-
-    articles[1] = {
-      title : "八月西湖",
-      description : "八月西湖",
-      picUrl : "http://weizhifeng.net/images/poem/bayuexihu.jpg",
-      url : "http://weizhifeng.net/bayuexihu.html"
-    };
-
-    articles[2] = {
-      title : "「翻译」Redis协议",
-      description : "「翻译」Redis协议",
-      picUrl : "http://weizhifeng.net/images/tech/redis.png",
-      url : "http://weizhifeng.net/redis-protocol.html"
-    };
-
-    // 返回图文消息
-    resMsg = {
-      fromUserName : msg.toUserName,
-      toUserName : msg.fromUserName,
-      msgType : "news",
-      articles : articles,
-      funcFlag : 0
-    };
-    break;
-  default :
-    var from_lang = 'CN';
-    var to_lang = 'KR';
-
-    var content = msg.content;
-    tttalk.translate(content);
-    resMsg = {
-      msgType : "empty"
-    };
-  }
-
-  console.log(resMsg);
-  weixin.sendMsg(resMsg);
+  var content = msg.content;
+  tttalk.requestTranslate(from_lang, to_lang, content, msg.toUserName, function(err, result) {
+    if (err) {
+      resMsg = {
+        fromUserName : msg.toUserName,
+        toUserName : msg.fromUserName,
+        msgType : "text",
+        content : result,
+        funcFlag : 0
+      };
+    } else {
+      resMsg = {
+        fromUserName : msg.toUserName,
+        toUserName : msg.fromUserName,
+        msgType : "text",
+        content : '正在翻译中，请稍等。。。',
+        funcFlag : 0
+      };
+    }
+    console.log(resMsg);
+    weixin.sendMsg(resMsg);
+  });
 });
 
 // 监听图片消息
@@ -132,21 +85,15 @@ weixin.eventMsg(function(msg) {
   switch (msg.event) {
   case "subscribe" :
     // 返回文本消息
-    resMsg = {
-      fromUserName : msg.toUserName,
-      toUserName : msg.fromUserName,
-      msgType : "text",
-      content : "感谢您关注，您可以直接输入文字或语音进行中韩翻译。",
-      funcFlag : 0
-    };
-    tttalk.createAccount(msg.toUserName, function(err, account) {
+    tttalk.createAccount(msg.fromUserName, function(err, account) {
       weixin.sendMsg( {
         fromUserName : msg.toUserName,
         toUserName : msg.fromUserName,
         msgType : "text",
-        content : "账户余额为" + user.balance + "T币",
+        content : "感谢您关注，您可以直接输入文字或语音进行中韩翻译。账户余额为" + parseFloat(account.balance)/100 + '元',
         funcFlag : 0
       });
+      weixin.sendMsg(resMsg);
     });
     break;
   case "unsubscribe" :
@@ -158,6 +105,10 @@ weixin.eventMsg(function(msg) {
       content : "再见",
       funcFlag : 0
     };
+    weixin.sendMsg(resMsg);
+    tttalk.deleteAccount(msg.fromUserName, function(err, account) {
+      logger.debug('deleteAccount');
+    });
     break;
   case "VIEW" :
   case "CLICK" :
@@ -171,15 +122,16 @@ weixin.eventMsg(function(msg) {
       content : msg.event,
       funcFlag : 0
     };
+    weixin.sendMsg(resMsg);
     break;
   case "VIEW" :
     resMsg = {
       msgType : "empty"
     };
+    weixin.sendMsg(resMsg);
   }
 
   console.log(resMsg);
-  weixin.sendMsg(resMsg);
 });
 
 // 接入验证
@@ -197,6 +149,14 @@ router.post('/', function(req, res, next) {
   // loop
   weixin.loop(req, res);
 
+});
+
+router.post('/translate_callback', function(req, res, next) {
+  var params = req.body;
+  logger.debug(params);
+  tttalk.translate_callback(params.auto_translate, params.from_content, params.from_lang, params.to_content, params.to_lang, params.callback_id, function() {
+
+  });
 });
 
 module.exports = router;
