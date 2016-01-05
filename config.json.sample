@@ -1,6 +1,6 @@
 {
   "host" : "",
-  "port" : 3003,
+  "port" : 80,
 
   "appId": "",
   "appSecret": "",

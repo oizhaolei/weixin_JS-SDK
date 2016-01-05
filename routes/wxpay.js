@@ -28,7 +28,7 @@ router.get('/', function (req, res, next) {
     out_trade_no: '20150331'+Math.random().toString().substr(2, 10),
     total_fee: fee,
     spbill_create_ip: '192.168.2.210',
-    notify_url: 'http://test.tttalk.org:3003/wxpay/noti'
+    notify_url: 'http://test.tttalk.org/wxpay/noti'
   };
   wxpay.getBrandWCPayRequestParams(requestParams, function(err, result){
     logger.info(err);

@@ -6,22 +6,22 @@
         {
           "type": "view",
           "name": "0.01元",
-          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://test.tttalk.org:3003/oauth?action=wxpay_1&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
+          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://test.tttalk.org/oauth?action=wxpay_1&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
         },
         {
           "type": "view",
           "name": "1.00元",
-          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://test.tttalk.org:3003/oauth?action=wxpay_100&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
+          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://test.tttalk.org/oauth?action=wxpay_100&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
         },
         {
           "type": "view",
           "name": "支付记录",
-          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://test.tttalk.org:3003/oauth?action=pay_history&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
+          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://test.tttalk.org/oauth?action=pay_history&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
         },
         {
           "type": "view",
           "name": "消费记录",
-          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://test.tttalk.org:3003/oauth?action=fee_history&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
+          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://test.tttalk.org/oauth?action=fee_history&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
         },
         {
           "type": "click",
@@ -33,12 +33,12 @@
     {
       "type": "view",
       "name": "Test页",
-      "url": "http://test.tttalk.org:3003/test.html"
+      "url": "http://test.tttalk.org/test.html"
     },
     {
       "type": "view",
       "name": "常见问题",
-      "url": "http://test.tttalk.org:3003/"
+      "url": "http://test.tttalk.org/"
     }
   ]
 }

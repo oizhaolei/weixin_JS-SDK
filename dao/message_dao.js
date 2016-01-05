@@ -13,7 +13,7 @@ function MessageDao() {
 
 MessageDao.prototype = {
   saveMessage : function (from_lang, to_lang, content, username, callback) {
-    var sql = 'insert into  tbl_message (from_lang, to_lang, content, username, create_date) values (?,?,?,?,utc_timestamp(3))' ;
+    var sql = 'insert into  tbl_message (from_lang, to_lang, from_content, username, create_date) values (?,?,?,?,utc_timestamp(3))' ;
     var args = [ from_lang, to_lang, content, username ];
     this.mainPool.query(sql, args, function(err, results){
       if (!err && results.affectedRows === 0) err = 'no data change';
