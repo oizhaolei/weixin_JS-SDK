@@ -66,9 +66,6 @@ app.use('/weixin', weixin_routes);
 var wxpay_routes = require('./routes/wxpay');
 app.use('/wxpay', wxpay_routes);
 
-var translate_routes = require('./routes/translate');
-app.use('/translate', translate_routes);
-
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   var err = new Error('Not Found');
@@ -209,9 +206,6 @@ app.use('/weixin', weixin_routes);
 var wxpay_routes = require('./routes/wxpay');
 app.use('/wxpay', wxpay_routes);
 
-var translate_routes = require('./routes/translate');
-app.use('/translate', translate_routes);
-
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   var err = new Error('Not Found');
@@ -280,9 +274,6 @@ app.use('/weixin', weixin_routes);
 
 var wxpay_routes = require('./routes/wxpay');
 app.use('/wxpay', wxpay_routes);
-
-var translate_routes = require('./routes/translate');
-app.use('/translate', translate_routes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
