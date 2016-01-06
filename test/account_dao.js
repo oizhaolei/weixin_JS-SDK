@@ -5,7 +5,7 @@ var async = require('async');
 var account_dao = require('../dao/account_dao');
 var moment = require("moment");
 var seed = moment().unix() ;
-var username = 'username' + seed;
+var username = 'osQJkwwhmX_8r-HsUIVzPeQn0PcM';
 
 describe('account dao', function () {
   it('new', function (done) {
@@ -28,7 +28,7 @@ describe('account dao', function () {
         username, {
           fullname      :'fullname' + seed,
           portrait      :'8cbde0ab21aa32db07f692ec16d3dad4',
-          delete_flag   :'1'
+          delete_flag   :'0'
         }, function(err, data) {
           console.log(err);
           console.log(data);

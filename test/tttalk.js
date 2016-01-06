@@ -10,8 +10,9 @@ var username = 'username' + seed;
 var from_lang = 'CN';
 var to_lang = 'KR';
 
-var content = 'hello';
-var to_content = '你好';
+var content = '呵呵';
+var to_content = '하하';
+var fee = 23;
 
 describe('tttalk', function () {
   it('normal', function (done) {
@@ -31,7 +32,7 @@ describe('tttalk', function () {
         callback(null, newId);
       });
     }, function(id, callback) {
-      tttalk.translate_callback(id, to_content, function(err, message) {
+      tttalk.translate_callback(id, to_content, fee, function(err, message) {
         console.log(err);
         console.log(message);
         assert(!err);
