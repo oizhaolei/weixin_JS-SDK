@@ -10,17 +10,33 @@ var x2j = require('xml2js');
 
 var tttalk = require('../lib/tttalk');
 
-var nodeWeixinMessage = require('node-weixin-message');
-var settings = require('node-weixin-settings');
-var auth = require('node-weixin-auth');
-var messages = nodeWeixinMessage.messages;
-var reply = nodeWeixinMessage.reply;
-
 var app = {
   id : config.appId,
   secret : config.appSecret,
   token : config.appToken
 };
+
+var nodeWeixinSettings = require('node-weixin-settings');
+nodeWeixinSettings.registerSet(function(id, key, value) {
+  if (!app[id]) {
+    app[id] = {};
+  }
+  app[id][key] = value;
+});
+nodeWeixinSettings.registerGet(function(id, key) {
+  if (app[id] && app[id][key]) {
+    var value = app[id][key];
+    return value;
+  }
+  return null;
+});
+
+var nodeWeixinAuth = require('node-weixin-auth');
+nodeWeixinAuth.determine(app, function () {
+});
+var nodeWeixinMessage = require('node-weixin-message');
+var messages = nodeWeixinMessage.messages;
+var reply = nodeWeixinMessage.reply;
 
 // 接入验证
 router.get('/', function(req, res, next) {
@@ -201,15 +217,13 @@ router.post('/translate_callback', function(req, res, next) {
   var params = req.body;
   logger.debug(params);
   tttalk.translate_callback(params.callback_id, params.to_content, function(err, message) {
-      // 客服API消息回复
-      var service = nodeWeixinMessage.service;
-      console.log(message);
-      auth.determine(app, function() {
-        service.api.text(app, message.username, message.to_content, function(error, data) {
-          // data.errcode
-          // data.errmsg
-        });
-      });
+    // 客服API消息回复
+    var service = nodeWeixinMessage.service;
+    console.log(message);
+    service.api.text(app, message.username, message.to_content, function(error, data) {
+      // data.errcode
+      // data.errmsg
+    });
   });
 });
 
