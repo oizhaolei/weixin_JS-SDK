@@ -25,12 +25,15 @@
     "lodash": "^3.10.1",
     "log4js": "^0.6.29",
     "mysql": "^2.10.0",
+    "node-weixin-api": "^0.3.0-alpha",
+    "node-weixin-auth": "^0.2.8",
+    "node-weixin-message": "0.0.4",
     "parseurl": "^1.3.0",
     "request": "*",
-    "urlrequest": "*",
-    "node-weixin-api": "^0.3.0-alpha",
-    "node-weixin-message": "0.0.4",
     "weixin-pay": "^1.1.6",
     "xml2js": "^0.4.15"
+  },
+  "devDependencies": {
+    "moment": "^2.11.0"
   }
 }

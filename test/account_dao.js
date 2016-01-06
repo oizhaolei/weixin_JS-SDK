@@ -10,21 +10,21 @@ var username = 'username' + seed;
 describe('account dao', function () {
   it('new', function (done) {
     async.waterfall([function(callback) {
-      new account_dao().createAccount(username, function(err, data) {
+      account_dao.createAccount(username, function(err, data) {
         console.log(data);
         assert(!err);
         assert(data.affectedRows == 1);
         callback();
       });
     }, function(callback) {
-      new account_dao().getByUsername(username, function(err, account){
+      account_dao.getByUsername(username, function(err, account){
         console.log(account);
         assert(!err);
         assert(account);
         callback();
       });
     }, function(callback) {
-      new account_dao().changeAccount(
+      account_dao.updateAccount(
         username, {
           fullname      :'fullname' + seed,
           portrait      :'8cbde0ab21aa32db07f692ec16d3dad4',
@@ -37,7 +37,7 @@ describe('account dao', function () {
           callback();
         });
     }, function(callback) {
-      new account_dao().deleteAccount(
+      account_dao.deleteAccount(
         username, function(err, data) {
           console.log(err);
           console.log(data);

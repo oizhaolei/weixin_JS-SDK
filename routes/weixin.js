@@ -117,17 +117,15 @@ router.post('/', function(req, res, next) {
       var to_lang = 'KR';
 
       var content = msg.Content;
-      tttalk.requestTranslate(from_lang, to_lang, content, msg.FromUserName,
-          function(err, result) {
-            if (err) {
-              var text = reply.text(msg.ToUserName, msg.FromUserName, result);
-              res.send(text);
-            } else {
-              var text = reply.text(msg.ToUserName, msg.FromUserName,
-                  '正在翻译中，请稍等。。。');
-              res.send(text);
-            }
-          });
+      tttalk.requestTranslate(from_lang, to_lang, content, msg.FromUserName, function(err, result) {
+        if (err) {
+          var text = reply.text(msg.ToUserName, msg.FromUserName, result);
+          res.send(text);
+        } else {
+          var text = reply.text(msg.ToUserName, msg.FromUserName, '正在翻译中，请稍等。。。');
+          res.send(text);
+        }
+      });
     }
   });
 
@@ -164,8 +162,7 @@ router.post('/', function(req, res, next) {
         fromUserName : msg.toUserName,
         toUserName : msg.fromUserName,
         msgType : "text",
-        content : "感谢您关注，您可以直接输入文字或语音进行中韩翻译。账户余额为"
-            + parseFloat(account.balance) / 100 + '元',
+        content : "感谢您关注，您可以直接输入文字或语音进行中韩翻译。账户余额为" + parseFloat(account.balance) / 100 + '元',
         funcFlag : 0
       });
       weixin.sendMsg(resMsg);
@@ -203,20 +200,16 @@ router.post('/', function(req, res, next) {
 router.post('/translate_callback', function(req, res, next) {
   var params = req.body;
   logger.debug(params);
-  tttalk.translate_callback(params.callback_id, params.to_content, function(
-      err, result) {
-    tttalk.send_translate(params.callback_id, function(username, to_content) {
+  tttalk.translate_callback(params.callback_id, params.to_content, function(err, message) {
       // 客服API消息回复
       var service = nodeWeixinMessage.service;
-      console.log("username:" + username);
-      console.log("to_content:" + to_content);
+      console.log(message);
       auth.determine(app, function() {
-        service.api.text(app, username, to_content, function(error, data) {
+        service.api.text(app, message.username, message.to_content, function(error, data) {
           // data.errcode
           // data.errmsg
         });
       });
-    });
   });
 });
 

@@ -5,10 +5,10 @@ var logger = require('log4js').getLogger('account_dao');
 var _ = require('lodash');
 var mysql = require('mysql');
 
-function AccountDao() {
+var AccountDao = function() {
   this.mainPool = mysql.createPool(config.mysql.weixin.main);
   this.readonlyPool = mysql.createPool(config.mysql.weixin.readonly);
-}
+};
 
 AccountDao.prototype = {
 
@@ -42,7 +42,7 @@ AccountDao.prototype = {
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },
 
-  changeAccount : function (username, data, callback) {
+  updateAccount : function (username, data, callback) {
     var sql='',
         args=[];
     _.forEach(data, function(n, key) {
@@ -74,4 +74,4 @@ AccountDao.prototype = {
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   }
 };
-exports = module.exports = AccountDao;
+module.exports = new AccountDao();

@@ -5,11 +5,11 @@ var logger = require('log4js').getLogger('message_dao');
 var _ = require('lodash');
 var mysql = require('mysql');
 
-function MessageDao() {
+var MessageDao = function() {
   this.mainPool = mysql.createPool(config.mysql.weixin.main);
 
   this.readonlyPool = mysql.createPool(config.mysql.weixin.readonly);
-}
+};
 
 MessageDao.prototype = {
   saveMessage : function(from_lang, to_lang, content, username, callback) {
@@ -26,15 +26,18 @@ MessageDao.prototype = {
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },
 
-  translateMessage : function(to_content, id, callback) {
-    var sql = 'update tbl_message set to_content = ? where id = ?;';
-    var args = [ to_content, id, id ];
-    this.mainPool.query(sql, args, function(err, results) {
-      if (!err && results.affectedRows === 0)
-        err = 'no data change';
-      if (err)
-        logger.error(err);
+  updateMessage : function (id, data, callback) {
+    var sql='',
+        args=[];
+    _.forEach(data, function(n, key) {
+      sql += key + '=?,';
+      args.push(data[key]);
+    });
+    sql = 'update tbl_message set ' + sql.substring(0, sql.length - 1) + ' where id = ?' ;
+    args.push(id);
 
+    this.mainPool.query(sql, args, function(err, results){
+      if (!err && results.affectedRows === 0) err = 'no data change';
       callback(err, results);
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
@@ -43,7 +46,7 @@ MessageDao.prototype = {
   getMessage : function(id, callback) {
     var sql = 'select * from tbl_message where id = ?;';
     var args = [ id ];
-    this.mainPool.query(sql, args, function(err, results) {
+    this.readonlyPool.query(sql, args, function(err, results) {
       if (err) {
         callback(err);
       } else if (results && results.length > 0) {
@@ -58,4 +61,4 @@ MessageDao.prototype = {
   }
 };
 
-exports = module.exports = MessageDao;
+module.exports = new MessageDao();
