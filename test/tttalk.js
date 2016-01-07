@@ -13,6 +13,7 @@ var to_lang = 'KR';
 var content = '呵呵';
 var to_content = '하하';
 var fee = 23;
+var from_content_length = 2;
 
 describe('tttalk', function () {
   it('normal', function (done) {
@@ -32,7 +33,7 @@ describe('tttalk', function () {
         callback(null, newId);
       });
     }, function(id, callback) {
-      tttalk.translate_callback(id, to_content, fee, function(err, message) {
+      tttalk.translate_callback(id, to_content, fee, from_content_length, function(err, message) {
         console.log(err);
         console.log(message);
         assert(!err);

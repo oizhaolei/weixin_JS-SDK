@@ -176,11 +176,12 @@ router.post('/', function(req, res, next) {
   });
   messages.event.on.click(function(msg) {
     logger.info("click received");
-    logger.info(msg);
+//    logger.info(msg);
+
   });
   messages.event.on.view(function(msg) {
     logger.info("view received");
-    logger.info(msg);
+//    logger.info(msg);
   });
   messages.event.on.templatesendjobfinish(function(msg) {
     logger.info("templatesendjobfinish received");
@@ -193,6 +194,10 @@ router.post('/translate_callback', function(req, res, next) {
   logger.debug(params);
 
   var id = parseInt(params.callback_id);
+  var from_content_length = params.from_content_length;
+  var to_content = params.to_content;
+  var fee = tp2fen(params.fee);
+
   //stop delayed job
   clearTimeout(timerknock[id]);
   delete timerknock[id];
@@ -200,14 +205,12 @@ router.post('/translate_callback', function(req, res, next) {
   // 客服API消息回复
   var service = nodeWeixinMessage.service;
   console.log(message);
-  var content = params.to_content;//util.format( + '\n-- ' + fee + '分\n-- ' + parseFloat(message.user_balance) / 100 + '元');
-  service.api.text(app, message.username, content, function(error, data) {
+  service.api.text(app, message.username, to_content, function(error, data) {
     // data.errcode
     // data.errmsg
   });
 
-  var fee = tp2fen(params.fee);
-  tttalk.translate_callback(id, params.to_content, fee, function(err, message) {
+  tttalk.translate_callback(id, to_content, fee, from_content_length,  function(err, message) {
     if (err) {
       logger.info(err);
     } else {

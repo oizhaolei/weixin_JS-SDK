@@ -50,6 +50,9 @@ router.get('/oauth', function (req, res, next) {
       res.redirect('/wxpay/fee_history?openid=' + openid);
       break;
 
+    case 'profile' :
+      break;
+
     }
 
   });
