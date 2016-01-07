@@ -16,7 +16,7 @@ var fee = 23;
 var from_content_length = 2;
 
 describe('tttalk', function () {
-  it('normal', function (done) {
+  it('text translate', function (done) {
     async.waterfall([function(callback) {
       tttalk.createAccount(username, function(err, account) {
         console.log(account);
@@ -25,7 +25,7 @@ describe('tttalk', function () {
         callback();
       });
     }, function(callback) {
-      tttalk.requestTranslate(from_lang, to_lang, content, username, function(err, newId) {
+      tttalk.requestTranslateText(from_lang, to_lang, content, username, function(err, newId) {
         console.log(err);
         console.log(newId);
         assert(!err);

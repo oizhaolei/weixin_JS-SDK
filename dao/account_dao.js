@@ -25,6 +25,7 @@ AccountDao.prototype = {
         err = 'user not exists.';
         callback(err);
       }
+      if (err) logger.error(err);
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },
@@ -61,6 +62,7 @@ AccountDao.prototype = {
     this.mainPool.query(sql, args, function(err, results){
       if (!err && results.affectedRows === 0) err = 'no data change';
       callback(err, results);
+      if (err) logger.error(err);
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },
@@ -72,6 +74,7 @@ AccountDao.prototype = {
     this.mainPool.query(sql, args, function(err, results){
       if (!err && results.affectedRows === 0) err = 'no data change';
       callback(err, results);
+      if (err) logger.error(err);
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   }

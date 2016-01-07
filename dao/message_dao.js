@@ -12,14 +12,13 @@ var MessageDao = function() {
 };
 
 MessageDao.prototype = {
-  saveMessage : function(from_lang, to_lang, content, username, callback) {
-    var sql = 'insert into  tbl_message (from_lang, to_lang, from_content, username, create_date) values (?,?,?,?,utc_timestamp(3))';
-    var args = [ from_lang, to_lang, content, username ];
+  saveMessage : function(from_lang, to_lang, filetype, content, username, callback) {
+    var sql = 'insert into  tbl_message (from_lang, to_lang, filetype, from_content, username, create_date) values (?,?,?,?,?,utc_timestamp(3))';
+    var args = [ from_lang, to_lang, filetype, content, username ];
     this.mainPool.query(sql, args, function(err, results) {
       if (!err && results.affectedRows === 0)
         err = 'no data change';
-      if (err)
-        logger.error(err);
+      if (err) logger.error(err);
 
       callback(err, results);
     });
@@ -38,6 +37,7 @@ MessageDao.prototype = {
 
     this.mainPool.query(sql, args, function(err, results){
       if (!err && results.affectedRows === 0) err = 'no data change';
+      if (err) logger.error(err);
       callback(err, results);
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
@@ -56,6 +56,7 @@ MessageDao.prototype = {
         err = 'message not exists.';
         callback(err);
       }
+      if (err) logger.error(err);
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   }
