@@ -8,6 +8,13 @@ var fs = require("fs");
 var request = require('request');
 var path = require('path');
 
+var redis = require("redis");
+var redisClient = redis.createClient(config.redis);
+
+redisClient.on("error", function (err) {
+    console.log("Error " + err);
+});
+
 var express = require('express');
 var router = express.Router();
 
@@ -18,7 +25,6 @@ var tttalk = require('../lib/tttalk');
 var from_lang = 'CN';
 var to_lang = 'EN';
 
-var timerknock = {};
 var app = {
   id : config.appId,
   secret : config.appSecret,
@@ -105,6 +111,7 @@ router.post('/', function(req, res, next) {
     logger.info("textMsg received");
     logger.info(msg);
 
+
     var content = msg.Content;
     tttalk.requestTranslateText(from_lang, to_lang, content, msg.FromUserName, function(err, newId) {
       if (err) {
@@ -113,16 +120,23 @@ router.post('/', function(req, res, next) {
       } else {
         res.send("success");
 
+        var key = '' + newId;
+        redisClient.set(key, key);
+
         //延迟发送客服消息
-        timerknock[newId] = setTimeout(function() {
-          // 客服API消息回复
-          var service = nodeWeixinMessage.service;
-          service.api.text(app, msg.FromUserName, '正在人工翻译中，请稍等。。。', function(error, data) {
-            if (error) {
-              logger.info("%s, %s", data.errcode, data.errmsg);
+        setTimeout(function() {
+          redisClient.get(key, function(err, reply) {
+            if (reply) {
+              // 客服API消息回复
+              var service = nodeWeixinMessage.service;
+              service.api.text(app, msg.FromUserName, '正在人工翻译中，请稍等。。。', function(error, data) {
+                if (error) {
+                  logger.info("%s, %s", data.errcode, data.errmsg);
+                }
+              });
+              redisClient.del(key);
             }
           });
-          delete timerknock[newId];
         },4*1000);
       }
     });
@@ -139,6 +153,7 @@ router.post('/', function(req, res, next) {
 
     tttalk.requestTranslatePhoto(from_lang, to_lang, filename, msg.FromUserName, function(err, newId) {
       if (err) {
+        logger.info("requestTranslatePhoto: %s", err);
         var text = reply.text(msg.ToUserName, msg.FromUserName, err);
         res.send(text);
       }
@@ -161,8 +176,8 @@ router.post('/', function(req, res, next) {
       request(url).pipe(file);
       file.on('finish', function() {
         tttalk.requestTranslateVoice(from_lang, to_lang, filename, msg.FromUserName, function(err, newId) {
-          logger.info("requestTranslateVoice: %s", err);
           if (err) {
+            logger.info("requestTranslateVoice: %s", err);
             var text = reply.text(msg.ToUserName, msg.FromUserName, err);
             res.send(text);
           }
@@ -240,8 +255,7 @@ router.post('/translate_callback', function(req, res, next) {
   var fee = tp2fen(params.fee);
 
   //取消 delayed job
-  clearTimeout(timerknock[id]);
-  delete timerknock[id];
+  redisClient.del(id);
   logger.debug('params: %s' , JSON.stringify(params));
 
 
