@@ -42,6 +42,16 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.set('view engine', '.hbs');
 
+app.use(function(req, res, next) {
+  logger.info('----------- New Request ---------');
+  logger.info('url: %s ', req.originalUrl);
+  logger.info('query: %s', JSON.stringify(req.query));
+  logger.info('body, %s', JSON.stringify(req.body));
+  logger.info('---------------------------------');
+
+  next();
+});
+
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(bodyParser.json());

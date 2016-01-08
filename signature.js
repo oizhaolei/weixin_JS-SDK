@@ -18,7 +18,7 @@ function getSignature(config, url, cb) {
     // 判断内存中是否有缓存
     if (!cache || !cache.ticket) {
         logger.info('readCache');
-        readFile(__dirname + '/../cache.json', function(str) {
+        readFile(__dirname + '/cache.json', function(str) {
             if (str) {
                 logger.info(str);
                 cache = JSON.parse(str);
@@ -99,24 +99,6 @@ function getNewTicket(token, cb) {
     });
 }
 
-function getOpenid(config, code, cb) {
-    request.get('https://api.weixin.qq.com/sns/oauth2/access_token?appid=' + config.appId + '&secret=' + config.appSecret + '&code=' + code + '&grant_type=authorization_code', function(error, res, body) {
-        if (error) {
-            cb('getOpenId error', error);
-        }
-        else {
-            try {
-                logger.info(JSON.parse(body));
-                var openid = JSON.parse(body).openid;
-                cb(null, openid);
-            }
-            catch (e) {
-                cb('getOpenid error', e);
-            }
-        }
-    });
-}
-
 
 
 function tryGetSignature(config, u, cb) {
@@ -135,7 +117,7 @@ function tryGetSignature(config, u, cb) {
                 cache.ticket = result;
                 cache.time = new Date().getTime();
                 // 文件保存
-                writeFile(__dirname + '/../cache.json', JSON.stringify(cache));
+                writeFile(__dirname + '/cache.json', JSON.stringify(cache));
                 logger.info(result);
 
                 var timestamp = getTimesTamp();
@@ -205,6 +187,5 @@ function decodeBuffer(bf, encoding) {
     return val;
 }
 
-exports.getOpenid = getOpenid;
 exports.checkSignature = checkSignature;
 exports.getSignature =  getSignature;

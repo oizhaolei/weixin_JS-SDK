@@ -56,37 +56,6 @@ var nodeWeixinMessage = require('node-weixin-message');
 var messages = nodeWeixinMessage.messages;
 var reply = nodeWeixinMessage.reply;
 
-// 接入验证
-router.get('/', function(req, res, next) {
-  // 签名成功
-  if (checkSignature(req)) {
-    res.status(200).send(req.query.echostr);
-  } else {
-    res.status(200).send('fail');
-  }
-});
-
-checkSignature = function(req) {
-  // 获取校验参数
-  var signature = req.query.signature;
-  var timestamp = req.query.timestamp;
-  var nonce = req.query.nonce;
-  var echostr = req.query.echostr;
-
-  // 按照字典排序
-  var array = [ token, timestamp, nonce ];
-  array.sort();
-
-  // 连接
-  var str = sha1(array.join(""));
-
-  // 对比签名
-  if (str == signature) {
-    return true;
-  } else {
-    return false;
-  }
-};
 // Start
 router.post('/', function(req, res, next) {
   // 获取XML内容
@@ -173,6 +142,7 @@ router.post('/', function(req, res, next) {
     nodeWeixinAuth.determine(app, function () {
       var authData = nodeWeixinSettings.get(app.id, 'auth');
       var url = util.format('http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s', authData.accessToken, msg.MediaId);
+      logger.info("voice url: %s", url);
       request(url).pipe(file);
       file.on('finish', function() {
         tttalk.requestTranslateVoice(from_lang, to_lang, filename, msg.FromUserName, function(err, newId) {
