@@ -16,7 +16,7 @@ var x2j = require('xml2js');
 var tttalk = require('../lib/tttalk');
 
 var from_lang = 'CN';
-var to_lang = 'KR';
+var to_lang = 'EN';
 
 var timerknock = {};
 var app = {
@@ -132,13 +132,26 @@ router.post('/', function(req, res, next) {
   messages.on.image(function(msg) {
     logger.info("imageMsg received");
     logger.info(msg);
-    res.send("success");
+    var text = reply.text(msg.ToUserName, msg.FromUserName, '正在人工翻译中，请稍等。。。');
+    res.send(text);
+
+    var filename = msg.PicUrl;
+
+    tttalk.requestTranslatePhoto(from_lang, to_lang, filename, msg.FromUserName, function(err, newId) {
+      if (err) {
+        var text = reply.text(msg.ToUserName, msg.FromUserName, err);
+        res.send(text);
+      }
+    });
   });
 
   // 监听语音消息
   messages.on.voice(function(msg) {
     logger.info("voiceMsg received");
     logger.info(msg);
+    var text = reply.text(msg.ToUserName, msg.FromUserName, '正在人工翻译中，请稍等。。。');
+    res.send(text);
+
     var filename = msg.MediaId + '.amr';
     var file = fs.createWriteStream(path.join(config.tmpDirectory,  filename));
 
@@ -148,11 +161,9 @@ router.post('/', function(req, res, next) {
       request(url).pipe(file);
       file.on('finish', function() {
         tttalk.requestTranslateVoice(from_lang, to_lang, filename, msg.FromUserName, function(err, newId) {
+          logger.info("requestTranslateVoice: %s", err);
           if (err) {
             var text = reply.text(msg.ToUserName, msg.FromUserName, err);
-            res.send(text);
-          } else {
-            var text = reply.text(msg.ToUserName, msg.FromUserName, '正在人工翻译中，请稍等。。。');
             res.send(text);
           }
         });
@@ -246,7 +257,7 @@ router.post('/translate_callback', function(req, res, next) {
         // data.errmsg
       });
 
-      console.log(message);
+      console.log('message: %s', JSON.stringify(message));
       // var content = util.format( fee + '分\n您的余额： ' + parseFloat(message.user_balance) / 100 + '元');
       // service.api.text(app, message.username, content, function(error, data) {
       //   // data.errcode
