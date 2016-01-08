@@ -18,14 +18,14 @@ var from_content_length = 2;
 describe('tttalk', function () {
   it('text translate', function (done) {
     async.waterfall([function(callback) {
-      tttalk.createAccount(username, function(err, account) {
-        console.log(account);
+      tttalk.createAccount(username, function(err, results, account) {
         assert(!err);
-        assert(account.username == username);
+        assert.equal(results.affectedRows, 1);
+        assert.equal(account.username, username);
         callback();
       });
     }, function(callback) {
-      tttalk.requestTranslateText(from_lang, to_lang, content, username, function(err, newId) {
+      tttalk.saveText(from_lang, to_lang, content, username, function(err, newId) {
         console.log(err);
         console.log(newId);
         assert(!err);
@@ -38,6 +38,33 @@ describe('tttalk', function () {
         console.log(message);
         assert(!err);
         assert(message.id == id);
+        callback();
+      });
+    }, function(id, callback) {
+      var wxmessage = { appid: 'wx99b8690b0397ad16',
+                        bank_type: 'CFT',
+                        cash_fee: '1',
+                        fee_type: 'CNY',
+                        is_subscribe: 'Y',
+                        mch_id: '1302550301',
+                        nonce_str: 'PNv5ZdqDSVbFkEcEV7JX27HLewTLRzL8',
+                        openid: username,
+                        out_trade_no: '201503317709548182',
+                        result_code: 'SUCCESS',
+                        return_code: 'SUCCESS',
+                        sign: '312DB6DF805740B6BD32A612740694C1',
+                        time_end: '20160108130216',
+                        total_fee: '1',
+                        trade_type: 'JSAPI',
+                        transaction_id: seed
+                      };
+      tttalk.wxPay(wxmessage, function(err, account, charge) {
+        console.log(err);
+        console.log(account);
+        console.log(charge);
+        assert(!err);
+        assert(account.username == username);
+        assert(wxmessage.total_fee == charge.total_fee);
         callback();
       });
     }, function(callback) {

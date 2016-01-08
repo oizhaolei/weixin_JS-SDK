@@ -32,13 +32,15 @@ MessageDao.prototype = {
       sql += key + '=?,';
       args.push(data[key]);
     });
-    sql = 'update tbl_message set ' + sql.substring(0, sql.length - 1) + ' where id = ?' ;
+    sql = 'update tbl_message set ' + sql.substring(0, sql.length - 1) + ' where id = ?;select * from tbl_message where id = ?' ;
+    args.push(id);
     args.push(id);
 
     this.mainPool.query(sql, args, function(err, results){
-      if (!err && results.affectedRows === 0) err = 'no data change';
+      if (!err && (results[0].affectedRows === 0 || results[1].length === 0)) err = 'no data change';
       if (err) logger.error(err);
-      callback(err, results);
+
+      callback(err, results[0], results[1][0]);
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },

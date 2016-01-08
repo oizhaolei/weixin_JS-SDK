@@ -5,15 +5,15 @@ var async = require('async');
 var account_dao = require('../dao/account_dao');
 var moment = require("moment");
 var seed = moment().unix() ;
-var username = 'osQJkwwhmX_8r-HsUIVzPeQn0PcM';
+var username = 'u_' + seed;
 
 describe('account dao', function () {
   it('new', function (done) {
     async.waterfall([function(callback) {
-      account_dao.createAccount(username, function(err, data) {
-        console.log(data);
+      account_dao.createAccount(username, function(err, results, account) {
         assert(!err);
-        assert(data.affectedRows == 1);
+        assert.equal(results.affectedRows, 1);
+        assert.equal(account.username, username);
         callback();
       });
     }, function(callback) {
@@ -29,20 +29,17 @@ describe('account dao', function () {
           fullname      :'fullname' + seed,
           portrait      :'8cbde0ab21aa32db07f692ec16d3dad4',
           delete_flag   :'0'
-        }, function(err, data) {
-          console.log(err);
-          console.log(data);
+        }, function(err, results, account) {
           assert(!err);
-          assert(data.affectedRows == 1);
+          assert.equal(results.affectedRows, 1);
+          assert.equal(account.username, username);
           callback();
         });
     }, function(callback) {
       account_dao.deleteAccount(
-        username, function(err, data) {
-          console.log(err);
-          console.log(data);
+        username, function(err, results) {
           assert(!err);
-          assert(data.affectedRows == 1);
+          assert(results.affectedRows == 1);
           callback();
         });
     }], function(error, result) {

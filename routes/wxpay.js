@@ -7,6 +7,16 @@ var router = express.Router();
 
 var fs = require('fs');
 
+var app = {
+  id : config.appId,
+  secret : config.appSecret,
+  token : config.appToken
+};
+
+var tttalk = require('../lib/tttalk');
+
+var nodeWeixinMessage = require('node-weixin-message');
+
 var WXPay = require('weixin-pay');
 var wxpay = WXPay({
   appid: config.appId,
@@ -43,8 +53,37 @@ router.post('/', function (req, res, next) {
   logger.info(req.body);
 });
 router.all('/noti', wxpay.useWXCallback(function(msg, req, res, next){
-    // 处理商户业务逻辑
-  logger.info(req);
+  // 处理商户业务逻辑
+  // { appid: 'wx99b8690b0397ad16',
+  //   bank_type: 'CFT',
+  //   cash_fee: '1',
+  //   fee_type: 'CNY',
+  //   is_subscribe: 'Y',
+  //   mch_id: '1302550301',
+  //   nonce_str: 'PNv5ZdqDSVbFkEcEV7JX27HLewTLRzL8',
+  //   openid: 'osQJkw0lp_3QE3_ouApv_rNAQhqc',
+  //   out_trade_no: '201503317709548182',
+  //   result_code: 'SUCCESS',
+  //   return_code: 'SUCCESS',
+  //   sign: '312DB6DF805740B6BD32A612740694C1',
+  //   time_end: '20160108130216',
+  //   total_fee: '1',
+  //   trade_type: 'JSAPI',
+  //   transaction_id: '1006600349201601082576188135'
+  // }
+  logger.info(req.wxmessage);
+
+  tttalk.wxPay(req.wxmessage, function(err, account){
+    var service = nodeWeixinMessage.service;
+    var content = util.format('您充值%s, 账户余额为%s。', req.wxmessage.total_fee, account.balance);
+    service.api.text(app, msg.FromUserName, content, function(error, data) {
+      if (error) {
+        logger.info("%s, %s", data.errcode, data.errmsg);
+      }
+    });
+
+  });
+
 
   res.status(200).send();
 }));

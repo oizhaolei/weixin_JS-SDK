@@ -82,32 +82,34 @@ router.post('/', function(req, res, next) {
 
 
     var content = msg.Content;
-    tttalk.requestTranslateText(from_lang, to_lang, content, msg.FromUserName, function(err, newId) {
-      if (err) {
-        var text = reply.text(msg.ToUserName, msg.FromUserName, err);
-        res.send(text);
-      } else {
-        res.send("success");
+    tttalk.saveText(from_lang, to_lang, content, msg.FromUserName, function(err, newId) {
+      tttalk.requestTranslate(newId, from_lang, to_lang, content, function(err, results) {
+        if (err) {
+          var text = reply.text(msg.ToUserName, msg.FromUserName, err);
+          res.send(text);
+        } else {
+          res.send("success");
 
-        var key = '' + newId;
-        redisClient.set(key, key);
+          var key = '' + newId;
+          redisClient.set(key, key);
 
-        //延迟发送客服消息
-        setTimeout(function() {
-          redisClient.get(key, function(err, reply) {
-            if (reply) {
-              // 客服API消息回复
-              var service = nodeWeixinMessage.service;
-              service.api.text(app, msg.FromUserName, '正在人工翻译中，请稍等。。。', function(error, data) {
-                if (error) {
-                  logger.info("%s, %s", data.errcode, data.errmsg);
-                }
-              });
-              redisClient.del(key);
-            }
-          });
-        },4*1000);
-      }
+          //延迟发送客服消息
+          setTimeout(function() {
+            redisClient.get(key, function(err, reply) {
+              if (reply) {
+                // 客服API消息回复
+                var service = nodeWeixinMessage.service;
+                service.api.text(app, msg.FromUserName, '正在人工翻译中，请稍等。。。', function(error, data) {
+                  if (error) {
+                    logger.info("%s, %s", data.errcode, data.errmsg);
+                  }
+                });
+                redisClient.del(key);
+              }
+            });
+          },4*1000);
+        }
+      });
     });
   });
 
@@ -118,14 +120,16 @@ router.post('/', function(req, res, next) {
     var text = reply.text(msg.ToUserName, msg.FromUserName, '正在人工翻译中，请稍等。。。');
     res.send(text);
 
-    var filename = msg.PicUrl;
+    var picUrl = msg.PicUrl;
 
-    tttalk.requestTranslatePhoto(from_lang, to_lang, filename, msg.FromUserName, function(err, newId) {
-      if (err) {
-        logger.info("requestTranslatePhoto: %s", err);
-        var text = reply.text(msg.ToUserName, msg.FromUserName, err);
-        res.send(text);
-      }
+    tttalk.savePhoto(from_lang, to_lang, picUrl, msg.FromUserName, function(err, newId) {
+      tttalk.requestTranslate(newId, from_lang, to_lang, picUrl, function(err, results) {
+        if (err) {
+          logger.info("savePhoto: %s", err);
+          var text = reply.text(msg.ToUserName, msg.FromUserName, err);
+          res.send(text);
+        }
+      });
     });
   });
 
@@ -145,12 +149,14 @@ router.post('/', function(req, res, next) {
       logger.info("voice url: %s", url);
       request(url).pipe(file);
       file.on('finish', function() {
-        tttalk.requestTranslateVoice(from_lang, to_lang, filename, msg.FromUserName, function(err, newId) {
-          if (err) {
-            logger.info("requestTranslateVoice: %s", err);
-            var text = reply.text(msg.ToUserName, msg.FromUserName, err);
-            res.send(text);
-          }
+        tttalk.saveVoice(from_lang, to_lang, filename, msg.FromUserName, function(err, newId) {
+          tttalk.requestTranslate(newId, from_lang, to_lang, filename, function(err, results) {
+            if (err) {
+              logger.info("saveVoice: %s", err);
+              var text = reply.text(msg.ToUserName, msg.FromUserName, err);
+              res.send(text);
+            }
+          });
         });
       });
     });
@@ -175,7 +181,7 @@ router.post('/', function(req, res, next) {
     logger.info("subscribe received");
     logger.info(msg);
 
-    tttalk.createAccount(msg.FromUserName, function(err, account) {
+    tttalk.createAccount(msg.FromUserName, function(err, results, account) {
       var text = reply.text(msg.ToUserName, msg.FromUserName, "感谢您关注，您可以直接输入文字、语音、照片进行中韩翻译。\n当前账户余额为" + parseFloat(account.balance) / 100 + '元');
       res.send(text);
     });

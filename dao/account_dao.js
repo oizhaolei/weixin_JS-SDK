@@ -32,13 +32,14 @@ AccountDao.prototype = {
 
 
   createAccount : function (username, callback) {
-    var sql = 'insert into  tbl_account (username, fullname, portrait, delete_flag, create_date) values (?,?,?,?,utc_timestamp(3))' ;
-    var args = [ username, username, '', 0 ];
+    var sql = 'insert into  tbl_account (username, fullname, portrait, delete_flag, create_date) values (?,?,?,?,utc_timestamp(3));SELECT * FROM tbl_account where username = ?' ;
+    var args = [ username, username, '', 0, username ];
     this.mainPool.query(sql, args, function(err, results){
-      if (!err && results.affectedRows === 0) err = 'no data change';
-      if (err)     logger.error(err);
 
-      callback(err, results);
+      if (!err && (results[0].affectedRows === 0 || results[1].length === 0)) err = 'no data change';
+      if (err) logger.error(err);
+
+      callback(err, results[0], results[1][0]);
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },
@@ -50,19 +51,21 @@ AccountDao.prototype = {
       if ('password' == key) {
         sql += key + '=password(?),';
       } else if ('fee' == key) {
-        sql += 'balance=balance-?,';
+        sql += 'balance=balance+?,';
       } else {
         sql += key + '=?,';
       }
       args.push(data[key]);
     });
-    sql = 'update tbl_account set ' + sql.substring(0, sql.length - 1) + ' where username = ?' ;
+    sql = 'update tbl_account set ' + sql.substring(0, sql.length - 1) + ' where username = ?;SELECT * FROM tbl_account where username = ?' ;
+    args.push(username);
     args.push(username);
 
     this.mainPool.query(sql, args, function(err, results){
-      if (!err && results.affectedRows === 0) err = 'no data change';
-      callback(err, results);
+      if (!err && (results[0].affectedRows === 0 || results[1].length === 0)) err = 'no data change';
       if (err) logger.error(err);
+
+      callback(err, results[0], results[1][0]);
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },
