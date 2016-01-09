@@ -16,7 +16,7 @@
         {
           "type": "view",
           "name": "支付记录",
-          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://test.tttalk.org/oauth?action=pay_history&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
+          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://test.tttalk.org/oauth?action=charge_history&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
         },
         {
           "name": "消费记录",

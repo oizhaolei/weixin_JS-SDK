@@ -42,8 +42,8 @@ router.get('/oauth', function (req, res, next) {
       res.redirect('/wxpay?fee=100&openid=' + openid);
       break;
 
-    case 'pay_history' :
-      res.redirect('/wxpay/pay_history?openid=' + openid);
+    case 'charge_history' :
+      res.redirect('/wxpay/charge_history?openid=' + openid);
       break;
 
     case 'fee_history' :

@@ -7,7 +7,7 @@ var path = require('path');
 
 var ffmpeg = require('../lib/ffmpeg');
 
-var source = path.resolve(__dirname, 'sample.amr');
+var source = path.join(__dirname, 'sample.amr');
 var dest = '/tmp/sample.mp3';
 
 describe('ffmpeg', function () {
