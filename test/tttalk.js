@@ -68,6 +68,14 @@ describe('tttalk', function () {
         callback();
       });
     }, function(callback) {
+      tttalk.chargeHistory(username, function(err, results) {
+        assert(!err);
+        assert.equal(results.length, 1);
+        assert.equal(results[0].username, username);
+
+        callback();
+      });
+    }, function(callback) {
       tttalk.deleteAccount(username, function(err, account) {
         console.log(account);
         assert(!err);

@@ -30,6 +30,23 @@ ChargeDao.prototype = {
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },
+  findByUsername : function (username, callback) {
+    var sql = 'SELECT * FROM tbl_user_charge where username = ?' ;
+    var args = [ username ];
+    this.readonlyPool.query(sql, args, function(err, results){
+      if(err) {
+        logger.error(err);
+        callback(err);
+      } else if(results && results.length > 0) {
+        callback(null, results);
+      } else {
+        err = 'no data.';
+        callback(err);
+      }
+      if (err) logger.error(err);
+    });
+    logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
+  },
 
 
   createCharge : function (transaction_id,

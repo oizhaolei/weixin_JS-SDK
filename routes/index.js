@@ -8,6 +8,8 @@ var router = express.Router();
 var path = require('path');
 var signature = require('../signature');
 
+var account_dao = require('../dao/account_dao');
+
 router.all('/getSignature', function (req, res, next) {
   var url = req.body.url;
   logger.info(url);
@@ -48,9 +50,10 @@ router.get('/oauth', function (req, res, next) {
 
     case 'fee_history' :
       res.redirect('/wxpay/fee_history?openid=' + openid);
-      break;
 
+      break;
     case 'profile' :
+      res.redirect('/profile?openid=' + openid);
       break;
 
     }
@@ -79,4 +82,16 @@ function getOpenid(config, code, cb) {
 router.get('/', function (req, res, next) {
   res.render('index');
 });
+
+// profile
+router.get('/profile', function (req, res, next) {
+  var openid = req.query.openid;
+  account_dao.getByUsername(openid, function(err, account) {
+    res.render('profile', {
+      account : account
+    });
+
+  });
+});
+
 module.exports = router;

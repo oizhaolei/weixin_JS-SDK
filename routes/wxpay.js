@@ -5,6 +5,7 @@ var logger = require('log4js').getLogger('routers/wxpay');
 var express = require('express');
 var router = express.Router();
 
+var path = require('path');
 var fs = require('fs');
 
 var app = {
@@ -87,6 +88,23 @@ router.all('/noti', wxpay.useWXCallback(function(msg, req, res, next){
 // charge_history
 router.get('/charge_history', function (req, res, next) {
   var openid = req.query.openid;
+  tttalk.chargeHistory(openid, function(err, data) {
+    res.render('wxpay/jsapi/charge_history', {
+      data : data
+    });
+
+  });
+});
+
+// fee_history
+router.get('/fee_history', function (req, res, next) {
+  var openid = req.query.openid;
+  tttalk.feeHistory(openid, function(err, data) {
+    res.render('wxpay/jsapi/fee_history', {
+      data : data
+    });
+
+  });
 });
 
 module.exports = router;

@@ -45,6 +45,24 @@ MessageDao.prototype = {
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },
 
+  findByUsername : function (username, callback) {
+    var sql = 'SELECT * FROM tbl_message where username = ? order by id desc limit 100' ;
+    var args = [ username ];
+    this.readonlyPool.query(sql, args, function(err, results){
+      if(err) {
+        logger.error(err);
+        callback(err);
+      } else if(results && results.length > 0) {
+        callback(null, results);
+      } else {
+        err = 'no data.';
+        callback(err);
+      }
+      if (err) logger.error(err);
+    });
+    logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
+  },
+
   getMessage : function(id, callback) {
     var sql = 'select * from tbl_message where id = ?;';
     var args = [ id ];

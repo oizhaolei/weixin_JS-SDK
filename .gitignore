@@ -44,6 +44,7 @@ Temporary Items
 
 # node_modules
 *node_modules*
+*bower_components*
 
 # user
 .git
