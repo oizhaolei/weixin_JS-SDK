@@ -25,12 +25,12 @@ describe('tttalk', function () {
         callback();
       });
     }, function(callback) {
-      tttalk.saveText(from_lang, to_lang, content, username, function(err, newId) {
+      tttalk.saveText(from_lang, to_lang, content, username, function(err, results) {
         console.log(err);
-        console.log(newId);
+        console.log(results);
         assert(!err);
-        assert(newId > 0);
-        callback(null, newId);
+        assert(results.insertId > 0);
+        callback(null, results.insertId);
       });
     }, function(id, callback) {
       tttalk.translate_callback(id, to_content, fee, from_content_length, function(err, message) {
@@ -40,7 +40,7 @@ describe('tttalk', function () {
         assert(message.id == id);
         callback();
       });
-    }, function(id, callback) {
+    }, function(callback) {
       var wxmessage = { appid: 'wx99b8690b0397ad16',
                         bank_type: 'CFT',
                         cash_fee: '1',
@@ -59,12 +59,12 @@ describe('tttalk', function () {
                         transaction_id: seed
                       };
       tttalk.wxPay(wxmessage, function(err, account, charge) {
-        console.log(err);
         console.log(account);
         console.log(charge);
         assert(!err);
         assert(account.username == username);
-        assert(wxmessage.total_fee == charge.total_fee);
+        assert.equal(wxmessage.total_fee, charge.total_fee);
+
         callback();
       });
     }, function(callback) {
