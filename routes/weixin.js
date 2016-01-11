@@ -85,7 +85,7 @@ router.post('/', function(req, res, next) {
     var content = msg.Content;
     tttalk.saveText(from_lang, to_lang, content, msg.FromUserName, function(err, results) {
       var newId = results.insertId;
-      tttalk.requestTranslate(newId, from_lang, to_lang, 'text',content, function(err, results) {
+      tttalk.requestTranslate(newId, msg.FromUserName, from_lang, to_lang, 'text',content, function(err, results) {
         if (err) {
           var text = reply.text(msg.ToUserName, msg.FromUserName, err);
           res.send(text);
@@ -130,7 +130,7 @@ router.post('/', function(req, res, next) {
     file.on('finish', function() {
       tttalk.savePhoto(from_lang, to_lang, filename, msg.FromUserName, function(err, results) {
         var newId = results.insertId;
-        tttalk.requestTranslate(newId, from_lang, to_lang, 'photo', filename, function(err, results) {
+        tttalk.requestTranslate(newId, msg.FromUserName, from_lang, to_lang, 'photo', filename, function(err, results) {
           if (err) {
             logger.info("savePhoto: %s", err);
             var text = reply.text(msg.ToUserName, msg.FromUserName, err);
@@ -159,7 +159,7 @@ router.post('/', function(req, res, next) {
       file.on('finish', function() {
         tttalk.saveVoice(from_lang, to_lang, filename, msg.FromUserName, function(err, results) {
           var newId = results.insertId;
-          tttalk.requestTranslate(newId, from_lang, to_lang, 'voice', filename, function(err, results) {
+          tttalk.requestTranslate(newId, msg.FromUserName, from_lang, to_lang, 'voice', filename, function(err, results) {
             if (err) {
               logger.info("saveVoice: %s", err);
               var text = reply.text(msg.ToUserName, msg.FromUserName, err);
@@ -189,16 +189,19 @@ router.post('/', function(req, res, next) {
   messages.event.on.subscribe(function(msg) {
     logger.info("subscribe received");
     logger.info(msg);
-    //获取用户信息
-    nodeWeixinUser.profile(app, msg.FromUserName, function (err, data) {
-      logger.debug('err %s', err);
-      logger.debug('data %s', JSON.stringify(data));
-      if(!err){
-        tttalk.createAccount(data.openid, data.nickname, data.headimgurl, data.sex, data.language, data.city, data.province, data.country, function(err, results, account) {
-          var text = reply.text(msg.ToUserName, msg.FromUserName, "感谢您关注，您可以直接输入文字、语音、照片进行中韩翻译。\n当前账户余额为" + parseFloat(account.balance) / 100 + '元');
-          res.send(text);
-        });
-      }
+    tttalk.createAccount(msg.FromUserName, msg.EventKey, function(err, results, account) {
+      var text = reply.text(msg.ToUserName, msg.FromUserName, "感谢您关注，您可以直接输入文字、语音、照片进行中韩翻译。\n当前账户余额为" + parseFloat(account.balance) / 100 + '元');
+      res.send(text);
+      //获取用户信息
+      nodeWeixinUser.profile(app, msg.FromUserName, function (err, data) {
+        logger.debug('err %s', err);
+        logger.debug('data %s', JSON.stringify(data));
+        if(!err){
+          tttalk.changeAccount(data.openid, data.nickname, data.headimgurl, data.sex, data.language, data.city, data.province, data.country, function(err, results, account) {
+              //
+          });
+        }
+      });
     });
   });
   messages.event.on.unsubscribe(function(msg) {

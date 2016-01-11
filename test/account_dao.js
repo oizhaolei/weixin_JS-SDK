@@ -6,18 +6,12 @@ var account_dao = require('../dao/account_dao');
 var moment = require("moment");
 var seed = moment().unix() ;
 var openid = 'u_' + seed;
-var nickname = 'n_' + seed;
-var portrait = 'p_' + seed; 
-var sex = '1';
-var language = 'zh_CN';
-var city = '大连';
-var province = '辽宁';
-var country = '中国';
+var up_penid = 'up_' + seed;
 
 describe('account dao', function () {
   it('new', function (done) {
     async.waterfall([function(callback) {
-      account_dao.createAccount(openid, nickname, portrait, sex, language, city, province, country, function(err, results, account) {
+      account_dao.createAccount(openid, up_penid, function(err, results, account) {
         assert(!err);
         console.log(account);
         assert.equal(results.affectedRows, 1);
