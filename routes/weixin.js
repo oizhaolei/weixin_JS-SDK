@@ -214,8 +214,30 @@ router.post('/', function(req, res, next) {
   });
   messages.event.on.click(function(msg) {
     logger.info("click received");
-//    logger.info(msg);
-    res.send("success");
+    //    logger.info(msg);
+    switch (msg.EventKey) {
+
+    case 'share_to_friend' :
+      var nodeWeixinLink = require('node-weixin-link');
+      link.qrcode.permanent.createString(app, msg.FromUserName, function (err, json) {
+        if (err) {
+          res.send("success");
+        } else {
+          var qrCodeUrl = util.format('https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=%s', json.ticket);
+          var news = reply.news(msg.ToUserName, msg.FromUserName, [{
+            title: '推荐给朋友',
+            description: '得积分',
+            picUrl: qrCodeUrl,
+            url: qrCodeUrl
+          }]);
+          res.send(news);
+        }
+      });
+      break;
+    default :
+      res.send("success");
+    }
+
 
   });
   messages.event.on.view(function(msg) {

@@ -239,7 +239,7 @@ describe('weixin link', function () {
       //创建永久字符串二维码
       link.qrcode.permanent.createString(app, 'hello....', function (error, json) {
         if (error) logger.error(error);
-        logger.info(json);
+        logger.info('createString: ' + JSON.stringify(json));
         //json.url
         //json.expire_seconds
         //json.ticket
@@ -272,7 +272,7 @@ describe('weixin link', function () {
       //创建url短链接
       var url = 'http://mp.weixin.qq.com/wiki/3/17e6919a39c1c53555185907acf70093.html';
 
-      link.url.shorten(app, 'hello....', function (error, json) {
+      link.url.shorten(app, url, function (error, json) {
         if (error) logger.error(error);
         logger.info(json);
         //json.url
