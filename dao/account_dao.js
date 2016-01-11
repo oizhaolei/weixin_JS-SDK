@@ -31,12 +31,12 @@ AccountDao.prototype = {
   },
 
 
-  createAccount : function (openid, nickname, portrait, sex, language, city, province, country, callback) {
-    var sql = 'insert into  tbl_account (openid, nickname, portrait, sex, language, city, province, country, delete_flag, create_date) values (?,?,?,?,?,?,?,?,?,utc_timestamp(3)) ';
-      sql += 'ON DUPLICATE KEY UPDATE nickname = ?, portrait = ?, sex = ?, language = ?, city = ?, province = ?, country = ?, delete_flag = ?;'
+  createAccount : function (openid, up_penid, callback) {
+    var sql = 'insert into  tbl_account (openid, up_openid, delete_flag, create_date) values (?,?,?,utc_timestamp(3)) ';
+      sql += 'ON DUPLICATE KEY UPDATE delete_flag = ?;'
       sql += 'SELECT * FROM tbl_account where openid = ?' ;
 
-    var args = [ openid, nickname, portrait, sex, language, city, province, country, 0, nickname, portrait, sex, language, city, province, country, 0, openid ];
+    var args = [ openid, up_penid, 0, 0, openid ];
     this.mainPool.query(sql, args, function(err, results){
 
       if (!err && (results[0].affectedRows === 0 || results[1].length === 0)) err = 'no data change';
