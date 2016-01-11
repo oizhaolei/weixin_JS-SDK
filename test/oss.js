@@ -38,14 +38,14 @@ describe('oss', function () {
         callback();
       });
     }, function(callback) {
-      console.log('check');
+      console.log('check: %s', destUrl);
       request(destUrl, function (error, response, body) {
         if (!error && response.statusCode == 200) {
           callback();
         }
       });
     }, function(callback) {
-      console.log('delete');
+      console.log('delete: %s', dest);
       oss.deleteObject(dest, function(err, data) {
         callback();
       });

@@ -82,8 +82,9 @@ router.post('/', function(req, res, next) {
 
 
     var content = msg.Content;
-    tttalk.saveText(from_lang, to_lang, content, msg.FromUserName, function(err, newId) {
-      tttalk.requestTranslate(newId, from_lang, to_lang, content, function(err, results) {
+    tttalk.saveText(from_lang, to_lang, content, msg.FromUserName, function(err, results) {
+      var newId = results.insertId;
+      tttalk.requestTranslate(newId, from_lang, to_lang, 'text',content, function(err, results) {
         if (err) {
           var text = reply.text(msg.ToUserName, msg.FromUserName, err);
           res.send(text);
@@ -120,15 +121,21 @@ router.post('/', function(req, res, next) {
     var text = reply.text(msg.ToUserName, msg.FromUserName, '正在人工翻译中，请稍等。。。');
     res.send(text);
 
-    var picUrl = msg.PicUrl;
+    var filename = msg.MediaId + '.jpg';
+    var file = fs.createWriteStream(path.join(config.tmpDirectory,  filename));
+    var url = msg.PicUrl;
 
-    tttalk.savePhoto(from_lang, to_lang, picUrl, msg.FromUserName, function(err, newId) {
-      tttalk.requestTranslate(newId, from_lang, to_lang, picUrl, function(err, results) {
-        if (err) {
-          logger.info("savePhoto: %s", err);
-          var text = reply.text(msg.ToUserName, msg.FromUserName, err);
-          res.send(text);
-        }
+    request(url).pipe(file);
+    file.on('finish', function() {
+      tttalk.savePhoto(from_lang, to_lang, filename, msg.FromUserName, function(err, results) {
+        var newId = results.insertId;
+        tttalk.requestTranslate(newId, from_lang, to_lang, 'photo', filename, function(err, results) {
+          if (err) {
+            logger.info("savePhoto: %s", err);
+            var text = reply.text(msg.ToUserName, msg.FromUserName, err);
+            res.send(text);
+          }
+        });
       });
     });
   });
@@ -149,8 +156,9 @@ router.post('/', function(req, res, next) {
       logger.info("voice url: %s", url);
       request(url).pipe(file);
       file.on('finish', function() {
-        tttalk.saveVoice(from_lang, to_lang, filename, msg.FromUserName, function(err, newId) {
-          tttalk.requestTranslate(newId, from_lang, to_lang, filename, function(err, results) {
+        tttalk.saveVoice(from_lang, to_lang, filename, msg.FromUserName, function(err, results) {
+          var newId = results.insertId;
+          tttalk.requestTranslate(newId, from_lang, to_lang, 'voice', filename, function(err, results) {
             if (err) {
               logger.info("saveVoice: %s", err);
               var text = reply.text(msg.ToUserName, msg.FromUserName, err);
