@@ -32,17 +32,19 @@ AccountDao.prototype = {
 
 
   createAccount : function (openid, up_penid, callback) {
-    var sql = 'insert into  tbl_account (openid, up_openid, delete_flag, create_date) values (?,?,?,utc_timestamp(3)) ';
-      sql += 'ON DUPLICATE KEY UPDATE delete_flag = ?;'
-      sql += 'SELECT * FROM tbl_account where openid = ?' ;
+    var sql = 'SELECT * FROM tbl_account where openid = ?;' +
+          'insert into  tbl_account (openid, up_openid, delete_flag, create_date) values (?,?,?,utc_timestamp(3)) ON DUPLICATE KEY UPDATE delete_flag = ?;' +
+          'SELECT * FROM tbl_account where openid = ?' ;
 
-    var args = [ openid, up_penid, 0, 0, openid ];
+    var args = [ openid, openid, up_penid, 0, 0, openid ];
     this.mainPool.query(sql, args, function(err, results){
 
-      if (!err && (results[0].affectedRows === 0 || results[1].length === 0)) err = 'no data change';
+      if (!err && (results[1].affectedRows === 0 || results[2].length === 0)) err = 'no data change';
       if (err) logger.error(err);
 
-      callback(err, results[0], results[1][0]);
+      var oldAccount = results[0].length > 0 ? results[0][0] : null;
+      var newAccount = results[2].length > 0 ? results[2][0] : null;
+      callback(err, oldAccount, results[1], newAccount);
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },

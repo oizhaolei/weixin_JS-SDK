@@ -5,17 +5,27 @@ var async = require('async');
 var account_dao = require('../dao/account_dao');
 var moment = require("moment");
 var seed = moment().unix() ;
+var existOpenid = process.env.APP_OPENID;
 var openid = 'u_' + seed;
-var up_penid = 'up_' + seed;
+var up_openid = 'up_' + seed;
 
 describe('account dao', function () {
   it('new', function (done) {
     async.waterfall([function(callback) {
-      account_dao.createAccount(openid, up_penid, function(err, results, account) {
+      account_dao.createAccount(existOpenid, up_openid, function(err, oldAccount, results, account) {
         assert(!err);
-        console.log(account);
+        assert(oldAccount);
+        assert.equal(results.affectedRows, 1);
+        assert.equal(account.openid, existOpenid);
+        callback();
+      });
+    }, function(callback) {
+      account_dao.createAccount(openid, up_openid, function(err, oldAccount, results, account) {
+        assert(!err);
+        assert(!oldAccount);
         assert.equal(results.affectedRows, 1);
         assert.equal(account.openid, openid);
+        assert.equal(account.up_openid, up_openid);
         callback();
       });
     }, function(callback) {

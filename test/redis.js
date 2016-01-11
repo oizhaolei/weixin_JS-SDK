@@ -21,6 +21,13 @@ describe('/redis', function () {
     });
   });
 
+  it('util', function (done) {
+    assert(!'');
+    assert(!null);
+
+    done();
+});
+
   it('redis set int key', function (done) {
     var key = 187;
 

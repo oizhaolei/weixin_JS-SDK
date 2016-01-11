@@ -6,6 +6,7 @@ var BufferHelp = require('bufferhelper');
 var iconv = require('iconv-lite');
 var fs = require('fs');
 var logger = require('log4js').getLogger('signature');
+var path = require('path');
 
 
 var cache = {

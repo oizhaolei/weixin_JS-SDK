@@ -23,8 +23,7 @@ ChargeDao.prototype = {
         var charge = results[0];
         callback(null, charge);
       } else {
-        err = 'charge not exists.';
-        callback(err);
+        callback(err, null);
       }
       if (err) logger.error(err);
     });

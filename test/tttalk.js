@@ -1,4 +1,5 @@
 var assert = require('assert');
+var config = require('../config.json');
 
 var async = require('async');
 
@@ -6,7 +7,8 @@ var tttalk = require('../lib/tttalk');
 var moment = require("moment");
 var seed = moment().unix() ;
 
-var openid = 'openid' + seed;
+var openid = 'u_' + seed;
+var up_openid = process.env.APP_OPENID;
 var from_lang = 'CN';
 var to_lang = 'KR';
 
@@ -18,11 +20,27 @@ var from_content_length = 2;
 describe('tttalk', function () {
   it('text translate', function (done) {
     async.waterfall([function(callback) {
-      tttalk.createAccount(openid, function(err, results, account) {
+      tttalk.createAccount(openid, up_openid, function(err, oldAccount, results, account) {
         assert(!err);
+        assert(!oldAccount);
         assert.equal(results.affectedRows, 1);
         assert.equal(account.openid, openid);
-        callback();
+        if (!oldAccount && up_openid) {
+          // 给推荐人奖励
+          tttalk.wxPay(up_openid,{
+            transaction_id: 'createAccount' + seed,
+            total_fee: config.subscribe_fee,
+            cash_fee: '0',
+            fee_type: 'CNY',
+            result_code: 'SUCCESS',
+            return_code: 'SUCCESS',
+            memo : 'subscribe'
+          }, function(err, account) {
+
+            callback();
+          });
+        }
+
       });
     }, function(callback) {
       tttalk.saveText(from_lang, to_lang, content, openid, function(err, results) {
@@ -41,6 +59,26 @@ describe('tttalk', function () {
         callback();
       });
     }, function(callback) {
+      var wxmessage = {
+        transaction_id: '100660' + seed,
+        cash_fee: '0',
+        total_fee: '1',
+        fee_type: 'CNY',
+        result_code: 'SUCCESS',
+        return_code: 'SUCCESS',
+        memo : 'subscribe'
+      };
+      tttalk.wxPay(openid, wxmessage, function(err, account, charge) {
+        console.log(err);
+        console.log(account);
+        console.log(charge);
+        assert(!err);
+        assert(account.openid == openid);
+        assert.equal(wxmessage.total_fee, charge.total_fee);
+
+        callback();
+      });
+    }, function(callback) {
       var wxmessage = { appid: 'wx99b8690b0397ad16',
                         bank_type: 'CFT',
                         cash_fee: '1',
@@ -56,9 +94,10 @@ describe('tttalk', function () {
                         time_end: '20160108130216',
                         total_fee: '1',
                         trade_type: 'JSAPI',
-                        transaction_id: seed
+                        transaction_id: seed,
                       };
-      tttalk.wxPay(wxmessage, function(err, account, charge) {
+      wxmessage.memo = 'test pay';
+      tttalk.wxPay(openid, wxmessage, function(err, account, charge) {
         console.log(account);
         console.log(charge);
         assert(!err);
@@ -70,7 +109,7 @@ describe('tttalk', function () {
     }, function(callback) {
       tttalk.chargeHistory(openid, function(err, results) {
         assert(!err);
-        assert.equal(results.length, 1);
+        assert.equal(results.length, 2);
         assert.equal(results[0].openid, openid);
 
         callback();

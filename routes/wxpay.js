@@ -68,8 +68,11 @@ router.get('/', function (req, res, next) {
 // }
 router.all('/noti', wxpay.useWXCallback(function(msg, req, res, next){
   logger.info(req.wxmessage);
+  var wxmessage = req.wxmessage;
+  var openid = wxmessage.openid;
+  wxmessage.memo = 'wxpay';
 
-  tttalk.wxPay(req.wxmessage, function(err, account){
+  tttalk.wxPay(openid, wxmessage, function(err, account){
     var service = nodeWeixinMessage.service;
     var content = util.format('您充值%s, 账户余额为%s。', req.wxmessage.total_fee, account.balance);
     service.api.text(app, msg.FromUserName, content, function(error, data) {

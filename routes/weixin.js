@@ -189,16 +189,46 @@ router.post('/', function(req, res, next) {
   messages.event.on.subscribe(function(msg) {
     logger.info("subscribe received");
     logger.info(msg);
-    tttalk.createAccount(msg.FromUserName, msg.EventKey, function(err, results, account) {
+
+    var openid = msg.FromUserName;
+    var up_openid = '';
+    if (msg.EventKey.indexOf('qrscene_') === 0) {
+      up_openid = msg.EventKey.substring(8);
+    }
+    tttalk.createAccount(openid, up_openid, function(err, oldAccount, results, account) {
       var text = reply.text(msg.ToUserName, msg.FromUserName, "感谢您关注，您可以直接输入文字、语音、照片进行中韩翻译。\n当前账户余额为" + parseFloat(account.balance) / 100 + '元');
       res.send(text);
+
+      if (!oldAccount && up_openid) {
+        // 给推荐人奖励
+        tttalk.wxPay(up_openid,{
+          transaction_id: msg.MsgId,
+          total_fee: config.subscribe_fee,
+          cash_fee: '0',
+          fee_type: 'CNY',
+          result_code: 'SUCCESS',
+          return_code: 'SUCCESS',
+          memo : 'subscribe'
+        }, function(err, account) {
+
+        });
+      }
       //获取用户信息
       nodeWeixinUser.profile(app, msg.FromUserName, function (err, data) {
         logger.debug('err %s', err);
         logger.debug('data %s', JSON.stringify(data));
         if(!err){
-          tttalk.changeAccount(data.openid, data.nickname, data.headimgurl, data.sex, data.language, data.city, data.province, data.country, function(err, results, account) {
-              //
+          tttalk.updateAccount(data.openid, {
+            nickname : data.nickname,
+            portrait : data.headimgurl,
+            sex : data.sex,
+            language : data.language,
+            city : data.city,
+            province : data.province,
+            country : data.country,
+            delete_flag : 0
+          }, function(err, results, account) {
+            //
           });
         }
       });
@@ -224,23 +254,31 @@ router.post('/', function(req, res, next) {
   });
   messages.event.on.click(function(msg) {
     logger.info("click received");
-    //    logger.info(msg);
+    logger.info(msg);
     switch (msg.EventKey) {
 
     case 'share_to_friend' :
       var nodeWeixinLink = require('node-weixin-link');
-      link.qrcode.permanent.createString(app, msg.FromUserName, function (err, json) {
+      nodeWeixinLink.qrcode.permanent.createString(app, msg.FromUserName, function (err, json) {
         if (err) {
           res.send("success");
         } else {
           var qrCodeUrl = util.format('https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=%s', json.ticket);
           var news = reply.news(msg.ToUserName, msg.FromUserName, [{
-            title: '推荐给朋友',
-            description: '得积分',
+            title: 'TTTalk翻译秘书',
+            description: '您的贴身翻译管家',
             picUrl: qrCodeUrl,
             url: qrCodeUrl
           }]);
           res.send(news);
+
+          var service = nodeWeixinMessage.service;
+          service.api.text(app, msg.FromUserName, '分享上面的二维码给朋友，您可以得到充值0.99元，具体规则请见http://url.cn/97', function(error, data) {
+            if (error) {
+              logger.info("%s, %s", data.errcode, data.errmsg);
+            }
+          });
+
         }
       });
       break;
