@@ -11,11 +11,7 @@ var async = require('async');
 
 var nwc = require('node-weixin-config');
 var nodeWeixinAuth = require("node-weixin-auth");
-var link = require('node-weixin-link');
 var nodeWeixinSettings = require('node-weixin-settings');
-var nodeWeixinOauth = require('node-weixin-oauth');
-var nodeWeixinPay = require('node-weixin-pay');
-var nodeWeixinUser = require('node-weixin-user');
 
 //Init app
 var app = {
@@ -42,28 +38,6 @@ nodeWeixinSettings.registerGet(function(id, key) {
 
 
 nwc.app.init(app);
-
-//Init Merchant
-var merchant = {
-  id: config.mch_id,
-  key: config.wxpay_api_secret
-};
-nwc.merchant.init(merchant);
-
-//Init SSL Certificate
-nwc.certificate.init(path.join(__dirname, '../cert/apiclient_cert.p12'), config.wxpay_api_secret);
-
-//Init Oauth
-var oauth = {
-  //用户首次访问的URL地址
-  access: 'http://oauth.domain.com/weixin/access',
-  //用户通过验证后的返回地址
-  redirect: 'http://oauth.domain.com/weixin/redirect',
-  //成功获取用户openid后的地址
-  success: 'http://pay.domain.com/successAndReadyToPay'
-};
-
-nwc.urls.oauth.init(oauth);
 
 //JSSDK Init
 var jssdk = {
@@ -92,6 +66,20 @@ describe('weixin auth', function () {
   });
 });
 describe('weixin oauth', function () {
+  var nodeWeixinOauth = require('node-weixin-oauth');
+
+  //Init Oauth
+  var oauth = {
+    //用户首次访问的URL地址
+    access: 'http://oauth.domain.com/weixin/access',
+    //用户通过验证后的返回地址
+    redirect: 'http://oauth.domain.com/weixin/redirect',
+    //成功获取用户openid后的地址
+    success: 'http://pay.domain.com/successAndReadyToPay'
+  };
+  nwc.urls.oauth.init(oauth);
+
+
   // it('profile', function (done) {
   //   nodeWeixinAuth.tokenize(app, function (error, json) {
   //     var accessToken = json.access_token;
@@ -122,6 +110,7 @@ describe('weixin oauth', function () {
   // });
 });
 describe('weixin user', function () {
+  var nodeWeixinUser = require('node-weixin-user');
   it('profile', function (done) {
     var openId = process.env.APP_OPENID;
     nodeWeixinUser.profile(app, openId, function (err, data) {
@@ -133,11 +122,26 @@ describe('weixin user', function () {
   });
 });
 describe('weixin pay', function () {
-  it('sign', function (done) {
+  var nodeWeixinPay = require('node-weixin-pay');
+
+  //Init Merchant
+  var merchant = {
+    id: config.mch_id,
+    key: config.wxpay_api_secret
+  };
+  nwc.merchant.init(merchant);
+
+  var certificate = {
+    pkcs12: path.join(__dirname, '../cert/apiclient_cert.p12'),
+    key: '1302550301'
+  };
+
+
+  it('prepay', function (done) {
     var openId = process.env.APP_OPENID;
     var params = { openid: openId,
                    spbill_create_ip: '1.202.241.25',
-                   notify_url: 'http://wx.domain.com/weixin/pay/main',
+                   notify_url: config.wxpay_noti_url,
                    body: '测试支付',
                    out_trade_no: '111',
                    total_fee: '1',
@@ -147,11 +151,23 @@ describe('weixin pay', function () {
                    nonce_str: 'XjUw56N8MjeCUqHCwqgiKwr2CJVgYUpe' };
     var sign = nodeWeixinPay.sign(merchant, params);
     logger.debug('sign %s', sign);
-    done();
+
+    var conf = {
+      app: app,
+      merchant: merchant,
+      certificate: certificate
+    };
+    logger.info('unified: %s', JSON.stringify(config));
+    nodeWeixinPay.api.order.unified(conf, params, function(error, data) {
+      logger.info('unified: %s, %s', error, JSON.stringify(data));
+      done();
+    });
+
   });
 
 });
 describe('weixin link', function () {
+  var link = require('node-weixin-link');
   it('temporary', function (done) {
     async.waterfall([function(callback) {
       //创建临时二维码

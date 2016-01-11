@@ -41,8 +41,7 @@ router.get('/', function (req, res, next) {
     notify_url: config.wxpay_noti_url
   };
   wxpay.getBrandWCPayRequestParams(requestParams, function(err, result){
-    logger.info(err);
-    logger.info(result);
+    logger.info("getBrandWCPayRequestParams: %s, %s", JSON.stringify(requestParams), JSON.stringify(result));
     res.render('wxpay/jsapi/index', {
       params : requestParams,
       payargs : result
