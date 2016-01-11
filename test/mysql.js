@@ -26,17 +26,17 @@ describe('/mysql', function () {
   });
 
   it('multi statements', function (done) {
-    var username = 'u_'+seed;
+    var openid = 'u_'+seed;
 
-    var sql = 'insert into tbl_account (username,create_date) values (?,utc_timestamp(3));SELECT * FROM tbl_account where username = ?;delete FROM tbl_account where username = ?' ;
-    var args = [username,username,username];
+    var sql = 'insert into tbl_account (openid,create_date) values (?,utc_timestamp(3));SELECT * FROM tbl_account where openid = ?;delete FROM tbl_account where openid = ?' ;
+    var args = [openid,openid,openid];
     mainPool.query(sql, args, function(err, results) {
       if (err) throw err;
       console.log(results);
       assert.equal(results.length, 3);
       assert(results[0].affectedRows == 1);
       assert(results[1].length == 1);
-      assert(results[1][0].username == username);
+      assert(results[1][0].openid == openid);
       assert(results[2].affectedRows == 1);
 
       done();

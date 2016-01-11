@@ -249,7 +249,7 @@ router.post('/translate_callback', function(req, res, next) {
     } else {
       // 客服API消息回复
       var service = nodeWeixinMessage.service;
-      service.api.text(app, message.username, to_content, function(error, data) {
+      service.api.text(app, message.openid, to_content, function(error, data) {
         if (error) logger.info(error);
         // data.errcode
         // data.errmsg
@@ -257,7 +257,7 @@ router.post('/translate_callback', function(req, res, next) {
 
       console.log('message: %s', JSON.stringify(message));
       // var content = util.format( fee + '分\n您的余额： ' + parseFloat(message.user_balance) / 100 + '元');
-      // service.api.text(app, message.username, content, function(error, data) {
+      // service.api.text(app, message.openid, content, function(error, data) {
       //   // data.errcode
       //   // data.errmsg
       // });

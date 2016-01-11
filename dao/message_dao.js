@@ -12,9 +12,9 @@ var MessageDao = function() {
 };
 
 MessageDao.prototype = {
-  saveMessage : function(from_lang, to_lang, filetype, content, username, callback) {
-    var sql = 'insert into  tbl_message (from_lang, to_lang, filetype, from_content, username, create_date) values (?,?,?,?,?,utc_timestamp(3))';
-    var args = [ from_lang, to_lang, filetype, content, username ];
+  saveMessage : function(from_lang, to_lang, filetype, content, openid, callback) {
+    var sql = 'insert into  tbl_message (from_lang, to_lang, filetype, from_content, openid, create_date) values (?,?,?,?,?,utc_timestamp(3))';
+    var args = [ from_lang, to_lang, filetype, content, openid ];
     this.mainPool.query(sql, args, function(err, results) {
       if (!err && results.affectedRows === 0)
         err = 'no data change';
@@ -45,9 +45,9 @@ MessageDao.prototype = {
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },
 
-  findByUsername : function (username, callback) {
-    var sql = 'SELECT * FROM tbl_message where username = ? order by id desc limit 100' ;
-    var args = [ username ];
+  findByOpenid : function (openid, callback) {
+    var sql = 'SELECT * FROM tbl_message where openid = ? order by id desc limit 100' ;
+    var args = [ openid ];
     this.readonlyPool.query(sql, args, function(err, results){
       if(err) {
         logger.error(err);

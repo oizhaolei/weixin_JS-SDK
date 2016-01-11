@@ -6,7 +6,7 @@ var tttalk = require('../lib/tttalk');
 var moment = require("moment");
 var seed = moment().unix() ;
 
-var username = 'username' + seed;
+var openid = 'openid' + seed;
 var from_lang = 'CN';
 var to_lang = 'KR';
 
@@ -18,14 +18,14 @@ var from_content_length = 2;
 describe('tttalk', function () {
   it('text translate', function (done) {
     async.waterfall([function(callback) {
-      tttalk.createAccount(username, function(err, results, account) {
+      tttalk.createAccount(openid, function(err, results, account) {
         assert(!err);
         assert.equal(results.affectedRows, 1);
-        assert.equal(account.username, username);
+        assert.equal(account.openid, openid);
         callback();
       });
     }, function(callback) {
-      tttalk.saveText(from_lang, to_lang, content, username, function(err, results) {
+      tttalk.saveText(from_lang, to_lang, content, openid, function(err, results) {
         console.log(err);
         console.log(results);
         assert(!err);
@@ -48,7 +48,7 @@ describe('tttalk', function () {
                         is_subscribe: 'Y',
                         mch_id: '1302550301',
                         nonce_str: 'PNv5ZdqDSVbFkEcEV7JX27HLewTLRzL8',
-                        openid: username,
+                        openid: openid,
                         out_trade_no: '201503317709548182',
                         result_code: 'SUCCESS',
                         return_code: 'SUCCESS',
@@ -62,21 +62,21 @@ describe('tttalk', function () {
         console.log(account);
         console.log(charge);
         assert(!err);
-        assert(account.username == username);
+        assert(account.openid == openid);
         assert.equal(wxmessage.total_fee, charge.total_fee);
 
         callback();
       });
     }, function(callback) {
-      tttalk.chargeHistory(username, function(err, results) {
+      tttalk.chargeHistory(openid, function(err, results) {
         assert(!err);
         assert.equal(results.length, 1);
-        assert.equal(results[0].username, username);
+        assert.equal(results[0].openid, openid);
 
         callback();
       });
     }, function(callback) {
-      tttalk.deleteAccount(username, function(err, account) {
+      tttalk.deleteAccount(openid, function(err, account) {
         console.log(account);
         assert(!err);
         assert(account);

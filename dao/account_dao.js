@@ -12,9 +12,9 @@ var AccountDao = function() {
 
 AccountDao.prototype = {
 
-  getByUsername : function (username, callback) {
-    var sql = 'SELECT * FROM tbl_account where username = ?' ;
-    var args = [ username ];
+  getByOpenid : function (openid, callback) {
+    var sql = 'SELECT * FROM tbl_account where openid = ?' ;
+    var args = [ openid ];
     this.readonlyPool.query(sql, args, function(err, results){
       if(err) {
         callback(err);
@@ -31,9 +31,9 @@ AccountDao.prototype = {
   },
 
 
-  createAccount : function (username, callback) {
-    var sql = 'insert into  tbl_account (username, fullname, portrait, delete_flag, create_date) values (?,?,?,?,utc_timestamp(3));SELECT * FROM tbl_account where username = ?' ;
-    var args = [ username, username, '', 0, username ];
+  createAccount : function (openid, callback) {
+    var sql = 'insert into  tbl_account (openid, nickname, portrait, delete_flag, create_date) values (?,?,?,?,utc_timestamp(3));SELECT * FROM tbl_account where openid = ?' ;
+    var args = [ openid, openid, '', 0, openid ];
     this.mainPool.query(sql, args, function(err, results){
 
       if (!err && (results[0].affectedRows === 0 || results[1].length === 0)) err = 'no data change';
@@ -44,7 +44,7 @@ AccountDao.prototype = {
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },
 
-  updateAccount : function (username, data, callback) {
+  updateAccount : function (openid, data, callback) {
     var sql='',
         args=[];
     _.forEach(data, function(n, key) {
@@ -57,9 +57,9 @@ AccountDao.prototype = {
       }
       args.push(data[key]);
     });
-    sql = 'update tbl_account set ' + sql.substring(0, sql.length - 1) + ' where username = ?;SELECT * FROM tbl_account where username = ?' ;
-    args.push(username);
-    args.push(username);
+    sql = 'update tbl_account set ' + sql.substring(0, sql.length - 1) + ' where openid = ?;SELECT * FROM tbl_account where openid = ?' ;
+    args.push(openid);
+    args.push(openid);
 
     this.mainPool.query(sql, args, function(err, results){
       if (!err && (results[0].affectedRows === 0 || results[1].length === 0)) err = 'no data change';
@@ -70,9 +70,9 @@ AccountDao.prototype = {
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },
 
-  deleteAccount : function (username, callback) {
-    var sql='delete from tbl_account where username = ?' ;
-    var args=[ username ];
+  deleteAccount : function (openid, callback) {
+    var sql='delete from tbl_account where openid = ?' ;
+    var args=[ openid ];
 
     this.mainPool.query(sql, args, function(err, results){
       if (!err && results.affectedRows === 0) err = 'no data change';

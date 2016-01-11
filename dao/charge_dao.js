@@ -30,9 +30,9 @@ ChargeDao.prototype = {
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },
-  findByUsername : function (username, callback) {
-    var sql = 'SELECT * FROM tbl_user_charge where username = ?' ;
-    var args = [ username ];
+  findByOpenid : function (openid, callback) {
+    var sql = 'SELECT * FROM tbl_user_charge where openid = ?' ;
+    var args = [ openid ];
     this.readonlyPool.query(sql, args, function(err, results){
       if(err) {
         logger.error(err);
@@ -50,7 +50,7 @@ ChargeDao.prototype = {
 
 
   createCharge : function (transaction_id,
-                           username,
+                           openid,
                            cash_fee,
                            total_fee,
                            user_balance,
@@ -60,8 +60,8 @@ ChargeDao.prototype = {
                            time_end,
                            trade_type,
                            callback) {
-    var sql = 'insert into  tbl_user_charge (transaction_id, username, cash_fee, total_fee, user_balance, out_trade_no, bank_type, fee_type, time_end, trade_type, create_date) values (?,?,?,?,?,?,?,?,?,?,utc_timestamp(3));SELECT * FROM tbl_user_charge where transaction_id = ?' ;
-    var args = [ transaction_id, username, cash_fee, total_fee, user_balance, out_trade_no, bank_type, fee_type, time_end, trade_type, transaction_id ];
+    var sql = 'insert into  tbl_user_charge (transaction_id, openid, cash_fee, total_fee, user_balance, out_trade_no, bank_type, fee_type, time_end, trade_type, create_date) values (?,?,?,?,?,?,?,?,?,?,utc_timestamp(3));SELECT * FROM tbl_user_charge where transaction_id = ?' ;
+    var args = [ transaction_id, openid, cash_fee, total_fee, user_balance, out_trade_no, bank_type, fee_type, time_end, trade_type, transaction_id ];
     this.mainPool.query(sql, args, function(err, results){
       if (!err && (results[0].affectedRows === 0 || results[1].length === 0)) err = 'no data change';
       if (err) logger.error(err);

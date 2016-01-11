@@ -86,7 +86,7 @@ router.get('/', function (req, res, next) {
 // profile
 router.get('/profile', function (req, res, next) {
   var openid = req.query.openid;
-  account_dao.getByUsername(openid, function(err, account) {
+  account_dao.getByOpenid(openid, function(err, account) {
     res.render('profile', {
       account : account
     });
