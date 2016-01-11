@@ -56,6 +56,7 @@ var nodeWeixinMessage = require('node-weixin-message');
 var messages = nodeWeixinMessage.messages;
 var reply = nodeWeixinMessage.reply;
 
+var nodeWeixinUser = require('node-weixin-user');
 // Start
 router.post('/', function(req, res, next) {
   // 获取XML内容
@@ -184,14 +185,20 @@ router.post('/', function(req, res, next) {
     res.send("success");
   });
 
-  // 监听事件消息
+//监听事件消息
   messages.event.on.subscribe(function(msg) {
     logger.info("subscribe received");
     logger.info(msg);
-
-    tttalk.createAccount(msg.FromUserName, function(err, results, account) {
-      var text = reply.text(msg.ToUserName, msg.FromUserName, "感谢您关注，您可以直接输入文字、语音、照片进行中韩翻译。\n当前账户余额为" + parseFloat(account.balance) / 100 + '元');
-      res.send(text);
+    //获取用户信息
+    nodeWeixinUser.profile(app, msg.FromUserName, function (err, data) {
+      logger.debug('err %s', err);
+      logger.debug('data %s', JSON.stringify(data));
+      if(!err){
+        tttalk.createAccount(data.openid, data.nickname, data.headimgurl, data.sex, data.language, data.city, data.province, data.country, function(err, results, account) {
+          var text = reply.text(msg.ToUserName, msg.FromUserName, "感谢您关注，您可以直接输入文字、语音、照片进行中韩翻译。\n当前账户余额为" + parseFloat(account.balance) / 100 + '元');
+          res.send(text);
+        });
+      }
     });
   });
   messages.event.on.unsubscribe(function(msg) {
