@@ -21,7 +21,7 @@ describe('/redis', function () {
     });
   });
 
-  it('redis set', function (done) {
+  it('redis set int key', function (done) {
     var key = 187;
 
     redisClient.set(key, key);
@@ -31,6 +31,24 @@ describe('/redis', function () {
         redisClient.get(key, function(err, reply) {
           assert(!reply);
           done();
+        });
+      });
+    });
+  });
+
+  it('redis hset', function (done) {
+    var key = 187;
+    var field = 'f_232';
+    var value = 'v_232';
+
+    redisClient.hset(key, field, value, function(){
+      redisClient.hget(key, field,  function(err, reply) {
+        assert(reply == value);
+        redisClient.hdel(key, field, function() {
+          redisClient.hget(key, field, function(err, reply) {
+            assert(!reply);
+            done();
+          });
         });
       });
     });
