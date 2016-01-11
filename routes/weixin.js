@@ -1,7 +1,7 @@
 // 微信消息回调接口
 // 80端口
 var config = require('../config.json');
-var logger = require('log4js').getLogger('routers/weixin');
+var logger = require('log4js').getLogger('routers/weixin.js');
 var util = require('util');
 var fs = require("fs");
 

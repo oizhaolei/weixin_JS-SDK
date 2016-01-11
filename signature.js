@@ -1,68 +1,41 @@
+var config = require('./config.json');
+
 var url = require('url');
 var crypto = require('crypto');
 var request = require('request');
 var async = require('async');
-var BufferHelp = require('bufferhelper');
 var iconv = require('iconv-lite');
-var fs = require('fs');
-var logger = require('log4js').getLogger('signature');
+var logger = require('log4js').getLogger('signature.js');
 var path = require('path');
 
+var redis = require("redis");
+var redisClient = redis.createClient(config.redis);
 
+var key = 'cache.json';
 var cache = {
     ticket: null,
     time: 0
 };
 
-function getSignature(config, url, cb) {
+exports.getSignature = function(url, cb) {
     logger.info('start getSignature');
     // 判断内存中是否有缓存
     if (!cache || !cache.ticket) {
-        logger.info('readCache');
-      readFile(path.join(__dirname, 'cache.json'), function(str) {
+      logger.info('readCache');
+      redisClient.get(key, function(str) {
             if (str) {
                 logger.info(str);
                 cache = JSON.parse(str);
             }
-            tryGetSignature(config, url, cb);
+            tryGetSignature(url, cb);
         });
     }
     else {
-        tryGetSignature(config, url, cb);
+        tryGetSignature(url, cb);
     }
-}
+};
 
-function checkSignature(config) {
-    return function(req, res, next) {
-        logger.info('checkSignature');
-        req.query = url.parse(req.url, true).query;
-
-        if (req.query.getsignature) {
-            logger.info('req.query.getsignature');
-            return next();
-        }
-
-
-        if (!req.query.signature) {
-            return res.end('Access Denied!');
-        }
-        var tmp = [config.appToken, req.query.timestamp, req.query.nonce].sort().join('');
-        var signature = crypto.createHash('sha1').update(tmp).digest('hex');
-        if (req.query.signature != signature) {
-            logger.info('req.query.signature != signature');
-            return res.end('Auth failed!'); // 指纹码不匹配时返回错误信息，禁止后面的消息接受及发送
-        }
-        if (req.query.echostr) {
-            logger.info('req.query.echostr');
-            return res.end(req.query.echostr); // 添加公众号接口地址时，返回查询字符串echostr表示验证通过
-        }
-        // 消息真实性验证通过，继续后面的处理
-        return next();
-    };
-}
-
-
-function getToken(config, cb) {
+function getToken(cb) {
     var tokenUrl = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appId=' + config.appId + '&secret=' + config.appSecret;
 
     request.get(tokenUrl, function(error, response, body) {
@@ -102,12 +75,12 @@ function getNewTicket(token, cb) {
 
 
 
-function tryGetSignature(config, u, cb) {
+function tryGetSignature(u, cb) {
     // 判断cache 是否过期
     if (!cache.ticket || (new Date().getTime() - cache.time) > 7000000) {
         async.waterfall([function(cb) {
             logger.info('start getNew Ticket', cache);
-            getToken(config, cb);
+            getToken(cb);
         }, function(token, cb) {
             getNewTicket(token, cb);
         }], function(error, result) {
@@ -117,8 +90,10 @@ function tryGetSignature(config, u, cb) {
             else {
                 cache.ticket = result;
                 cache.time = new Date().getTime();
-                // 文件保存
-              writeFile(path.join(__dirname, 'cache.json'), JSON.stringify(cache));
+              // 文件保存
+              var value = JSON.stringify(cache);
+
+              redisClient.set(key, value);
                 logger.info(result);
 
                 var timestamp = getTimesTamp();
@@ -159,27 +134,6 @@ function getNonceStr() {
     return Math.random().toString(36).substr(2, 15);
 }
 
-
-function readFile(path, cb) {
-    var readstream = fs.createReadStream(path);
-    var bf = new BufferHelp();
-    readstream.on('data', function(chunk) {
-        bf.concat(chunk);
-    });
-    readstream.on('end', function() {
-        cb && cb(decodeBuffer(bf));
-    });
-}
-
-function writeFile(path, str, cb) {
-    var writestream = fs.createWriteStream(path);
-
-    writestream.write(str);
-    writestream.on('close', function() {
-        cb && cb();
-    });
-}
-
 function decodeBuffer(bf, encoding) {
     var val = iconv.decode(bf.toBuffer(), encoding || 'utf8');
     if (val.indexOf('�') != -1) {
@@ -187,6 +141,3 @@ function decodeBuffer(bf, encoding) {
     }
     return val;
 }
-
-exports.checkSignature = checkSignature;
-exports.getSignature =  getSignature;

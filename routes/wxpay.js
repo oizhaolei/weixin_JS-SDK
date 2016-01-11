@@ -1,6 +1,6 @@
 // 公众号支付
 var config = require('../config.json');
-var logger = require('log4js').getLogger('routers/wxpay');
+var logger = require('log4js').getLogger('routers/wxpay.js');
 
 var express = require('express');
 var router = express.Router();

@@ -1,5 +1,5 @@
 var config = require('../config.json');
-var logger = require('log4js').getLogger('routers/index');
+var logger = require('log4js').getLogger('routers/index.js');
 
 var request = require('request');
 var express = require('express');
@@ -13,7 +13,7 @@ var account_dao = require('../dao/account_dao');
 router.all('/getSignature', function (req, res, next) {
   var url = req.body.url;
   logger.info(url);
-  signature.getSignature(config, url, function(error, result) {
+  signature.getSignature(url, function(error, result) {
     logger.info(error);
     logger.info(result);
     if (error) {

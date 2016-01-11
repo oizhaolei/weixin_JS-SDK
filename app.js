@@ -1,3 +1,4 @@
+"use strict";
 ////set DEBUG=handle & node .\bin\www
 var config = require('./config.json');
 
@@ -5,7 +6,7 @@ var express = require('express');
 var app = express();
 
 var path = require('path');
-var logger = require('log4js').getLogger('app');
+var logger = require('log4js').getLogger('app.js');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
