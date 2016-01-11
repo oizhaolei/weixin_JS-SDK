@@ -85,7 +85,7 @@ router.post('/', function(req, res, next) {
     var content = msg.Content;
     tttalk.saveText(from_lang, to_lang, content, msg.FromUserName, function(err, results) {
       var newId = results.insertId;
-      tttalk.requestTranslate(newId, from_lang, to_lang, 'text',content, function(err, results) {
+      tttalk.requestTranslate(newId, msg.FromUserName, from_lang, to_lang, 'text',content, function(err, results) {
         if (err) {
           var text = reply.text(msg.ToUserName, msg.FromUserName, err);
           res.send(text);
@@ -130,7 +130,7 @@ router.post('/', function(req, res, next) {
     file.on('finish', function() {
       tttalk.savePhoto(from_lang, to_lang, filename, msg.FromUserName, function(err, results) {
         var newId = results.insertId;
-        tttalk.requestTranslate(newId, from_lang, to_lang, 'photo', filename, function(err, results) {
+        tttalk.requestTranslate(newId, msg.FromUserName, from_lang, to_lang, 'photo', filename, function(err, results) {
           if (err) {
             logger.info("savePhoto: %s", err);
             var text = reply.text(msg.ToUserName, msg.FromUserName, err);
@@ -159,7 +159,7 @@ router.post('/', function(req, res, next) {
       file.on('finish', function() {
         tttalk.saveVoice(from_lang, to_lang, filename, msg.FromUserName, function(err, results) {
           var newId = results.insertId;
-          tttalk.requestTranslate(newId, from_lang, to_lang, 'voice', filename, function(err, results) {
+          tttalk.requestTranslate(newId, msg.FromUserName, from_lang, to_lang, 'voice', filename, function(err, results) {
             if (err) {
               logger.info("saveVoice: %s", err);
               var text = reply.text(msg.ToUserName, msg.FromUserName, err);
