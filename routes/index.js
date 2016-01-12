@@ -115,7 +115,7 @@ router.get('/profile', function (req, res, next) {
               feeHistory.from_content = '图片翻译';
             else if(feeHistory.filetype == 'voice')
               feeHistory.from_content = '语音翻译';
-            feeHistory.create_date = moment(feeHistory.create_date).format("MM-DD HH:mm:ss")
+            feeHistory.create_date = moment(feeHistory.create_date).format("MM-DD HH:mm:ss");
           }
         }
         callback(null, feeHistoryData);
@@ -126,7 +126,7 @@ router.get('/profile', function (req, res, next) {
         if(!err){
           for(var i in chargeHistoryData) {
             var chargeHistory = chargeHistoryData[i];
-            chargeHistory.create_date = moment(feeHistory.create_date).format("MM-DD HH:mm:ss")
+            chargeHistory.create_date = moment(chargeHistory.create_date).format("MM-DD HH:mm:ss");
           }
         }
         callback(null, chargeHistoryData);
