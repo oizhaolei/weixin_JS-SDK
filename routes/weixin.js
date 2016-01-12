@@ -56,6 +56,7 @@ nodeWeixinAuth.determine(app, function () {
 var nodeWeixinMessage = require('node-weixin-message');
 var messages = nodeWeixinMessage.messages;
 var reply = nodeWeixinMessage.reply;
+var service = nodeWeixinMessage.service;
 
 var nodeWeixinUser = require('node-weixin-user');
 // Start
@@ -101,7 +102,6 @@ router.post('/', function(req, res, next) {
             redisClient.get(key, function(err, reply) {
               if (reply) {
                 // 客服API消息回复
-                var service = nodeWeixinMessage.service;
                 service.api.text(app, msg.FromUserName, '正在人工翻译中，请稍等。。。', function(error, data) {
                   if (error) {
                     logger.info("%s, %s", data.errcode, data.errmsg);
@@ -197,7 +197,7 @@ router.post('/', function(req, res, next) {
       up_openid = msg.EventKey.substring(8);
     }
     account_dao.createAccount(openid, up_openid, function(err, oldAccount, results, account) {
-      var text = reply.text(msg.ToUserName, msg.FromUserName, "感谢您关注，您可以直接输入文字、语音、照片进行中韩翻译。\n当前账户余额为" + parseFloat(account.balance) / 100 + '元');
+      var text = reply.text(msg.ToUserName, msg.FromUserName, util.format("感谢您关注，您可以直接输入文字、语音、照片进行中韩翻译。\n当前账户余额为%d元", parseFloat(account.balance) / 100));
       res.send(text);
 
       if (!oldAccount && up_openid) {
@@ -210,8 +210,14 @@ router.post('/', function(req, res, next) {
           result_code: 'SUCCESS',
           return_code: 'SUCCESS',
           memo : 'subscribe'
-        }, function(err, account) {
-
+        }, function(err, upAccount) {
+          if (err) {
+            logger.error(err);
+          } else {
+            service.api.text(app, msg.FromUserName, util.format('您的朋友%s得到%d元，推荐关注的积分，具体规则请见%s', upAccount.nickname, parseFloat(config.subscribe_fee) / 100), config.share_rules_url, function(err, data) {
+              if (err) logger.error(err);
+            });
+          }
         });
       }
       //获取用户信息
@@ -276,8 +282,7 @@ router.post('/', function(req, res, next) {
           }]);
           res.send(news);
 
-          var service = nodeWeixinMessage.service;
-          service.api.text(app, msg.FromUserName, '分享上面的二维码给朋友，您可以得到充值0.99元，具体规则请见http://url.cn/97', function(error, data) {
+          service.api.text(app, msg.FromUserName, util.format('分享上面的二维码给朋友，您可以得到充值%d元，具体规则请见%s', parseFloat(config.subscribe_fee) / 100, config.share_rules_url), function(error, data) {
             if (error) {
               logger.info("%s, %s", data.errcode, data.errmsg);
             }
@@ -289,8 +294,6 @@ router.post('/', function(req, res, next) {
     default :
       res.send("success");
     }
-
-
   });
   messages.event.on.view(function(msg) {
     logger.info("view received");
@@ -322,7 +325,6 @@ router.post('/translate_callback', function(req, res, next) {
       logger.info(err);
     } else {
       // 客服API消息回复
-      var service = nodeWeixinMessage.service;
       service.api.text(app, message.openid, to_content, function(error, data) {
         if (error) logger.info(error);
         // data.errcode
