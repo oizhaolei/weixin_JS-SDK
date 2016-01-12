@@ -1,27 +1,40 @@
-<!DOCTYPE html>
-<html>
- <head> 
-  <meta charset="utf-8" /> 
-  <title>消费记录</title> 
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0" /> 
-  <link rel="stylesheet" href="/stylesheets/style.css" /> 
- </head> 
- <body ontouchstart=""> 
-  <table class="datalist"> 
-   <tbody>
-    <tr> 
-     <th scope="col">原文</th> 
-     <th scope="col">译文</th> 
-     <th scope="col">费用</th> 
-     <th scope="col">时间</th> 
-    </tr> {{#each feeHistoryData}} 
-    <tr> 
-     <td>{{from_content}}</td> 
-     <td>{{to_content}}</td> 
-     <td>{{fee}}</td> 
-     <td>{{create_date}}</td> 
-    </tr> {{/each}} 
-   </tbody>
-  </table>  
- </body>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>消费记录</title>
+    <link href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../dist/css/bootstrap-theme.min.css" rel="stylesheet">
+  </head>
+<body>
+  <div class="container theme-showcase" role="main">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>原文</th>
+          <th>译文</th>
+          <th>费用</th>
+          <th>时间</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each feeHistoryData}} 
+          <tr> 
+           <td>{{from_content}}</td> 
+           <td>{{to_content}}</td> 
+           <td>{{fee}}元</td> 
+           <td>{{create_date}}</td> 
+          </tr> 
+        {{/each}} 
+      </tbody>
+    </table>
+  </div>
+<!-- Bootstrap core JavaScript -->
+<script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+</body>
 </html>
