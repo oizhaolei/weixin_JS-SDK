@@ -17,7 +17,6 @@ i18n.configure({
   directory : path.join(__dirname, 'locales')
 });
 
-
 var hbs = require("hbs");
 hbs.registerPartials(path.join(__dirname, 'views/partials'));
 hbs.registerHelper("equal", require("handlebars-helper-equal"));
@@ -25,23 +24,23 @@ hbs.localsAsTemplateData(app);
 // {{blocks}} {{extend}}
 var blocks = {};
 hbs.registerHelper('extend', function(name, context) {
-    var block = blocks[name];
-    if (!block) {
-        block = blocks[name] = [];
-    }
+  var block = blocks[name];
+  if (!block) {
+    block = blocks[name] = [];
+  }
 
-    block.push(context.fn(this)); // for older versions of handlebars, use block.push(context(this));
+  block.push(context.fn(this)); // for older versions of handlebars, use block.push(context(this));
 });
 
 hbs.registerHelper('block', function(name) {
-    var val = (blocks[name] || []).join('\n');
+  var val = (blocks[name] || []).join('\n');
 
-    // clear the block
-    blocks[name] = [];
-    return val;
+  // clear the block
+  blocks[name] = [];
+  return val;
 });
 hbs.registerHelper('json', function(context) {
-    return JSON.stringify(context);
+  return JSON.stringify(context);
 });
 hbs.registerHelper('__', function () {
   return i18n.__.apply(this, arguments);

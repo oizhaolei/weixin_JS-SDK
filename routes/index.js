@@ -19,9 +19,7 @@ var moment = require("moment");
 
 var signature = require('../signature');
 
-var account_dao = require('../dao/account_dao');
-var message_dao = require('../dao/message_dao');
-var charge_dao = require('../dao/charge_dao');
+var tttalk = require('../lib/tttalk');
 var app = {
   id : config.appId,
   secret : config.appSecret,
@@ -100,51 +98,7 @@ router.get('/', function (req, res, next) {
 // profile
 router.get('/profile', function (req, res, next) {
   var openid = req.query.openid;
-  async.parallel({
-    accountData : function(callback){
-      account_dao.getByOpenid(openid, function(err, accountData) {
-        callback(err, accountData);
-      });
-    },
-    feeHistoryData : function(callback){
-      message_dao.findByOpenid(openid, function(err, feeHistoryData) {
-        if(!err){
-          for(var i in feeHistoryData) {
-            var feeHistory = feeHistoryData[i];
-            if(feeHistory.filetype == 'photo')
-              feeHistory.from_content = '图片翻译';
-            else if(feeHistory.filetype == 'voice')
-              feeHistory.from_content = '语音翻译';
-            
-            feeHistory.fee = parseFloat(feeHistory.fee)/100;
-            feeHistory.create_date = moment(feeHistory.create_date).format("MM-DD HH:mm:ss");
-          }
-        }
-        callback(null, feeHistoryData);
-      });
-    },
-    chargeHistoryData : function(callback){
-      charge_dao.findByOpenid(openid, function(err, chargeHistoryData) {
-        if(!err){
-          for(var i in chargeHistoryData) {
-            var chargeHistory = chargeHistoryData[i];
-            chargeHistory.total_fee = parseFloat(chargeHistory.total_fee)/100;
-            chargeHistory.create_date = moment(chargeHistory.create_date).format("MM-DD HH:mm:ss");
-          }
-        }
-        callback(null, chargeHistoryData);
-      });
-    }
-  },
-
-  function(err, results) {
-    //准备数据
-    logger.debug('accountData', JSON.stringify(results.accountData));
-    logger.debug('feeHistoryData', JSON.stringify(results.feeHistoryData));
-    logger.debug('chargeHistoryData', JSON.stringify(results.chargeHistoryData));
-    var accountData = results.accountData;
-    var feeHistoryData = results.feeHistoryData;
-    var chargeHistoryData = results.chargeHistoryData;
+  tttalk.profile(openid, function(err, accountData, feeHistoryData, chargeHistoryData) {
     res.render('profile', {
       account : accountData,
       feeHistory : feeHistoryData,

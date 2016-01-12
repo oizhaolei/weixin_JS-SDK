@@ -92,14 +92,14 @@ router.post('/', function(req, res, next) {
     logger.info(msg);
     res.send("success");
 
+    var msgid = msg.MsgId;
     var content = msg.Content;
-    tttalk.saveText(from_lang, to_lang, content, msg.FromUserName, function(err, results) {
-      var newId = results.insertId;
-      tttalk.requestTranslate(newId, msg.FromUserName, from_lang, to_lang, 'text',content, function(err, results) {
+    tttalk.saveText(msgid, from_lang, to_lang, content, msg.FromUserName, function(err, results) {
+      tttalk.requestTranslate(msgid, msg.FromUserName, from_lang, to_lang, 'text',content, function(err, results) {
         if (err) {
           logger.err("requestTranslate: %s", err);
         } else {
-          var key = '' + newId;
+          var key = msgid;
           redisClient.set(key, key);
 
           //延迟发送客服消息
@@ -128,15 +128,15 @@ router.post('/', function(req, res, next) {
     var text = reply.text(msg.ToUserName, msg.FromUserName, i18n.__('translating_pls_wait'));
     res.send(text);
 
+    var msgid = msg.MsgId;
     var filename = msg.MediaId + '.jpg';
     var file = fs.createWriteStream(path.join(config.tmpDirectory,  filename));
     var url = msg.PicUrl;
 
     request(url).pipe(file);
     file.on('finish', function() {
-      tttalk.savePhoto(from_lang, to_lang, filename, msg.FromUserName, function(err, results) {
-        var newId = results.insertId;
-        tttalk.requestTranslate(newId, msg.FromUserName, from_lang, to_lang, 'photo', filename, function(err, results) {
+      tttalk.savePhoto(msgid, from_lang, to_lang, filename, msg.FromUserName, function(err, results) {
+        tttalk.requestTranslate(msgid, msg.FromUserName, from_lang, to_lang, 'photo', filename, function(err, results) {
           if (err) {
             logger.err("savePhoto: %s", err);
           }
@@ -152,6 +152,7 @@ router.post('/', function(req, res, next) {
     var text = reply.text(msg.ToUserName, msg.FromUserName, i18n.__('translating_pls_wait'));
     res.send(text);
 
+    var msgid = msg.MsgId;
     var filename = msg.MediaId + '.amr';
     var file = fs.createWriteStream(path.join(config.tmpDirectory,  filename));
 
@@ -161,9 +162,8 @@ router.post('/', function(req, res, next) {
       logger.info("voice url: %s", url);
       request(url).pipe(file);
       file.on('finish', function() {
-        tttalk.saveVoice(from_lang, to_lang, filename, msg.FromUserName, function(err, results) {
-          var newId = results.insertId;
-          tttalk.requestTranslate(newId, msg.FromUserName, from_lang, to_lang, 'voice', filename, function(err, results) {
+        tttalk.saveVoice(msgid, from_lang, to_lang, filename, msg.FromUserName, function(err, results) {
+          tttalk.requestTranslate(msgid, msg.FromUserName, from_lang, to_lang, 'voice', filename, function(err, results) {
             if (err) {
               logger.info("saveVoice: %s", err);
             }
@@ -298,16 +298,16 @@ router.post('/', function(req, res, next) {
 router.post('/translate_callback', function(req, res, next) {
   var params = req.body;
 
-  var id = parseInt(params.callback_id);
+  var msgid = parseInt(params.callback_id);
   var from_content_length = params.from_content_length;
   var to_content = params.to_content;
   var fee = tp2fen(params.fee);
 
   //取消 delayed job
-  redisClient.del(id);
+  redisClient.del(msgid);
   logger.debug('params: %s' , JSON.stringify(params));
 
-  tttalk.translate_callback(id, to_content, fee, from_content_length,  function(err, message) {
+  tttalk.translate_callback(msgid, to_content, fee, from_content_length,  function(err, message) {
     if (err) {
       logger.info(err);
     } else {

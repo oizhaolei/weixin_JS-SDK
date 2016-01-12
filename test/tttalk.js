@@ -13,6 +13,7 @@ var up_openid = process.env.APP_OPENID;
 var from_lang = 'CN';
 var to_lang = 'KR';
 
+var msgid = 'm_' + seed;
 var content = '呵呵';
 var to_content = '하하';
 var fee = 23;
@@ -51,19 +52,18 @@ describe('tttalk', function () {
 
       });
     }, function(callback) {
-      tttalk.saveText(from_lang, to_lang, content, openid, function(err, results) {
+      tttalk.saveText(msgid, from_lang, to_lang, content, openid, function(err, results) {
         console.log(err);
         console.log(results);
         assert(!err);
-        assert(results.insertId > 0);
-        callback(null, results.insertId);
+        callback(null, msgid);
       });
     }, function(id, callback) {
       tttalk.translate_callback(id, to_content, fee, from_content_length, function(err, message) {
         console.log(err);
         console.log(message);
         assert(!err);
-        assert(message.id == id);
+        assert(message.msgid == id);
         callback();
       });
     }, function(callback) {
@@ -115,10 +115,9 @@ describe('tttalk', function () {
         callback();
       });
     }, function(callback) {
-      tttalk.chargeHistory(openid, function(err, results) {
+      tttalk.profile(openid, function(err, accountData, feeHistoryData, chargeHistoryData) {
         assert(!err);
-        assert.equal(results.length, 2);
-        assert.equal(results[0].openid, openid);
+        assert.equal(accountData.openid, openid);
 
         callback();
       });

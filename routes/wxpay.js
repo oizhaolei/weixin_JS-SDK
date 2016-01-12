@@ -94,26 +94,4 @@ router.all('/noti', wxpay.useWXCallback(function(msg, req, res, next){
   res.status(200).send();
 }));
 
-// charge_history
-router.get('/charge_history', function (req, res, next) {
-  var openid = req.query.openid;
-  tttalk.chargeHistory(openid, function(err, data) {
-    res.render('wxpay/jsapi/charge_history', {
-      data : data
-    });
-
-  });
-});
-
-// fee_history
-router.get('/fee_history', function (req, res, next) {
-  var openid = req.query.openid;
-  tttalk.feeHistory(openid, function(err, data) {
-    res.render('wxpay/jsapi/fee_history', {
-      feeHistoryData : data
-    });
-
-  });
-});
-
 module.exports = router;
