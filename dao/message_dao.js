@@ -55,7 +55,7 @@ MessageDao.prototype = {
       } else if(results && results.length > 0) {
         callback(null, results);
       } else {
-        err = 'no data.';
+        err = 'no data: ' + openid;
         callback(err);
       }
       if (err) logger.error(err);

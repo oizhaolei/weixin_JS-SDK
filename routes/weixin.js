@@ -20,6 +20,14 @@ var router = express.Router();
 
 var x2j = require('xml2js');
 
+var i18n = require("i18n");
+i18n.configure({
+  locales : ['cn'],
+  defaultLocale : 'cn',
+  directory : path.join(__dirname, '../locales')
+});
+
+
 var account_dao = require('../dao/account_dao');
 var tttalk = require('../lib/tttalk');
 
@@ -102,7 +110,7 @@ router.post('/', function(req, res, next) {
             redisClient.get(key, function(err, reply) {
               if (reply) {
                 // 客服API消息回复
-                service.api.text(app, msg.FromUserName, '正在人工翻译中，请稍等。。。', function(error, data) {
+                service.api.text(app, msg.FromUserName, i18n.__('translating_pls_wait'), function(error, data) {
                   if (error) {
                     logger.info("%s, %s", data.errcode, data.errmsg);
                   }
@@ -120,7 +128,7 @@ router.post('/', function(req, res, next) {
   messages.on.image(function(msg) {
     logger.info("imageMsg received");
     logger.info(msg);
-    var text = reply.text(msg.ToUserName, msg.FromUserName, '正在人工翻译中，请稍等。。。');
+    var text = reply.text(msg.ToUserName, msg.FromUserName, i18n.__('translating_pls_wait'));
     res.send(text);
 
     var filename = msg.MediaId + '.jpg';
@@ -146,7 +154,7 @@ router.post('/', function(req, res, next) {
   messages.on.voice(function(msg) {
     logger.info("voiceMsg received");
     logger.info(msg);
-    var text = reply.text(msg.ToUserName, msg.FromUserName, '正在人工翻译中，请稍等。。。');
+    var text = reply.text(msg.ToUserName, msg.FromUserName, i18n.__('translating_pls_wait'));
     res.send(text);
 
     var filename = msg.MediaId + '.amr';
@@ -197,7 +205,7 @@ router.post('/', function(req, res, next) {
       up_openid = msg.EventKey.substring(8);
     }
     account_dao.createAccount(openid, up_openid, function(err, oldAccount, results, account) {
-      var text = reply.text(msg.ToUserName, msg.FromUserName, util.format("感谢您关注，您可以直接输入文字、语音、照片进行中韩翻译。\n当前账户余额为%d元", parseFloat(account.balance) / 100));
+      var text = reply.text(msg.ToUserName, msg.FromUserName, i18n.__('subscribe_success', parseFloat(account.balance) / 100));
       res.send(text);
 
       if (!oldAccount && up_openid) {
@@ -214,7 +222,7 @@ router.post('/', function(req, res, next) {
           if (err) {
             logger.error(err);
           } else {
-            service.api.text(app, msg.FromUserName, util.format('您的朋友%s得到%d元，推荐关注的积分，具体规则请见%s', upAccount.nickname, parseFloat(config.subscribe_fee) / 100), config.share_rules_url, function(err, data) {
+            service.api.text(app, msg.FromUserName, i18n.__('subscribe_share_fee', upAccount.nickname, parseFloat(config.subscribe_fee) / 100), config.share_rules_url, function(err, data) {
               if (err) logger.error(err);
             });
           }
@@ -266,21 +274,16 @@ router.post('/', function(req, res, next) {
     logger.info("click received");
     logger.info(msg);
     switch (msg.EventKey) {
-
     case 'usage_text' :
-      var text = reply.text(msg.ToUserName, msg.FromUserName, '文字翻译说明。。。');
+      var text = reply.text(msg.ToUserName, msg.FromUserName, i18n.__('usage_text'));
       res.send(text);
       break;
     case 'usage_voice' :
-      var text = reply.text(msg.ToUserName, msg.FromUserName, '语音翻译说明。。。');
+      var text = reply.text(msg.ToUserName, msg.FromUserName, i18n.__('usage_voice'));
       res.send(text);
       break;
     case 'usage_photo' :
-      var text = reply.text(msg.ToUserName, msg.FromUserName, '图片翻译说明。。。');
-      res.send(text);
-      break;
-    case 'usage_text' :
-      var text = reply.text(msg.ToUserName, msg.FromUserName, '文字翻译说明。。。');
+      var text = reply.text(msg.ToUserName, msg.FromUserName, i18n.__('usage_photo'));
       res.send(text);
       break;
     default :

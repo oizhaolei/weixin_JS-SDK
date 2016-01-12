@@ -1,12 +1,19 @@
 var config = require('../config.json');
 var logger = require('log4js').getLogger('routers/index.js');
 var util = require('util');
+var path = require('path');
 
 var request = require('request');
 var express = require('express');
 var router = express.Router();
 
-var path = require('path');
+var i18n = require("i18n");
+i18n.configure({
+  locales : ['cn'],
+  defaultLocale : 'cn',
+  directory : path.join(__dirname, '../locales')
+});
+
 var signature = require('../signature');
 
 var account_dao = require('../dao/account_dao');
@@ -106,7 +113,7 @@ router.get('/share_to_friend', function (req, res, next) {
       res.send("success");
     } else {
       var qrCodeUrl = util.format('https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=%s', json.ticket);
-      var info = util.format('分享上面的二维码给朋友，您可以得到充值%d元，具体规则请见%s', parseFloat(config.subscribe_fee) / 100, config.share_rules_url);
+      var info = i18n.__('share_to_friend', parseFloat(config.subscribe_fee) / 100, config.share_rules_url);
 
       res.render('share_to_friend', {
         info : info,
