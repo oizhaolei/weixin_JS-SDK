@@ -1,13 +1,27 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-    <meta charset="utf-8" />
-    <title>消费记录</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0" />
-    <link rel="stylesheet" href="/stylesheets/style.css" />
-</head>
-
-<body ontouchstart="">
-
+ <head> 
+  <meta charset="utf-8" /> 
+  <title>消费记录</title> 
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0" /> 
+  <link rel="stylesheet" href="/stylesheets/style.css" /> 
+ </head> 
+ <body ontouchstart=""> 
+  <table class="datalist"> 
+   <tbody>
+    <tr> 
+     <th scope="col">原文</th> 
+     <th scope="col">译文</th> 
+     <th scope="col">费用</th> 
+     <th scope="col">时间</th> 
+    </tr> {{#each feeHistoryData}} 
+    <tr> 
+     <td>{{from_content}}</td> 
+     <td>{{to_content}}</td> 
+     <td>{{fee}}</td> 
+     <td>{{create_date}}</td> 
+    </tr> {{/each}} 
+   </tbody>
+  </table>  
+ </body>
 </html>

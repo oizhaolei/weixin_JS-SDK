@@ -103,7 +103,7 @@ router.get('/fee_history', function (req, res, next) {
   var openid = req.query.openid;
   tttalk.feeHistory(openid, function(err, data) {
     res.render('wxpay/jsapi/fee_history', {
-      data : data
+      feeHistoryData : data
     });
 
   });
