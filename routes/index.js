@@ -1,5 +1,6 @@
 var config = require('../config.json');
 var logger = require('log4js').getLogger('routers/index.js');
+var util = require('util');
 
 var request = require('request');
 var express = require('express');
@@ -9,6 +10,12 @@ var path = require('path');
 var signature = require('../signature');
 
 var account_dao = require('../dao/account_dao');
+var app = {
+  id : config.appId,
+  secret : config.appSecret,
+  token : config.appToken
+};
+
 
 router.all('/getSignature', function (req, res, next) {
   var url = req.body.url;
@@ -42,6 +49,10 @@ router.get('/oauth', function (req, res, next) {
 
     case 'wxpay_100' :
       res.redirect('/wxpay/?fee=100&openid=' + openid);
+      break;
+
+    case 'share_to_friend' :
+      res.redirect('/share_to_friend?openid=' + openid);
       break;
 
     case 'profile' :
@@ -83,6 +94,25 @@ router.get('/profile', function (req, res, next) {
       account : account
     });
 
+  });
+});
+
+// share_to_friend
+router.get('/share_to_friend', function (req, res, next) {
+  var openid = req.query.openid;
+  var nodeWeixinLink = require('node-weixin-link');
+  nodeWeixinLink.qrcode.permanent.createString(app, openid, function (err, json) {
+    if (err) {
+      res.send("success");
+    } else {
+      var qrCodeUrl = util.format('https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=%s', json.ticket);
+      var info = util.format('分享上面的二维码给朋友，您可以得到充值%d元，具体规则请见%s', parseFloat(config.subscribe_fee) / 100, config.share_rules_url);
+
+      res.render('share_to_friend', {
+        info : info,
+        qrcode : qrCodeUrl
+      });
+    }
   });
 });
 
