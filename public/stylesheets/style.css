@@ -186,3 +186,26 @@ h3:before {
 .btn {
   margin-bottom: 15px;
 }
+.datalist{  
+    border:1px solid #2B88FF;
+    font-family:Arial;  
+    border-collapse:collapse;
+    background-color:#2B88FF;
+    font-size:14px;  
+}
+.datalist th{  
+    border:1px solid #2B88FF;
+    background-color:#2B88FF;
+    color:#FFFFFF;
+    font-weight:bold;  
+    padding-top:4px; padding-bottom:4px;  
+    padding-left:12px; padding-right:12px;  
+    text-align:center;  
+}  
+.datalist td{  
+    border:1px solid #2B88FF;
+    text-align:left;  
+    padding-top:4px; padding-bottom:4px;  
+    padding-left:10px; padding-right:10px; 
+    background-color:#ffffff; 
+}
