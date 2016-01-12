@@ -267,6 +267,22 @@ router.post('/', function(req, res, next) {
     logger.info(msg);
     switch (msg.EventKey) {
 
+    case 'usage_text' :
+      var text = reply.text(msg.ToUserName, msg.FromUserName, '文字翻译说明。。。');
+      res.send(text);
+      break;
+    case 'usage_voice' :
+      var text = reply.text(msg.ToUserName, msg.FromUserName, '语音翻译说明。。。');
+      res.send(text);
+      break;
+    case 'usage_photo' :
+      var text = reply.text(msg.ToUserName, msg.FromUserName, '图片翻译说明。。。');
+      res.send(text);
+      break;
+    case 'usage_text' :
+      var text = reply.text(msg.ToUserName, msg.FromUserName, '文字翻译说明。。。');
+      res.send(text);
+      break;
     case 'share_to_friend' :
       var nodeWeixinLink = require('node-weixin-link');
       nodeWeixinLink.qrcode.permanent.createString(app, msg.FromUserName, function (err, json) {
