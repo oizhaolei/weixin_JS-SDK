@@ -1,0 +1,32 @@
+{
+  "name": "weixin-JS-SDK",
+  "description": "",
+  "main": "app.js",
+  "authors": [
+    "oizhaolei <oizhaolei@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "微信",
+    "API",
+    "weixin",
+    "wxpay",
+    "wechat"
+  ],
+  "homepage": "https://github.com/oizhaolei/weixin_JS-SDK",
+  "moduleType": [
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.6",
+    "jquery": "~2.2.0",
+    "less": "~2.5.3"
+  }
+}
