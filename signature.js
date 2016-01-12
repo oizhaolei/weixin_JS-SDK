@@ -1,11 +1,10 @@
 var config = require('./config.json');
+var logger = require('log4js').getLogger('signature.js');
 
 var url = require('url');
 var crypto = require('crypto');
 var request = require('request');
 var async = require('async');
-var iconv = require('iconv-lite');
-var logger = require('log4js').getLogger('signature.js');
 var path = require('path');
 
 var redis = require("redis");
@@ -130,12 +129,4 @@ function getTimesTamp() {
 
 function getNonceStr() {
     return Math.random().toString(36).substr(2, 15);
-}
-
-function decodeBuffer(bf, encoding) {
-    var val = iconv.decode(bf.toBuffer(), encoding || 'utf8');
-    if (val.indexOf('�') != -1) {
-        val = iconv.decode(bf.toBuffer(), 'gbk');
-    }
-    return val;
 }

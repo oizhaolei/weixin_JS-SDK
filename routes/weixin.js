@@ -90,18 +90,15 @@ router.post('/', function(req, res, next) {
   messages.on.text(function(msg) {
     logger.info("textMsg received");
     logger.info(msg);
-
+    res.send("success");
 
     var content = msg.Content;
     tttalk.saveText(from_lang, to_lang, content, msg.FromUserName, function(err, results) {
       var newId = results.insertId;
       tttalk.requestTranslate(newId, msg.FromUserName, from_lang, to_lang, 'text',content, function(err, results) {
         if (err) {
-          var text = reply.text(msg.ToUserName, msg.FromUserName, err);
-          res.send(text);
+          logger.err("requestTranslate: %s", err);
         } else {
-          res.send("success");
-
           var key = '' + newId;
           redisClient.set(key, key);
 
@@ -118,7 +115,7 @@ router.post('/', function(req, res, next) {
                 redisClient.del(key);
               }
             });
-          },4*1000);
+          }, 4*1000);
         }
       });
     });
@@ -141,9 +138,7 @@ router.post('/', function(req, res, next) {
         var newId = results.insertId;
         tttalk.requestTranslate(newId, msg.FromUserName, from_lang, to_lang, 'photo', filename, function(err, results) {
           if (err) {
-            logger.info("savePhoto: %s", err);
-            var text = reply.text(msg.ToUserName, msg.FromUserName, err);
-            res.send(text);
+            logger.err("savePhoto: %s", err);
           }
         });
       });
@@ -171,8 +166,6 @@ router.post('/', function(req, res, next) {
           tttalk.requestTranslate(newId, msg.FromUserName, from_lang, to_lang, 'voice', filename, function(err, results) {
             if (err) {
               logger.info("saveVoice: %s", err);
-              var text = reply.text(msg.ToUserName, msg.FromUserName, err);
-              res.send(text);
             }
           });
         });
@@ -252,12 +245,12 @@ router.post('/', function(req, res, next) {
   messages.event.on.unsubscribe(function(msg) {
     logger.info("unsubscribe received");
     logger.info(msg);
+    res.send("success");
     // 用户取消关注
     account_dao.updateAccount(msg.FromUserName, {
       delete_flag : 1
     }, function(err, results, account) {
       logger.debug('deleteAccount logic');
-      res.send("success");
     });
   });
   messages.event.on.scan(function(msg) {
@@ -313,7 +306,6 @@ router.post('/translate_callback', function(req, res, next) {
   //取消 delayed job
   redisClient.del(id);
   logger.debug('params: %s' , JSON.stringify(params));
-
 
   tttalk.translate_callback(id, to_content, fee, from_content_length,  function(err, message) {
     if (err) {
