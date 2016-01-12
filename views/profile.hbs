@@ -26,21 +26,13 @@
      <h3 class="panel-title">消费履历</h3> 
     </div> 
     <table class="table table-striped"> 
-     <thead> 
-      <tr> 
-       <th>原文</th> 
-       <th>译文</th> 
-       <th>费用</th> 
-       <th>时间</th> 
-      </tr> 
-     </thead> 
      <tbody>
        {{#each feeHistory}} 
       <tr> 
-       <td>{{from_content}}</td> 
-       <td>{{to_content}}</td> 
-       <td>{{fee}}元</td> 
-       <td>{{create_date}}</td> 
+       <td><h5>{{from_content}}</h5></td> 
+       <td><h5>{{to_content}}</h5></td> 
+       <td><h5>{{fee}}元</h5></td> 
+       <td><h5>{{create_date}}</h5></td> 
       </tr> {{/each}} 
      </tbody> 
     </table> 
@@ -53,8 +45,8 @@
      <tbody>
        {{#each chargeHistory}} 
       <tr> 
-       <td>充值</td> 
-       <td>{{total_fee}}元</td> 
+       <td><h5>充值</h5></td> 
+       <td><h5>{{total_fee}}元</h5></td> 
       </tr> {{/each}} 
      </tbody> 
     </table> 
