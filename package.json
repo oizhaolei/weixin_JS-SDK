@@ -23,9 +23,9 @@
     "handlebars-helper-equal": "*",
     "hbs": "^4.0.0",
     "i18n": "^0.5.0",
-    "iconv-lite": "*",
     "lodash": "^3.10.1",
     "log4js": "^0.6.29",
+    "moment": "^2.11.0",
     "mysql": "^2.10.0",
     "node-weixin-api": "^0.3.0-alpha",
     "node-weixin-auth": "^0.2.8",
@@ -47,7 +47,6 @@
     "gulp": "^3.9.0",
     "gulp-mocha": "^2.2.0",
     "gulp-util": "^3.0.7",
-    "moment": "^2.11.0",
     "nock": "^5.2.1",
     "node-weixin-pay": "^0.2.4",
     "should": "^8.1.1"

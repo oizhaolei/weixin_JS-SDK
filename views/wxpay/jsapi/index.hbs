@@ -19,8 +19,8 @@
     </div>
 </body>
 <script src="../../jweixin-1.0.0.js"></script>
-<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
-<script>
+ <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+ <script>
  $('#chooseWXPay').click(function () {
      WeixinJSBridge.invoke(
          'getBrandWCPayRequest', {{{ json payargs }}},
