@@ -73,8 +73,6 @@ function getNewTicket(token, cb) {
     });
 }
 
-
-
 function tryGetSignature(u, cb) {
     // 判断cache 是否过期
     if (!cache.ticket || (new Date().getTime() - cache.time) > 7000000) {

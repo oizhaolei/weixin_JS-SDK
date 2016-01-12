@@ -283,30 +283,6 @@ router.post('/', function(req, res, next) {
       var text = reply.text(msg.ToUserName, msg.FromUserName, '文字翻译说明。。。');
       res.send(text);
       break;
-    case 'share_to_friend' :
-      var nodeWeixinLink = require('node-weixin-link');
-      nodeWeixinLink.qrcode.permanent.createString(app, msg.FromUserName, function (err, json) {
-        if (err) {
-          res.send("success");
-        } else {
-          var qrCodeUrl = util.format('https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=%s', json.ticket);
-          var news = reply.news(msg.ToUserName, msg.FromUserName, [{
-            title: 'TTTalk翻译秘书',
-            description: '您的贴身翻译管家',
-            picUrl: qrCodeUrl,
-            url: qrCodeUrl
-          }]);
-          res.send(news);
-
-          service.api.text(app, msg.FromUserName, util.format('分享上面的二维码给朋友，您可以得到充值%d元，具体规则请见%s', parseFloat(config.subscribe_fee) / 100, config.share_rules_url), function(error, data) {
-            if (error) {
-              logger.info("%s, %s", data.errcode, data.errmsg);
-            }
-          });
-
-        }
-      });
-      break;
     default :
       res.send("success");
     }
