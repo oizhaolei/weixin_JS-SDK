@@ -5,10 +5,13 @@ var request = require('request');
 var express = require('express');
 var router = express.Router();
 
+var async = require('async');
+
 var path = require('path');
 var signature = require('../signature');
 
 var account_dao = require('../dao/account_dao');
+var message_dao = require('../dao/message_dao');
 
 router.all('/getSignature', function (req, res, next) {
   var url = req.body.url;
@@ -78,11 +81,27 @@ router.get('/', function (req, res, next) {
 // profile
 router.get('/profile', function (req, res, next) {
   var openid = req.query.openid;
-  account_dao.getByOpenid(openid, function(err, account) {
-    res.render('profile', {
-      account : account
-    });
+  async.parallel({
+    accountData : function(callback){
+      account_dao.getByOpenid(openid, function(err, accountData) {
+        callback(err, accountData);
+      });
+    },
+    feeHistoryData : function(callback){
+      message_dao.findByOpenid(openid, function(err, feeHistoryData) {
+        callback(err, feeHistoryData);
+      });
+    }
+  },
 
+  function(err, results) {
+    //准备数据
+    var accountData = results.accountData;
+    var feeHistoryData = results.feeHistoryData;
+    res.render('profile', {
+      account : accountData,
+      feeHistory : feeHistoryData
+    });
   });
 });
 
