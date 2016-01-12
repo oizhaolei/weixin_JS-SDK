@@ -20,6 +20,7 @@ var router = express.Router();
 
 var x2j = require('xml2js');
 
+var account_dao = require('../dao/account_dao');
 var tttalk = require('../lib/tttalk');
 
 var from_lang = 'CN';
@@ -195,7 +196,7 @@ router.post('/', function(req, res, next) {
     if (msg.EventKey.indexOf('qrscene_') === 0) {
       up_openid = msg.EventKey.substring(8);
     }
-    tttalk.createAccount(openid, up_openid, function(err, oldAccount, results, account) {
+    account_dao.createAccount(openid, up_openid, function(err, oldAccount, results, account) {
       var text = reply.text(msg.ToUserName, msg.FromUserName, "感谢您关注，您可以直接输入文字、语音、照片进行中韩翻译。\n当前账户余额为" + parseFloat(account.balance) / 100 + '元');
       res.send(text);
 
@@ -218,7 +219,7 @@ router.post('/', function(req, res, next) {
         logger.debug('err %s', err);
         logger.debug('data %s', JSON.stringify(data));
         if(!err){
-          tttalk.updateAccount(data.openid, {
+          account_dao.updateAccount(data.openid, {
             nickname : data.nickname,
             portrait : data.headimgurl,
             sex : data.sex,
@@ -237,8 +238,11 @@ router.post('/', function(req, res, next) {
   messages.event.on.unsubscribe(function(msg) {
     logger.info("unsubscribe received");
     logger.info(msg);
-    tttalk.deleteAccount(msg.FromUserName, function(err, account) {
-      logger.debug('deleteAccount');
+    // 用户取消关注
+    account_dao.updateAccount(msg.FromUserName, {
+      delete_flag : 1
+    }, function(err, results, account) {
+      logger.debug('deleteAccount logic');
       res.send("success");
     });
   });

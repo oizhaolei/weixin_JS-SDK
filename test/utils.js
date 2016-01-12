@@ -12,6 +12,7 @@ describe('utils', function () {
     signature.getSignature(url, function(error, result) {
       logger.info(error);
       logger.info(result);
+      done();
     });
   });
 

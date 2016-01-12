@@ -2,10 +2,11 @@ var assert = require('assert');
 var config = require('../config.json');
 
 var async = require('async');
-
-var tttalk = require('../lib/tttalk');
 var moment = require("moment");
 var seed = moment().unix() ;
+
+var account_dao = require('../dao/account_dao');
+var tttalk = require('../lib/tttalk');
 
 var openid = 'u_' + seed;
 var up_openid = process.env.APP_OPENID;
@@ -20,24 +21,31 @@ var from_content_length = 2;
 describe('tttalk', function () {
   it('text translate', function (done) {
     async.waterfall([function(callback) {
-      tttalk.createAccount(openid, up_openid, function(err, oldAccount, results, account) {
+      account_dao.createAccount(openid, up_openid, function(err, oldAccount, results, account) {
         assert(!err);
         assert(!oldAccount);
         assert.equal(results.affectedRows, 1);
         assert.equal(account.openid, openid);
         if (!oldAccount && up_openid) {
-          // 给推荐人奖励
-          tttalk.wxPay(up_openid,{
-            transaction_id: 'createAccount' + seed,
-            total_fee: config.subscribe_fee,
-            cash_fee: '0',
-            fee_type: 'CNY',
-            result_code: 'SUCCESS',
-            return_code: 'SUCCESS',
-            memo : 'subscribe'
-          }, function(err, account) {
+          account_dao.getByOpenid(up_openid, function(err, oldUpAccount) {
+            // 给推荐人奖励
+            tttalk.wxPay(up_openid,{
+              transaction_id: 'createAccount' + seed,
+              total_fee: config.subscribe_fee,
+              cash_fee: '0',
+              fee_type: 'CNY',
+              result_code: 'SUCCESS',
+              return_code: 'SUCCESS',
+              memo : 'subscribe'
+            }, function(err, account) {
+              account_dao.getByOpenid(up_openid, function(err, newUpAccount) {
+                assert.equal(oldUpAccount.openid, newUpAccount.openid);
+                assert.equal(newUpAccount.balance-oldUpAccount.balance, config.subscribe_fee);
 
-            callback();
+                callback();
+              });
+            });
+
           });
         }
 
@@ -115,10 +123,13 @@ describe('tttalk', function () {
         callback();
       });
     }, function(callback) {
-      tttalk.deleteAccount(openid, function(err, account) {
+      account_dao.updateAccount(openid, {
+        delete_flag : 1
+      }, function(err, results, account) {
         console.log(account);
         assert(!err);
         assert(account);
+        assert.equal(account.delete_flag, 1);
         callback();
       });
     }], function(error, result) {
