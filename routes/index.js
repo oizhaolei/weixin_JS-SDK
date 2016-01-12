@@ -14,15 +14,19 @@ i18n.configure({
   directory : path.join(__dirname, '../locales')
 });
 
+var async = require('async');
+var moment = require("moment");
+
 var signature = require('../signature');
 
 var account_dao = require('../dao/account_dao');
+var message_dao = require('../dao/message_dao');
+var charge_dao = require('../dao/charge_dao');
 var app = {
   id : config.appId,
   secret : config.appSecret,
   token : config.appToken
 };
-
 
 router.all('/getSignature', function (req, res, next) {
   var url = req.body.url;
@@ -96,11 +100,53 @@ router.get('/', function (req, res, next) {
 // profile
 router.get('/profile', function (req, res, next) {
   var openid = req.query.openid;
-  account_dao.getByOpenid(openid, function(err, account) {
-    res.render('profile', {
-      account : account
-    });
+  async.parallel({
+    accountData : function(callback){
+      account_dao.getByOpenid(openid, function(err, accountData) {
+        callback(err, accountData);
+      });
+    },
+    feeHistoryData : function(callback){
+      message_dao.findByOpenid(openid, function(err, feeHistoryData) {
+        if(!err){
+          for(var i in feeHistoryData) {
+            var feeHistory = feeHistoryData[i];
+            if(feeHistory.filetype == 'photo')
+              feeHistory.from_content = '图片翻译';
+            else if(feeHistory.filetype == 'voice')
+              feeHistory.from_content = '语音翻译';
+            feeHistory.create_date = moment(feeHistory.create_date).format("MM-DD HH:mm:ss")
+          }
+        }
+        callback(null, feeHistoryData);
+      });
+    },
+    chargeHistoryData : function(callback){
+      charge_dao.findByOpenid(openid, function(err, chargeHistoryData) {
+        if(!err){
+          for(var i in chargeHistoryData) {
+            var chargeHistory = chargeHistoryData[i];
+            chargeHistory.create_date = moment(feeHistory.create_date).format("MM-DD HH:mm:ss")
+          }
+        }
+        callback(null, chargeHistoryData);
+      });
+    }
+  },
 
+  function(err, results) {
+    //准备数据
+    logger.debug('accountData', JSON.stringify(results.accountData));
+    logger.debug('feeHistoryData', JSON.stringify(results.feeHistoryData));
+    logger.debug('chargeHistoryData', JSON.stringify(results.chargeHistoryData));
+    var accountData = results.accountData;
+    var feeHistoryData = results.feeHistoryData;
+    var chargeHistoryData = results.chargeHistoryData;
+    res.render('profile', {
+      account : accountData,
+      feeHistory : feeHistoryData,
+      chargeHistory : chargeHistoryData
+    });
   });
 });
 

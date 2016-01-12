@@ -1,13 +1,59 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8" />
-    <title>个人信息</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0" />
-    <link rel="stylesheet" href="/stylesheets/style.css" />
-</head>
-
-<body ontouchstart="">
-
+<html lang="zh-CN">
+ <head> 
+  <meta charset="utf-8" /> 
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" /> 
+  <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+  <meta name="description" content="" /> 
+  <meta name="author" content="" /> 
+  <title>个人资料</title> 
+  <link href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" /> 
+  <link href="../../dist/css/bootstrap-theme.min.css" rel="stylesheet" /> 
+ </head> 
+ <body> 
+  <div class="container theme-showcase" role="main"> 
+   <p> </p>
+   <div class="panel panel-primary"> 
+    <div class="panel-heading"> 
+     <h3 class="panel-title">个人信息</h3> 
+    </div> 
+    <div class="panel-body"> 
+     <h5>昵称：{{account.nickname}}</h5> 
+     <h5>余额：{{account.balance}}元</h5> 
+    </div> 
+   </div> 
+   <div class="panel panel-primary"> 
+    <div class="panel-heading"> 
+     <h3 class="panel-title">消费履历</h3> 
+    </div> 
+    <table class="table table-striped"> 
+     <tbody>
+       {{#each feeHistory}} 
+      <tr> 
+       <td><h5>{{from_content}}</h5></td> 
+       <td><h5>{{to_content}}</h5></td> 
+       <td><h5>{{fee}}元</h5></td> 
+       <td><h5>{{create_date}}</h5></td> 
+      </tr> {{/each}} 
+     </tbody> 
+    </table> 
+   </div> 
+   <div class="panel panel-primary"> 
+    <div class="panel-heading"> 
+     <h3 class="panel-title">充值履历</h3> 
+    </div> 
+    <table class="table table-striped"> 
+     <tbody>
+       {{#each chargeHistory}} 
+      <tr> 
+       <td><h5>充值</h5></td> 
+       <td><h5>{{total_fee}}元</h5></td> 
+      </tr> {{/each}} 
+     </tbody> 
+    </table> 
+   </div> 
+  </div> 
+  <!-- Bootstrap core JavaScript --> 
+  <script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script> 
+  <script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>  
+ </body>
 </html>
