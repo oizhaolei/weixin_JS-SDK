@@ -1,12 +1,14 @@
 * 说明
-** fork from https://git.oschina.net/xinshangshangxin/node_JS-SDK_signature.git
 ** 安装
  - npm install; bower install
  - cp  config.json.sample config.json
- - touch cache.json OR USE MEMCACHE INSTEAD
  - rsync -avz --exclude ./cache.json --exclude .git  --delete -e "ssh -p 22000" ./ zhaolei@test:/work/test/weixin_message/;ssh -p 22000 zhaolei@test 'export APP_OPENID=osQJkw2UHrHoPkvar90v1AK1R8pM;cd /work/test/weixin_message/;gulp mocha'
 * TODO-LIST
-** TODO 用户计费
+** DONE 用户计费
+   CLOSED: [2016-01-12 Tue 12:21]
+   :LOGBOOK:
+   - State "DONE"       from "NEXT"       [2016-01-12 Tue 12:21]
+   :END:
 ** DONE 文本
    CLOSED: [2016-01-06 Wed 22:12]
    :LOGBOOK:
@@ -22,5 +24,9 @@
    :LOGBOOK:
    - State "DONE"       from "NEXT"       [2016-01-11 Mon 12:22]
    :END:
-** 分享二维码
+** DONE 分享二维码
+   CLOSED: [2016-01-12 Tue 12:21]
+   :LOGBOOK:
+   - State "DONE"       from "NEXT"       [2016-01-12 Tue 12:21]
+   :END:
 ** 分享卡券
