@@ -39,8 +39,11 @@ hbs.registerHelper('block', function(name) {
   blocks[name] = [];
   return val;
 });
-hbs.registerHelper('json', function(context) {
-  return JSON.stringify(context);
+hbs.registerHelper('json', function(val) {
+  return JSON.stringify(val);
+});
+hbs.registerHelper('fen2yuan', function(val) {
+  return parseFloat(val) / 100;
 });
 hbs.registerHelper('__', function () {
   return i18n.__.apply(this, arguments);

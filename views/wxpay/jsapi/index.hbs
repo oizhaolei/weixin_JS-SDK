@@ -23,7 +23,7 @@
  <script>
  $('#chooseWXPay').click(function () {
      WeixinJSBridge.invoke(
-         'getBrandWCPayRequest', {{{ json payargs }}},
+         'getBrandWCPayRequest', {{{json payargs }}},
          function(res){
              _log(res);
          }

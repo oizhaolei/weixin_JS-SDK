@@ -298,7 +298,7 @@ router.post('/', function(req, res, next) {
 router.post('/translate_callback', function(req, res, next) {
   var params = req.body;
 
-  var msgid = parseInt(params.callback_id);
+  var msgid = params.callback_id;
   var from_content_length = params.from_content_length;
   var to_content = params.to_content;
   var fee = tp2fen(params.fee);
