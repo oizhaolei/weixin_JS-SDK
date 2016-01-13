@@ -51,6 +51,16 @@ hbs.registerHelper('__', function () {
 hbs.registerHelper('__n', function () {
   return i18n.__n.apply(this, arguments);
 });
+hbs.registerHelper('convUtcDateString', function(UTCDateString) {
+  if (UTCDateString != null) {
+    var convertdLocalTime  = new Date(UTCDateString);
+    var hourOffset = convertdLocalTime.getTimezoneOffset() / 60;
+    convertdLocalTime.setHours(convertdLocalTime.getHours() - hourOffset);
+    return (convertdLocalTime.getMonth() + 1) + "-" + convertdLocalTime.getDate() + " " + convertdLocalTime.getHours() + ":" + convertdLocalTime.getMinutes();
+  } else {
+    return "";
+  }
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

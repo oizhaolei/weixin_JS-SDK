@@ -39,7 +39,7 @@
      <tbody>
        {{#each feeHistory}}
       <tr>
-       <td><h5>{{create_date}}</h5></td>
+       <td><h5>{{{convUtcDateString create_date}}}</h5></td>
        <td><h5>{{from_content}}</h5></td>
        <td><h5>{{to_content}}</h5></td>
        <td><h5>{{{fen2yuan fee}}}元</h5></td>
@@ -65,7 +65,7 @@
      <tbody>
        {{#each chargeHistory}}
       <tr>
-       <td><h5>{{create_date}}</h5></td>
+       <td><h5>{{{convUtcDateString create_date}}}</h5></td>
        <td><h5>{{memo}}</h5></td>
        <td><h5>{{{fen2yuan total_fee}}}元</h5></td>
        <td><h5>{{{fen2yuan user_balance}}}元</h5></td>
