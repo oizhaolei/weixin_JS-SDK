@@ -53,7 +53,7 @@ router.get('/', function (req, res, next) {
     logger.info("getBrandWCPayRequestParams: %s, %s", JSON.stringify(requestParams), JSON.stringify(result));
     res.render('order_detail', {
       layout : 'layout',
-      title : detail,
+      title : '微信支付',
       params : requestParams,
       payargs : result
     });
