@@ -20,11 +20,7 @@ var moment = require("moment");
 var signature = require('../signature');
 
 var tttalk = require('../lib/tttalk');
-var app = {
-  id : config.appId,
-  secret : config.appSecret,
-  token : config.appToken
-};
+var app = config.app;
 
 router.all('/getSignature', function (req, res, next) {
   var url = req.body.url;
@@ -49,15 +45,12 @@ router.post('/log', function (req, res, next) {
 router.get('/oauth', function (req, res, next) {
   logger.info(req.query);
   getOpenid(config, req.query.code, function(err, openid) {
-    logger.info(openid);
+    if (err) logger.error(err);
+    logger.info("openid: ", openid);
     switch (req.query.action) {
 
-    case 'wxpay_1' :
-      res.redirect('/wxpay/?fee=1&openid=' + openid);
-      break;
-
-    case 'wxpay_100' :
-      res.redirect('/wxpay/?fee=100&openid=' + openid);
+    case 'wxpay' :
+      res.redirect('/wxpay/list?openid=' + openid);
       break;
 
     case 'share_to_friend' :
@@ -74,7 +67,7 @@ router.get('/oauth', function (req, res, next) {
 });
 
 function getOpenid(config, code, cb) {
-    request.get('https://api.weixin.qq.com/sns/oauth2/access_token?appid=' + config.appId + '&secret=' + config.appSecret + '&code=' + code + '&grant_type=authorization_code', function(error, res, body) {
+    request.get('https://api.weixin.qq.com/sns/oauth2/access_token?appid=' + config.app.id + '&secret=' + config.appSecret + '&code=' + code + '&grant_type=authorization_code', function(error, res, body) {
         if (error) {
             cb('getOpenId error', error);
         }
@@ -124,17 +117,12 @@ router.get('/share_to_friend', function (req, res, next) {
       var info = i18n.__('share_to_friend', parseFloat(config.subscribe_fee) / 100, config.share_rules_url);
 
       res.render('share_to_friend', {
+        layout : 'layout',
+        title : '个人资料',
         info : info,
         qrcode : qrCodeUrl
       });
     }
-  });
-});
-
-router.get('/weixin_order', function (req, res, next) {
-  res.render('order', {
-    layout : 'layout',
-    title : '微信充值'
   });
 });
 

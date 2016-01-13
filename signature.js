@@ -34,8 +34,63 @@ exports.getSignature = function(url, cb) {
     }
 };
 
+var app = config.app;
+
+var auth = require('node-weixin-auth');
+var util = require('node-weixin-util');
+var settings = require('node-weixin-settings');
+settings.registerSet(function(id, key, value) {
+  logger.warn('registerSet %s %s %s', id, key, JSON.stringify(value));
+  if (!app[id]) {
+    app[id] = {};
+  }
+  app[id][key] = value;
+});
+settings.registerGet(function(id, key) {
+  logger.debug('registerGet %s %s', id, key);
+  if (app[id] && app[id][key]) {
+    var value = app[id][key];
+    logger.debug('registerGet %s', JSON.stringify(value));
+    return value;
+  }
+  return null;
+});
+var nodeWeixinMessage = require('node-weixin-message');
+var service = nodeWeixinMessage.service;
+
+exports.wxcard= function (to, cardId, outerId, cb) {
+  var crypto = require('crypto');
+  auth.determine(app, function () {
+    var authData = settings.get(app.id, 'auth');
+
+    getNewTicket(authData.accessToken, 'wx_card', function(err, ticket) {
+      var timestamp = String((new Date().getTime() / 1000).toFixed(0));
+      var sha1 = crypto.createHash('sha1');
+      sha1.update(timestamp);
+      var noncestr = sha1.digest('hex');
+
+      logger.info('ticket: %s, timestamp: %s, noncestr: %s, card_id: %s', ticket, timestamp, noncestr, cardId);
+
+      var str = [ticket, timestamp, noncestr, cardId].sort().join('');
+      var signature = crypto.createHash('sha1').update(str).digest('hex');
+      logger.info('%s => %s', str, signature);
+      var cardExt = '{"code":"","openid":"","timestamp":"'+timestamp+',"signature":"'+signature+'"}';
+      logger.info(cardExt);
+
+      service.api._send(app, {
+        touser: to,
+        msgtype: 'wxcard',
+        wxcard: {
+          card_id: cardId,
+          card_ext: cardExt
+        }
+      }, cb);
+    });
+  });
+};
+
 function getToken(cb) {
-    var tokenUrl = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appId=' + config.appId + '&secret=' + config.appSecret;
+    var tokenUrl = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appId=' + config.app.id + '&secret=' + config.appSecret;
 
     request.get(tokenUrl, function(error, response, body) {
         if (error) {
@@ -54,8 +109,8 @@ function getToken(cb) {
     });
 }
 
-function getNewTicket(token, cb) {
-    request.get('https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + token + '&type=jsapi', function(error, res, body) {
+function getNewTicket(token, type, cb) {
+    request.get('https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + token + '&type=' + type, function(error, res, body) {
         if (error) {
             cb('getNewTicket error', error);
         }
@@ -79,7 +134,7 @@ function tryGetSignature(u, cb) {
             logger.info('start getNew Ticket', cache);
             getToken(cb);
         }, function(token, cb) {
-            getNewTicket(token, cb);
+          getNewTicket(token, 'jsapi', cb);
         }], function(error, result) {
             if (error) {
                 cb('getToken getNewTicket error', error);
@@ -99,7 +154,7 @@ function tryGetSignature(u, cb) {
                 logger.info(str);
                 var signature = crypto.createHash('sha1').update(str).digest('hex');
                 cb(null, {
-                    appId: config.appId,
+                    appId: config.app.id,
                     timestamp: timestamp,
                     nonceStr: noncestr,
                     signature: signature
@@ -115,7 +170,7 @@ function tryGetSignature(u, cb) {
         logger.info(str);
         var signature = crypto.createHash('sha1').update(str).digest('hex');
         cb(null, {
-            appId: config.appId,
+            appId: config.app.id,
             timestamp: timestamp,
             nonceStr: noncestr,
             signature: signature

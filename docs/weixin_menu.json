@@ -1,62 +1,62 @@
 {
   "button": [
     {
-      "name": "我要翻译",
+      "name": "使用说明",
       "sub_button": [
         {
-          "type": "click",
-          "name": "文字翻译",
-          "key":"usage_text"
-        },
-        {
-          "type": "click",
-          "name": "语音翻译",
-          "key":"usage_voice"
-        },
-        {
-          "type": "click",
-          "name": "照片翻译",
-          "key":"usage_photo"
-        },
-        {
           "type": "view",
+          "name": "我要翻译",
+          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://test.tttalk.org/oauth?action=request_translate&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
+        },
+        {
+          "type": "media_id",
           "name": "常见问题",
-          "url": "http://test.tttalk.org/faq.html"
+          "media_id": "tdMcgL-6TCyTfdBYdezB2w5ae0dUSOHIsOzhXDAvVh4"
         },
         {
-          "type": "view",
+          "type": "media_id",
+          "name": "价格政策",
+          "media_id": "eIaqywRmbMmbwmU5pDuUbEuhLvR0nvUBZha-mNSCJtU"
+        },
+        {
+          "type": "media_id",
           "name": "赚钱计划",
-          "url": "http://test.tttalk.org/joinus.html"
+          "media_id": "2ljlTrA3oaJSbaHw9LlBDFsRPbvy2LpbzRq4X17n78M"
+        },
+        {
+          "name": "APP下载",
+          "type": "view",
+          "url": "http://test.tttalk.org/download.html"
         }
       ]
+    },
+    {
+      "type": "view",
+      "name": "分享有奖",
+      "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://test.tttalk.org/oauth?action=share_to_friend&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
     },
     {
       "name": "我的中心",
       "sub_button": [
         {
           "type": "view",
-          "name": "微信充值",
-          "url": "http://test.tttalk.org/weixin_order"
+          "name": "充值",
+          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://test.tttalk.org/oauth?action=wxpay&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
         },
         {
           "type": "view",
-          "name": "分享有奖",
-          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://test.tttalk.org/oauth?action=share_to_friend&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
+          "name": "我的账单",
+          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://test.tttalk.org/oauth?action=fee_history&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
         },
         {
           "type": "view",
-          "name": "价格政策",
-          "url": "http://test.tttalk.org/price.html"
-        },
-        {
-          "type": "view",
-          "name": "个人资料",
+          "name": "完善资料",
           "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://test.tttalk.org/oauth?action=profile&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
         },
         {
-          "name": "APP下载",
           "type": "view",
-          "url": "http://test.tttalk.org/download.html"
+          "name": "我要提问",
+          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://test.tttalk.org/oauth?action=qa&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
         }
       ]
     }

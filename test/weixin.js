@@ -9,16 +9,12 @@ var fs = require("fs");
 
 var async = require('async');
 
+//Init app
+var app = config.app;
+
 var nwc = require('node-weixin-config');
 var nodeWeixinAuth = require("node-weixin-auth");
 var nodeWeixinSettings = require('node-weixin-settings');
-
-//Init app
-var app = {
-  id : config.appId,
-  secret : config.appSecret,
-  token : config.appToken
-};
 nodeWeixinSettings.registerSet(function(id, key, value) {
   logger.warn('registerSet %s %s %s', id, key, JSON.stringify(value));
   if (!app[id]) {

@@ -16,11 +16,7 @@ i18n.configure({
   directory : path.join(__dirname, '../locales')
 });
 
-var app = {
-  id : config.appId,
-  secret : config.appSecret,
-  token : config.appToken
-};
+var app = config.app;
 
 var tttalk = require('../lib/tttalk');
 
@@ -28,10 +24,21 @@ var nodeWeixinMessage = require('node-weixin-message');
 
 var WXPay = require('weixin-pay');
 var wxpay = WXPay({
-  appid: config.appId,
+  appid: config.app.id,
   mch_id: config.mch_id,
   partner_key: config.wxpay_api_secret, //微信商户平台API密钥
   pfx: fs.readFileSync(path.join(__dirname, '../cert/apiclient_cert.p12')), //微信商户平台证书
+});
+
+
+router.get('/list', function (req, res, next) {
+  logger.info(req.wxmessage);
+  var openid = req.query.openid;
+  res.render('orders', {
+    layout : 'layout',
+    title : '微信充值',
+    openid: openid
+  });
 });
 
 // 接入验证

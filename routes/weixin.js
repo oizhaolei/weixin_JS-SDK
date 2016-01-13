@@ -34,11 +34,7 @@ var tttalk = require('../lib/tttalk');
 var from_lang = 'CN';
 var to_lang = 'EN';
 
-var app = {
-  id : config.appId,
-  secret : config.appSecret,
-  token : config.appToken
-};
+var app = config.app;
 
 var nodeWeixinSettings = require('node-weixin-settings');
 nodeWeixinSettings.registerSet(function(id, key, value) {
@@ -95,29 +91,33 @@ router.post('/', function(req, res, next) {
     var msgid = msg.MsgId;
     var content = msg.Content;
     tttalk.saveText(msgid, from_lang, to_lang, content, msg.FromUserName, function(err, results) {
-      tttalk.requestTranslate(msgid, msg.FromUserName, from_lang, to_lang, 'text',content, function(err, results) {
-        if (err) {
-          logger.err("requestTranslate: %s", err);
-        } else {
-          var key = msgid;
-          redisClient.set(key, key);
+      if (err) {
+        logger.err("saveText: %s", err);
+      } else {
+        tttalk.requestTranslate(msgid, msg.FromUserName, from_lang, to_lang, 'text',content, function(err, results) {
+          if (err) {
+            logger.err("requestTranslate: %s", err);
+          } else {
+            var key = msgid;
+            redisClient.set(key, key);
 
-          //延迟发送客服消息
-          setTimeout(function() {
-            redisClient.get(key, function(err, reply) {
-              if (reply) {
-                // 客服API消息回复
-                service.api.text(app, msg.FromUserName, i18n.__('translating_pls_wait'), function(error, data) {
-                  if (error) {
-                    logger.info("%s, %s", data.errcode, data.errmsg);
-                  }
-                });
-                redisClient.del(key);
-              }
-            });
-          }, 4*1000);
-        }
-      });
+            //延迟发送客服消息
+            setTimeout(function() {
+              redisClient.get(key, function(err, reply) {
+                if (reply) {
+                  // 客服API消息回复
+                  service.api.text(app, msg.FromUserName, i18n.__('translating_pls_wait'), function(error, data) {
+                    if (error) {
+                      logger.info("%s, %s", data.errcode, data.errmsg);
+                    }
+                  });
+                  redisClient.del(key);
+                }
+              });
+            }, 4*1000);
+          }
+        });
+      }
     });
   });
 
@@ -136,11 +136,15 @@ router.post('/', function(req, res, next) {
     request(url).pipe(file);
     file.on('finish', function() {
       tttalk.savePhoto(msgid, from_lang, to_lang, filename, msg.FromUserName, function(err, results) {
-        tttalk.requestTranslate(msgid, msg.FromUserName, from_lang, to_lang, 'photo', filename, function(err, results) {
-          if (err) {
-            logger.err("savePhoto: %s", err);
-          }
-        });
+        if (err) {
+          logger.err("saveText: %s", err);
+        } else {
+          tttalk.requestTranslate(msgid, msg.FromUserName, from_lang, to_lang, 'photo', filename, function(err, results) {
+            if (err) {
+              logger.err("savePhoto: %s", err);
+            }
+          });
+        }
       });
     });
   });
@@ -163,11 +167,15 @@ router.post('/', function(req, res, next) {
       request(url).pipe(file);
       file.on('finish', function() {
         tttalk.saveVoice(msgid, from_lang, to_lang, filename, msg.FromUserName, function(err, results) {
-          tttalk.requestTranslate(msgid, msg.FromUserName, from_lang, to_lang, 'voice', filename, function(err, results) {
-            if (err) {
-              logger.info("saveVoice: %s", err);
-            }
-          });
+          if (err) {
+            logger.err("saveText: %s", err);
+          } else {
+            tttalk.requestTranslate(msgid, msg.FromUserName, from_lang, to_lang, 'voice', filename, function(err, results) {
+              if (err) {
+                logger.info("saveVoice: %s", err);
+              }
+            });
+          }
         });
       });
     });
@@ -215,12 +223,17 @@ router.post('/', function(req, res, next) {
           if (err) {
             logger.error(err);
           } else {
-            service.api.text(app, msg.FromUserName, i18n.__('subscribe_share_fee', upAccount.nickname, parseFloat(config.subscribe_fee) / 100), config.share_rules_url, function(err, data) {
+            service.api.text(app, msg.FromUserName, i18n.__('subscribe_share_fee', upAccount.nickname, parseFloat(config.subscribe_fee) / 100, config.share_rules_url), function(err, data) {
               if (err) logger.error(err);
             });
           }
         });
       }
+      //发送卡券
+      var cardId = config.cardId;
+      service.api.wxcard(app, msg.FromUserName, cardId, function(err, data) {
+        if (err) logger.error(err);
+      });
       //获取用户信息
       nodeWeixinUser.profile(app, msg.FromUserName, function (err, data) {
         logger.debug('err %s', err);
