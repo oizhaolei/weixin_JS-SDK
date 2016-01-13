@@ -101,6 +101,8 @@ router.get('/profile', function (req, res, next) {
   tttalk.profile(openid, function(err, accountData, feeHistoryData, chargeHistoryData) {
     var bind_action = (accountData.telephone==""||accountData.telephone==null)?'绑定':'更改';
     res.render('profile', {
+      layout : 'layout',
+      title : '个人资料',
       account : accountData,
       feeHistory : feeHistoryData,
       chargeHistory : chargeHistoryData,
@@ -126,6 +128,13 @@ router.get('/share_to_friend', function (req, res, next) {
         qrcode : qrCodeUrl
       });
     }
+  });
+});
+
+router.get('/weixin_order', function (req, res, next) {
+  res.render('order', {
+    layout : 'layout',
+    title : '微信充值'
   });
 });
 

@@ -1,98 +1,77 @@
-<!DOCTYPE html>
-<html>
- <head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="" />
-  <meta name="author" content="" />
-  <title>个人资料</title>
-  <link href="/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="/bower_components/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" />
- </head>
- <body>
-  <div class="container theme-showcase" role="main">
-   <p> </p>
-   <div class="panel panel-primary">
-    <div class="panel-heading">
-     <h3 class="panel-title">个人信息</h3>
-    </div>
-    <div class="panel-body">
-     <h5>昵称：{{account.nickname}}</h5>
-     <h5>余额：{{{fen2yuan account.balance}}}元</h5>
-    </div>
-   </div>
-   <div class="panel panel-primary">
-    <div class="panel-heading">
-     <h3 class="panel-title">绑定手机号码</h3>
-    </div>
-    <div class="panel-body">
-      <form id="contact-form" method="post" action="bind_telphone">
-        <div class="input-group">
-          <input type="hidden" id="openid" name="openid" value="{{openid}}"> 
-          <input type="text" class="form-control" id="telephone" name="telephone" value="{{account.telephone}}"placeholder="请输入手机号码" onkeyup="this.value=this.value.replace(/\D/g,'')">
-          <span class="input-group-btn">
-            <button class="btn btn-default" type="button" onclick="this.form.submit()">{{bind_action}}</button>
-          </span>
-        </div>
-      </form>
-    </div>
-   </div>
-   <div class="panel panel-primary">
-    <div class="panel-heading">
-     <h3 class="panel-title">消费履历</h3>
-    </div>
-    <table class="table table-striped">
-     <thead>
-      <tr>
-       <td><h5>日期</h5></td>
-       <td><h5>内容</h5></td>
-       <td><h5>结果</h5></td>
-       <td><h5>费用</h5></td>
-       <td><h5>余额</h5></td>
-      </tr>
-     </thead>
-     <tbody>
-       {{#each feeHistory}}
-      <tr>
-       <td><h5>{{{convUtcDateString create_date}}}</h5></td>
-       <td><h5>{{from_content}}</h5></td>
-       <td><h5>{{to_content}}</h5></td>
-       <td><h5>{{{fen2yuan fee}}}元</h5></td>
-       <td><h5>{{{fen2yuan user_balance}}}元</h5></td>
-      </tr>
-      {{/each}}
-     </tbody>
-    </table>
-   </div>
-   <div class="panel panel-primary">
-    <div class="panel-heading">
-     <h3 class="panel-title">充值履历</h3>
-    </div>
-    <table class="table table-striped">
-     <thead>
-      <tr>
-       <td><h5>日期</h5></td>
-       <td><h5>事件</h5></td>
-       <td><h5>费用</h5></td>
-       <td><h5>余额</h5></td>
-      </tr>
-     </thead>
-     <tbody>
-       {{#each chargeHistory}}
-      <tr>
-       <td><h5>{{{convUtcDateString create_date}}}</h5></td>
-       <td><h5>{{memo}}</h5></td>
-       <td><h5>{{{fen2yuan total_fee}}}元</h5></td>
-       <td><h5>{{{fen2yuan user_balance}}}元</h5></td>
-      </tr>
-      {{/each}}
-     </tbody>
-    </table>
-   </div>
+ <div class="panel panel-primary">
+  <div class="panel-heading">
+   <h3 class="panel-title">个人信息</h3>
   </div>
-  <!-- Bootstrap core JavaScript -->
-  <script src="/bower_components/jquery/dist/jquery.min.js"></script>
-  <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
- </body>
-</html>
+  <div class="panel-body">
+   <h5>昵称：{{account.nickname}}</h5>
+   <h5>余额：{{{fen2yuan account.balance}}}元</h5>
+  </div>
+ </div>
+ <div class="panel panel-primary">
+  <div class="panel-heading">
+   <h3 class="panel-title">绑定手机号码</h3>
+  </div>
+  <div class="panel-body">
+    <form id="contact-form" method="post" action="bind_telphone">
+      <div class="input-group">
+        <input type="hidden" id="openid" name="openid" value="{{openid}}"> 
+        <input type="text" class="form-control" id="telephone" name="telephone" value="{{account.telephone}}"placeholder="请输入手机号码" onkeyup="this.value=this.value.replace(/\D/g,'')">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="button" onclick="this.form.submit()">{{bind_action}}</button>
+        </span>
+      </div>
+    </form>
+  </div>
+ </div>
+ <div class="panel panel-primary">
+  <div class="panel-heading">
+   <h3 class="panel-title">消费履历</h3>
+  </div>
+  <table class="table table-striped">
+   <thead>
+    <tr>
+     <td><h5>日期</h5></td>
+     <td><h5>内容</h5></td>
+     <td><h5>结果</h5></td>
+     <td><h5>费用</h5></td>
+     <td><h5>余额</h5></td>
+    </tr>
+   </thead>
+   <tbody>
+     {{#each feeHistory}}
+    <tr>
+     <td><h5>{{{convUtcDateString create_date}}}</h5></td>
+     <td><h5>{{from_content}}</h5></td>
+     <td><h5>{{to_content}}</h5></td>
+     <td><h5>{{{fen2yuan fee}}}元</h5></td>
+     <td><h5>{{{fen2yuan user_balance}}}元</h5></td>
+    </tr>
+    {{/each}}
+   </tbody>
+  </table>
+ </div>
+ <div class="panel panel-primary">
+  <div class="panel-heading">
+   <h3 class="panel-title">充值履历</h3>
+  </div>
+  <table class="table table-striped">
+   <thead>
+    <tr>
+     <td><h5>日期</h5></td>
+     <td><h5>事件</h5></td>
+     <td><h5>费用</h5></td>
+     <td><h5>余额</h5></td>
+    </tr>
+   </thead>
+   <tbody>
+     {{#each chargeHistory}}
+    <tr>
+     <td><h5>{{{convUtcDateString create_date}}}</h5></td>
+     <td><h5>{{memo}}</h5></td>
+     <td><h5>{{{fen2yuan total_fee}}}元</h5></td>
+     <td><h5>{{{fen2yuan user_balance}}}元</h5></td>
+    </tr>
+    {{/each}}
+   </tbody>
+  </table>
+ </div>

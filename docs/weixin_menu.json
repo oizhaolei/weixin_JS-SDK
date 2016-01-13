@@ -36,7 +36,7 @@
         {
           "type": "view",
           "name": "微信充值",
-          "url": "http://test.tttalk.org/wxpay/order.html"
+          "url": "http://test.tttalk.org/weixin_order"
         },
         {
           "type": "view",
