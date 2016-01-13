@@ -24,6 +24,22 @@
    </div>
    <div class="panel panel-primary">
     <div class="panel-heading">
+     <h3 class="panel-title">绑定手机号码</h3>
+    </div>
+    <div class="panel-body">
+      <form id="contact-form" method="post" action="bind_telphone">
+        <div class="input-group">
+          <input type="hidden" id="openid" name="openid" value="{{openid}}"> 
+          <input type="text" class="form-control" id="telphone" name="telphone" value="{{account.telphone}}"placeholder="请输入手机号码" onkeyup="this.value=this.value.replace(/\D/g,'')">
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="button" onclick="this.form.submit()">{{bind_action}}</button>
+          </span>
+        </div>
+      </form>
+    </div>
+   </div>
+   <div class="panel panel-primary">
+    <div class="panel-heading">
      <h3 class="panel-title">消费履历</h3>
     </div>
     <table class="table table-striped">

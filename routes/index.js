@@ -99,10 +99,13 @@ router.get('/', function (req, res, next) {
 router.get('/profile', function (req, res, next) {
   var openid = req.query.openid;
   tttalk.profile(openid, function(err, accountData, feeHistoryData, chargeHistoryData) {
+    var bind_action = (accountData.telphone==""||accountData.telphone==null)?'绑定':'更改';
     res.render('profile', {
       account : accountData,
       feeHistory : feeHistoryData,
-      chargeHistory : chargeHistoryData
+      chargeHistory : chargeHistoryData,
+      openid : openid,
+      bind_action : bind_action
     });
   });
 });
@@ -123,6 +126,15 @@ router.get('/share_to_friend', function (req, res, next) {
         qrcode : qrCodeUrl
       });
     }
+  });
+});
+
+//bind_telphone
+router.post('/bind_telphone', function (req, res, next) {
+  var openid = req.body.openid;
+  var telphone = req.body.telphone;
+  tttalk.bind_telphone(openid, telphone, function(err, accountData) {
+    res.redirect('/profile?openid=' + openid);
   });
 });
 
