@@ -39,10 +39,11 @@ router.get('/', function (req, res, next) {
   var openid = req.query.openid;
   var fee = req.query.fee;
 
+  var detail = parseFloat(fee)/100 + '元';
   var requestParams = {
     openid: openid,
     body: '充值',
-    detail: parseFloat(fee)/100 + '元',
+    detail: detail,
     out_trade_no: '20150331'+Math.random().toString().substr(2, 10),
     total_fee: fee,
     spbill_create_ip: '192.168.2.210',
@@ -50,7 +51,9 @@ router.get('/', function (req, res, next) {
   };
   wxpay.getBrandWCPayRequestParams(requestParams, function(err, result){
     logger.info("getBrandWCPayRequestParams: %s, %s", JSON.stringify(requestParams), JSON.stringify(result));
-    res.render('wxpay/jsapi/index', {
+    res.render('order_detail', {
+      layout : 'layout',
+      title : detail,
       params : requestParams,
       payargs : result
     });

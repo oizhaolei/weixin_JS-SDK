@@ -1,14 +1,6 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8" />
-    <title>微信支付</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0" />
+{{#extend "css"}}
     <link rel="stylesheet" href="/stylesheets/style.css" />
-</head>
-
-<body ontouchstart="">
+{{/extend}}
     <div class="wxapi_container">
 
         <div class="lbox_close wxapi_form">
@@ -17,10 +9,10 @@
             <button class="btn btn_primary" id="chooseWXPay">支付</button>
         </div>
     </div>
-</body>
-<script src="../../jweixin-1.0.0.js"></script>
- <script src="/bower_components/jquery/dist/jquery.min.js"></script>
- <script>
+
+{{#extend "scripts"}}
+    <script src="/jweixin-1.0.0.js"></script>
+    <script>
  $('#chooseWXPay').click(function () {
      WeixinJSBridge.invoke(
          'getBrandWCPayRequest', {{{json payargs }}},
@@ -39,6 +31,5 @@
          }
      });
  }
-</script>
-
-</html>
+    </script>
+{{/extend}}
