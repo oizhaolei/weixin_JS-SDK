@@ -99,7 +99,7 @@ router.get('/', function (req, res, next) {
 router.get('/profile', function (req, res, next) {
   var openid = req.query.openid;
   tttalk.profile(openid, function(err, accountData, feeHistoryData, chargeHistoryData) {
-    var bind_action = (accountData.telphone==""||accountData.telphone==null)?'绑定':'更改';
+    var bind_action = (accountData.telephone==""||accountData.telephone==null)?'绑定':'更改';
     res.render('profile', {
       account : accountData,
       feeHistory : feeHistoryData,
@@ -132,8 +132,8 @@ router.get('/share_to_friend', function (req, res, next) {
 //bind_telphone
 router.post('/bind_telphone', function (req, res, next) {
   var openid = req.body.openid;
-  var telphone = req.body.telphone;
-  tttalk.bind_telphone(openid, telphone, function(err, accountData) {
+  var telephone = req.body.telephone;
+  tttalk.bind_telphone(openid, telephone, function(err, accountData) {
     res.redirect('/profile?openid=' + openid);
   });
 });

@@ -30,7 +30,7 @@
       <form id="contact-form" method="post" action="bind_telphone">
         <div class="input-group">
           <input type="hidden" id="openid" name="openid" value="{{openid}}"> 
-          <input type="text" class="form-control" id="telphone" name="telphone" value="{{account.telphone}}"placeholder="请输入手机号码" onkeyup="this.value=this.value.replace(/\D/g,'')">
+          <input type="text" class="form-control" id="telephone" name="telephone" value="{{account.telephone}}"placeholder="请输入手机号码" onkeyup="this.value=this.value.replace(/\D/g,'')">
           <span class="input-group-btn">
             <button class="btn btn-default" type="button" onclick="this.form.submit()">{{bind_action}}</button>
           </span>
