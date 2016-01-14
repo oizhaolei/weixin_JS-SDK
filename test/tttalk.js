@@ -115,7 +115,7 @@ describe('tttalk', function () {
         callback();
       });
     }, function(callback) {
-      tttalk.profile(openid, function(err, accountData, feeHistoryData, chargeHistoryData) {
+      tttalk.profile(openid, function(err, accountData) {
         assert(!err);
         assert.equal(accountData.openid, openid);
 
