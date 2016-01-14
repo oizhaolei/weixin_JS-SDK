@@ -47,6 +47,10 @@ router.get('/oauth', function (req, res, next) {
         res.redirect('/profile?openid=' + openid);
         break;
 
+      case 'fee_history' :
+        res.redirect('/fee_history?openid=' + openid);
+        break;
+
       }
     }
 
@@ -78,18 +82,29 @@ router.get('/', function (req, res, next) {
 // profile
 router.get('/profile', function (req, res, next) {
   var openid = req.query.openid;
-  tttalk.profile(openid, function(err, accountData, feeHistoryData, chargeHistoryData) {
+  tttalk.profile(openid, function(err, accountData) {
     var bind_action = (accountData.telephone==""||accountData.telephone==null)?'绑定':'更改';
     res.render('profile', {
       layout : 'layout',
       title : '个人资料',
       account : accountData,
-      feeHistory : feeHistoryData,
-      chargeHistory : chargeHistoryData,
       openid : openid,
       bind_action : bind_action
     });
   });
+});
+
+//fee_history
+router.get('/fee_history', function (req, res, next) {
+var openid = req.query.openid;
+tttalk.fee_history(openid, function(err, feeHistoryData, chargeHistoryData) {
+ res.render('fee_history', {
+   layout : 'layout',
+   title : '我的账单',
+   feeHistory : feeHistoryData,
+   chargeHistory : chargeHistoryData
+ });
+});
 });
 
 // share_to_friend
