@@ -1,5 +1,8 @@
 // 微信消息回调接口
 // 80端口
+var OUTER_ID_TEST = 0;
+var OUTER_ID_SUBSCRIBE = 1;
+
 var config = require('../config.json');
 var logger = require('log4js').getLogger('routers/weixin.js');
 var util = require('util');
@@ -266,7 +269,7 @@ router.post('/', function(req, res, next) {
 
         //发送卡券
         var cardId = config.cardId;
-        service.api.wxcard(app, msg.FromUserName, cardId, function(err, data) {
+        service.api.wxcard(app, msg.FromUserName, cardId, OUTER_ID_SUBSCRIBE, function(err, data) {
           if (err) logger.error(err);
         });
       }
@@ -319,6 +322,12 @@ router.post('/', function(req, res, next) {
     case 'usage_translate' :
       var text = reply.text(msg.ToUserName, msg.FromUserName, i18n.__('usage_translate'));
       res.send(text);
+
+      //发送卡券
+      var cardId = config.cardId;
+      service.api.wxcard(app, msg.FromUserName, cardId, OUTER_ID_TEST, function(err, data) {
+        if (err) logger.error(err);
+      });
       break;
     default :
       res.send("success");
