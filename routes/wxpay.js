@@ -1,7 +1,6 @@
 // 公众号支付
 var config = require('../config.json');
 var logger = require('log4js').getLogger('routers/wxpay.js');
-var util = require('util');
 
 var path = require('path');
 var fs = require('fs');
@@ -23,7 +22,7 @@ var tttalk = require('../lib/tttalk');
 var nodeWeixinMessage = require('node-weixin-message');
 
 var WXPay = require('weixin-pay');
-var wxpay = WXPay({
+var wxpay = new WXPay({
   appid: config.app.id,
   mch_id: config.mch_id,
   partner_key: config.wxpay_api_secret, //微信商户平台API密钥

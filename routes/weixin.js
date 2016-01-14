@@ -29,6 +29,11 @@ i18n.configure({
 });
 
 
+//T币换算成人民币分
+var tp2fen = function(fee) {
+  return fee / 2;
+};
+
 var account_dao = require('../dao/account_dao');
 var tttalk = require('../lib/tttalk');
 
@@ -62,7 +67,6 @@ var reply = nodeWeixinMessage.reply;
 var service = nodeWeixinMessage.service;
 
 var nodeWeixinUser = require('node-weixin-user');
-var nodeWeixinJssdk = require('node-weixin-jssdk');
 // Start
 
 router.post('/getSignature', function (req, res, next) {
@@ -75,7 +79,7 @@ router.post('/getSignature', function (req, res, next) {
     var type = 'jsapi';
     nodeWeixinAuth.ticket.determine(app, authData.accessToken, type, function(err) {
       if (err) {
-        cb(err);
+        next(err);
       } else {
         var ticket = nodeWeixinSettings.get(app.id, type).ticket;
         var timestamp = String((new Date().getTime() / 1000).toFixed(0));
@@ -362,9 +366,4 @@ router.post('/translate_callback', function(req, res, next) {
     }
   });
 });
-
-//T币换算成人民币分
-function tp2fen(fee) {
-  return fee / 2;
-}
 module.exports = router;

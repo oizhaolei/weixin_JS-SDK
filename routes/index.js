@@ -14,11 +14,26 @@ i18n.configure({
   directory : path.join(__dirname, '../locales')
 });
 
-var async = require('async');
-var moment = require("moment");
-
 var tttalk = require('../lib/tttalk');
 var app = config.app;
+
+var getOpenid = function(config, code, cb) {
+    request.get('https://api.weixin.qq.com/sns/oauth2/access_token?appid=' + config.app.id + '&secret=' + config.app.secret + '&code=' + code + '&grant_type=authorization_code', function(error, res, body) {
+        if (error) {
+            cb('getOpenId error', error);
+        }
+        else {
+            try {
+                logger.info(JSON.parse(body));
+                var openid = JSON.parse(body).openid;
+                cb(null, openid);
+            }
+            catch (e) {
+                cb('getOpenid error', e);
+            }
+        }
+    });
+};
 
 router.post('/log', function (req, res, next) {
   logger.info(req.body);
@@ -61,24 +76,6 @@ router.get('/oauth', function (req, res, next) {
 
   });
 });
-
-function getOpenid(config, code, cb) {
-    request.get('https://api.weixin.qq.com/sns/oauth2/access_token?appid=' + config.app.id + '&secret=' + config.app.secret + '&code=' + code + '&grant_type=authorization_code', function(error, res, body) {
-        if (error) {
-            cb('getOpenId error', error);
-        }
-        else {
-            try {
-                logger.info(JSON.parse(body));
-                var openid = JSON.parse(body).openid;
-                cb(null, openid);
-            }
-            catch (e) {
-                cb('getOpenid error', e);
-            }
-        }
-    });
-}
 
 router.get('/', function (req, res, next) {
   res.render('index');
