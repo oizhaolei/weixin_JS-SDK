@@ -57,11 +57,6 @@
           "type": "view",
           "name": "完善资料",
           "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://test.tttalk.org/oauth?action=profile&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
-        },
-        {
-          "type": "view",
-          "name": "我要提问",
-          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://test.tttalk.org/oauth?action=qa&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
         }
       ]
     }

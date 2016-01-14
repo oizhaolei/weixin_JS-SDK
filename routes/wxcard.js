@@ -5,6 +5,7 @@ var util = require('util');
 var crypto = require('crypto');
 
 var path = require('path');
+var async = require('async');
 
 var express = require('express');
 var router = express.Router();
@@ -52,16 +53,38 @@ router.get('/list', function (req, res, next) {
 
   nodeWeixinAuth.determine(app, function () {
     var authData = nodeWeixinSettings.get(app.id, 'auth');
+
     var url = 'https://api.weixin.qq.com/card/user/getcardlist?access_token=' + authData.accessToken;
     nodeWeixinRequest.json(url, {
       openid: openid,
       card_id: ""
     }, function(err, json) {
-      res.render('wxcard_list', {
-        layout : 'layout',
-        title : '我的优惠券',
-        card_list: json.card_list,
-        openid: openid
+      var cards = [];
+      async.each(json.card_list, function(card, callback) {
+        url = 'https://api.weixin.qq.com/card/get?access_token=' + authData.accessToken;
+        nodeWeixinRequest.json(url, {
+          card_id: card.card_id
+        }, function(err, json) {
+          if (!err && json.errcode === 0) {
+            //{"card_type":"CASH","cash":{"base_info":{"id":"psQJkwxCypbuXJGT12mNGAF9eYCk","logo_url":"http://mmbiz.qpic.cn/mmbiz/Vlqd2KB0xQJQMMqU4Zpp42icCVI9cCM2FhJEfoKOEZef3sSvibajJIUPOw0Zf8mRHJS04qvPtTSNSaA3c0AbWfibQ/0?wx_fmt=png","code_type":"CODE_TYPE_QRCODE","brand_name":"TTTalk翻译","title":"翻译抵值券1元","sub_title":"充值1元可用","date_info":{"type":"DATE_TYPE_FIX_TERM","fixed_term":30,"fixed_begin_term":0},"color":"#35A4DE","notice":"请充值后使用","description":"","location_id_list":[],"get_limit":1,"can_share":false,"can_give_friend":false,"status":"CARD_STATUS_SYS_DELETE","sku":{"quantity":0,"total_quantity":1},"create_time":1452693483,"update_time":1452693483},"least_cost":100,"reduce_cost":100,"advanced_info":{"time_limit":[{"type":"MONDAY"},{"type":"TUESDAY"},{"type":"WEDNESDAY"},{"type":"THURSDAY"},{"type":"FRIDAY"},{"type":"SATURDAY"},{"type":"SUNDAY"}],"text_image_list":[],"business_service":[],"consume_share_card_list":[],"abstract":{"abstract":"翻译抵值券，面值1元，用户在本公众号充值1元人民币以上可用。","icon_url_list":[]},"share_friends":false}},"card_id":"psQJkwxCypbuXJGT12mNGAF9eYCk","code":"299208562592"}
+
+            var cardDetail = json.card;
+            cardDetail.card_id = card.card_id;
+            cardDetail.code = card.code;
+            cards.push(cardDetail);
+
+            logger.debug('card %s', JSON.stringify(cardDetail));
+
+            callback();
+          }
+        });
+      }, function(err) {
+        res.render('wxcard_list', {
+          layout : 'layout',
+          title : '我的优惠券',
+          card_list: cards,
+          openid: openid
+        });
       });
     });
   });
