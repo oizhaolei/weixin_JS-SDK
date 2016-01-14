@@ -16,18 +16,6 @@ describe('utils', function () {
     });
   });
 
-  it('wxcard', function (done) {
-    var openid = process.env.APP_OPENID;
-    var cardId = config.cardId;
-    var outerId =1; //test
-
-    signature.wxcard(openid, cardId, outerId, function(err, data) {
-      logger.info(err);
-      logger.info(data);
-      done();
-    });
-  });
-
   it('util', function (done) {
     assert(!'');
     assert(!null);

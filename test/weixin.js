@@ -282,3 +282,20 @@ describe('weixin link', function () {
   });
 
 });
+describe('weixin message', function () {
+  it('wxcard', function (done) {
+    var nodeWeixinMessage = require('node-weixin-message');
+    var service = nodeWeixinMessage.service;
+
+    var openid = process.env.APP_OPENID;
+    var cardId = config.cardId;
+    var outerId =1; //test
+
+    service.api.wxcard(app, openid, cardId, outerId, function(err, data) {
+      logger.info(err);
+      logger.info(data);
+      done();
+    });
+  });
+
+});
