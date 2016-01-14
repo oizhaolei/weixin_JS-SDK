@@ -78,12 +78,7 @@ app.use(i18n.init);
 
 
 app.use(function(req, res, next) {
-  logger.info('----------- New Request ---------');
-  logger.info('url: %s ', req.originalUrl);
-  logger.info('query: %s', JSON.stringify(req.query));
-  logger.info('body, %s', JSON.stringify(req.body));
-  logger.info('---------------------------------');
-
+  logger.info('\n----------- New Request ---------\nurl: %s\nquery: %s\nbody: %s\n--------------------------------- ', req.originalUrl, JSON.stringify(req.query), JSON.stringify(req.body));
   next();
 });
 

@@ -322,7 +322,7 @@ router.post('/', function(req, res, next) {
   });
   messages.event.on.view(function(msg) {
     logger.info("view received");
-//    logger.info(msg);
+    logger.info(msg);
     res.send("success");
   });
   messages.event.on.templatesendjobfinish(function(msg) {

@@ -29,5 +29,6 @@
    :LOGBOOK:
    - State "DONE"       from "NEXT"       [2016-01-12 Tue 12:21]
    :END:
-** 分享卡券
+** TODO 分享卡券
 ** NEXT 我要翻译做成websocket+nodejs
+** TODO account更新batch，所有的用户都更新一遍 account信息

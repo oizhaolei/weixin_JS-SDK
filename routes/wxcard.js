@@ -89,5 +89,48 @@ router.get('/list', function (req, res, next) {
     });
   });
 });
+router.get('/consume', function (req, res, next) {
+  var openid = req.query.openid;
+  var code = req.query.code;
+  var card_id = req.query.card_id;
+
+  nodeWeixinAuth.determine(app, function () {
+    var authData = nodeWeixinSettings.get(app.id, 'auth');
+    //check_consume
+    var check_url = 'https://api.weixin.qq.com/card/code/get?access_token=' + authData.accessToken;
+    nodeWeixinRequest.json(check_url, {
+      code: code,
+      card_id: card_id,
+      check_consume: true
+    }, function(err, json) {
+      logger.debug('check_consume %s', JSON.stringify(json));
+      if (!err && json.errcode === 0 && json.can_consume) {
+        //卡券状态正常
+        var consume_url = 'https://api.weixin.qq.com/card/code/consume?access_token=' + authData.accessToken;
+        nodeWeixinRequest.json(consume_url, {
+          code: code,
+          card_id: card_id
+        }, function(err, json) {
+            logger.debug('consume %s', JSON.stringify(json));
+          if (!err && json.errcode === 0) {
+            //核销成功
+            res.render('wxcard_detail', {
+              layout : 'layout',
+              title : '使用成功'
+            });
+          } else {
+            //核销失败
+            next(json.errmsg);
+          }
+        });
+      } else {
+        //卡券状态异常
+        next(json.errmsg);
+      }
+    });
+
+  });
+
+});
 
 module.exports = router;

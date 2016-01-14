@@ -30,18 +30,18 @@ var wxpay = WXPay({
   pfx: fs.readFileSync(path.join(__dirname, '../cert/apiclient_cert.p12')), //微信商户平台证书
 });
 
-
+// 菜单
 router.get('/list', function (req, res, next) {
   var openid = req.query.openid;
-  res.render('orders', {
+  res.render('wxpay_list', {
     layout : 'layout',
     title : '微信充值',
     openid: openid
   });
 });
 
-// 接入验证
-router.get('/', function (req, res, next) {
+// 支付
+router.get('/pay', function (req, res, next) {
   var openid = req.query.openid;
   var fee = req.query.fee;
 
@@ -57,7 +57,7 @@ router.get('/', function (req, res, next) {
   };
   wxpay.getBrandWCPayRequestParams(requestParams, function(err, result){
     logger.info("getBrandWCPayRequestParams: %s, %s", JSON.stringify(requestParams), JSON.stringify(result));
-    res.render('order_detail', {
+    res.render('wxpay_detail', {
       layout : 'layout',
       title : '微信支付',
       params : requestParams,
@@ -65,7 +65,7 @@ router.get('/', function (req, res, next) {
     });
   });
 });
-// 处理商户业务逻辑
+// 回调 处理商户业务逻辑
 // { appid: 'wx99b8690b0397ad16',
 //   bank_type: 'CFT',
 //   cash_fee: '1',
