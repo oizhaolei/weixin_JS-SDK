@@ -137,4 +137,16 @@ router.post('/bind_telphone', function (req, res, next) {
   });
 });
 
+//change account
+router.post('/change_account', function (req, res, next) {
+  var openid = req.body.openid;
+  logger.info(req.body);
+  var username = req.body.username;
+  var sex = req.body.sex;
+  var birthday = req.body.birthday;
+  tttalk.change_account(openid, username, sex, birthday, function(err, accountData) {
+    res.redirect('/profile?openid=' + openid);
+  });
+});
+
 module.exports = router;
