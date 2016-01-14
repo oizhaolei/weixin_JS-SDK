@@ -17,26 +17,8 @@ i18n.configure({
 var async = require('async');
 var moment = require("moment");
 
-var signature = require('../signature');
-
 var tttalk = require('../lib/tttalk');
 var app = config.app;
-
-router.all('/getSignature', function (req, res, next) {
-  var url = req.body.url;
-  logger.info(url);
-  signature.getSignature(url, function(error, result) {
-    logger.info(error);
-    logger.info(result);
-    if (error) {
-      res.json({
-        'error': error
-      });
-    } else {
-      res.json(result);
-    }
-  });
-});
 
 router.post('/log', function (req, res, next) {
   logger.info(req.body);

@@ -13,7 +13,7 @@
 
 
 $.ajax({
-    url: '/getsignature',
+    url: '/weixin/getsignature',
     type: 'post',
     data: {
         url: location.href.split('#')[0] // 将当前URL地址上传至服务器用于产生数字签名

@@ -6,6 +6,7 @@ var logger = require('log4js').getLogger('test/weixin.js');
 var request = require('request');
 var path = require('path');
 var fs = require("fs");
+var crypto = require('crypto');
 
 var async = require('async');
 
@@ -279,6 +280,36 @@ describe('weixin link', function () {
     }], function(error, result) {
       done();
     });
+  });
+
+});
+describe('weixin jssdk', function () {
+  it('ticket', function (done) {
+    var url = 'http://test.tttalk.org/test.html'
+    var nodeWeixinJssdk = require('node-weixin-jssdk');
+    nodeWeixinAuth.determine(app, function () {
+      var authData = nodeWeixinSettings.get(app.id, 'auth');
+      nodeWeixinJssdk.getTicket(app, function(err, ticket) {
+        var timestamp = String((new Date().getTime() / 1000).toFixed(0));
+        var sha1 = crypto.createHash('sha1');
+        sha1.update(timestamp);
+        var noncestr = sha1.digest('hex');
+        var str = 'jsapi_ticket=' + ticket + '&noncestr='+ noncestr+'&timestamp=' + timestamp + '&url=' + url;
+        var signature = crypto.createHash('sha1').update(str).digest('hex');
+        logger.info("%s => %s", str, signature);
+
+        var sig = {
+          appId: config.app.id,
+          timestamp: timestamp,
+          nonceStr: noncestr,
+          signature: signature
+        };
+        logger.info(sig);
+      });
+
+      done();
+    });
+
   });
 
 });

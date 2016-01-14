@@ -30,4 +30,4 @@
    - State "DONE"       from "NEXT"       [2016-01-12 Tue 12:21]
    :END:
 ** 分享卡券
-** 我要翻译做成websocket+nodejs
+** NEXT 我要翻译做成websocket+nodejs

@@ -17,6 +17,9 @@ describe('utils', function () {
   });
 
   it('util', function (done) {
+    var now = new Date().getTime();
+    logger.info("now: %s", now);
+
     assert(!'');
     assert(!null);
 
