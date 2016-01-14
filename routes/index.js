@@ -26,30 +26,35 @@ router.post('/log', function (req, res, next) {
 
 router.get('/oauth', function (req, res, next) {
   logger.info(req.query);
+  var action = req.query.action;
   getOpenid(config, req.query.code, function(err, openid) {
-    if (err) logger.error(err);
-    logger.info("openid: ", openid);
-    switch (req.query.action) {
+    if (err) {
+      logger.error(err);
+      next(err);
+    } else {
+      logger.info("openid: ", openid);
+      switch (action) {
 
-    case 'wxpay' :
-      res.redirect('/wxpay/list?openid=' + openid);
-      break;
+      case 'wxpay' :
+        res.redirect('/wxpay/list?openid=' + openid);
+        break;
 
-    case 'share_to_friend' :
-      res.redirect('/share_to_friend?openid=' + openid);
-      break;
+      case 'share_to_friend' :
+        res.redirect('/share_to_friend?openid=' + openid);
+        break;
 
-    case 'profile' :
-      res.redirect('/profile?openid=' + openid);
-      break;
+      case 'profile' :
+        res.redirect('/profile?openid=' + openid);
+        break;
 
+      }
     }
 
   });
 });
 
 function getOpenid(config, code, cb) {
-    request.get('https://api.weixin.qq.com/sns/oauth2/access_token?appid=' + config.app.id + '&secret=' + config.appSecret + '&code=' + code + '&grant_type=authorization_code', function(error, res, body) {
+    request.get('https://api.weixin.qq.com/sns/oauth2/access_token?appid=' + config.app.id + '&secret=' + config.app.secret + '&code=' + code + '&grant_type=authorization_code', function(error, res, body) {
         if (error) {
             cb('getOpenId error', error);
         }
