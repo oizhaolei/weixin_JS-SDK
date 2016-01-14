@@ -71,13 +71,13 @@ router.post('/getSignature', function (req, res, next) {
 
   nodeWeixinAuth.determine(app, function () {
     var authData = nodeWeixinSettings.get(app.id, 'auth');
-    nodeWeixinJssdk.getTicket(app, function(err, ticket) {
+
+    var type = 'jsapi';
+    nodeWeixinAuth.ticket.determine(app, authData.accessToken, type, function(err) {
       if (err) {
-        logger.error(err);
-        res.json({
-          'error': error
-        });
+        cb(err);
       } else {
+        var ticket = nodeWeixinSettings.get(app.id, type).ticket;
         var timestamp = String((new Date().getTime() / 1000).toFixed(0));
         var sha1 = crypto.createHash('sha1');
         sha1.update(timestamp);
