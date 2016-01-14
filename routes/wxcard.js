@@ -37,6 +37,7 @@ nodeWeixinSettings.registerGet(function(id, key) {
 });
 
 var nodeWeixinAuth = require('node-weixin-auth');
+var nodeWeixinRequest = require('node-weixin-request');
 
 
 // shopId: '', // 门店Id
@@ -47,47 +48,23 @@ var nodeWeixinAuth = require('node-weixin-auth');
 // signType: '', // 签名方式，默认'SHA1'
 // cardSign: '', // 卡券签名
 router.get('/list', function (req, res, next) {
+  var openid = req.query.openid;
 
   nodeWeixinAuth.determine(app, function () {
     var authData = nodeWeixinSettings.get(app.id, 'auth');
-
-    var type = 'wx_card';
-    nodeWeixinAuth.ticket.determine(app, authData.accessToken, type, function(err) {
-      if (err) {
-        cb(err);
-      } else {
-        var ticket = nodeWeixinSettings.get(app.id, type).ticket;
-        var shopId = '';
-        var cardType = '';
-        var cardId = '';
-        var timestamp = String((new Date().getTime() / 1000).toFixed(0));
-        var sha1 = crypto.createHash('sha1');
-        sha1.update(timestamp);
-        var nonceStr = sha1.digest('hex');
-        var signType = 'SHA1';
-
-        console.log('ticket: %s, app.id: %s, shopId: %s, timestamp: %s, nonceStr: %s, cardId: %s, cardType: %s', ticket, app.id, shopId, timestamp, nonceStr, cardId, cardType);
-        var str = [ticket, app.id, shopId, timestamp, nonceStr, cardId, cardType].sort().join('');
-        var cardSign = crypto.createHash('sha1').update(str).digest('hex');
-        console.log('%s => %s', str, cardSign);
-
-        res.render('wxcard_list', {
-          layout : 'layout',
-          title : '我的优惠券',
-          cardargs : {
-            shopId: shopId, // 门店Id
-            cardType: cardType, // 卡券类型
-            cardId: cardId, // 卡券Id
-            timestamp: timestamp, // 卡券签名时间戳
-            nonceStr: nonceStr, // 卡券签名随机串
-            signType: signType, // 签名方式，默认'SHA1'
-            cardSign: cardSign // 卡券签名
-          }
-        });
-      }
+    var url = 'https://api.weixin.qq.com/card/user/getcardlist?access_token=' + authData.accessToken;
+    nodeWeixinRequest.json(url, {
+      openid: openid,
+      card_id: ""
+    }, function(err, json) {
+      res.render('wxcard_list', {
+        layout : 'layout',
+        title : '我的优惠券',
+        card_list: json.card_list,
+        openid: openid
+      });
     });
   });
 });
-
 
 module.exports = router;

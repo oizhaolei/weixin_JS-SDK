@@ -89,12 +89,12 @@ describe('weixin oauth', function () {
   // it('profile', function (done) {
   //   nodeWeixinAuth.tokenize(app, function (error, json) {
   //     var accessToken = json.access_token;
-  //     var openId = process.env.APP_OPENID;
+  //     var openid = process.env.APP_OPENID;
   //     var nock = require('nock');
 
   //     var params = {
   //       access_token: accessToken,
-  //       openid: openId
+  //       openid: openid
   //     };
   //     var url = 'https://api.weixin.qq.com';
 
@@ -105,7 +105,7 @@ describe('weixin oauth', function () {
   //         errcode: 1
   //       });
 
-  //     nodeWeixinOauth.profile(openId, accessToken, function (err, body) {
+  //     nodeWeixinOauth.profile(openid, accessToken, function (err, body) {
   //       logger.debug('err %s', err);
   //       logger.debug('body %s', JSON.stringify(body));
   //       assert.equal(true, !err);
@@ -118,8 +118,8 @@ describe('weixin oauth', function () {
 describe('weixin user', function () {
   var nodeWeixinUser = require('node-weixin-user');
   it('profile', function (done) {
-    var openId = process.env.APP_OPENID;
-    nodeWeixinUser.profile(app, openId, function (err, data) {
+    var openid = process.env.APP_OPENID;
+    nodeWeixinUser.profile(app, openid, function (err, data) {
       logger.debug('err %s', err);
       logger.debug('data %s', JSON.stringify(data));
 
@@ -144,8 +144,8 @@ describe('weixin pay', function () {
 
 
   it('prepay', function (done) {
-    var openId = process.env.APP_OPENID;
-    var params = { openid: openId,
+    var openid = process.env.APP_OPENID;
+    var params = { openid: openid,
                    spbill_create_ip: '1.202.241.25',
                    notify_url: config.wxpay_noti_url,
                    body: '测试支付',
@@ -343,5 +343,23 @@ describe('weixin message', function () {
       done();
     });
   });
+});
+describe('weixin card', function () {
+  var openid = process.env.APP_OPENID;
 
+  it('list', function (done) {
+    nodeWeixinAuth.determine(app, function () {
+      var authData = nodeWeixinSettings.get(app.id, 'auth');
+      var nodeWeixinRequest = require('node-weixin-request');
+      var url = 'https://api.weixin.qq.com/card/user/getcardlist?access_token=' + authData.accessToken;
+      nodeWeixinRequest.json(url, {
+        openid: openid,
+        card_id: ""
+      }, function(err, json) {
+        logger.info(err);
+        logger.info(json);
+        done();
+      });
+    });
+  });
 });
