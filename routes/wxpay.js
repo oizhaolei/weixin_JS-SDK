@@ -32,7 +32,6 @@ var wxpay = WXPay({
 
 
 router.get('/list', function (req, res, next) {
-  logger.info(req.wxmessage);
   var openid = req.query.openid;
   res.render('orders', {
     layout : 'layout',

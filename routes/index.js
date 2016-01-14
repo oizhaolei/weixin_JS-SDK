@@ -35,6 +35,11 @@ router.get('/oauth', function (req, res, next) {
       logger.info("openid: ", openid);
       switch (action) {
 
+      case 'wxcard' :
+        res.redirect('/wxcard/list?openid=' + openid);
+        break;
+
+
       case 'wxpay' :
         res.redirect('/wxpay/list?openid=' + openid);
         break;

@@ -24,10 +24,9 @@ nodeWeixinSettings.registerSet(function(id, key, value) {
   app[id][key] = value;
 });
 nodeWeixinSettings.registerGet(function(id, key) {
-  logger.debug('registerGet %s %s', id, key);
   if (app[id] && app[id][key]) {
     var value = app[id][key];
-    logger.debug('registerGet %s', JSON.stringify(value));
+    logger.debug('registerGet %s %s: %s', id, key, JSON.stringify(value));
     return value;
   }
   return null;
@@ -54,11 +53,21 @@ describe('weixin auth', function () {
     });
   });
   it('determine', function (done) {
-    nodeWeixinAuth.determine(app, function (error, json) {
+    nodeWeixinAuth.determine(app, function (error) {
       var authData = nodeWeixinSettings.get(app.id, 'auth');
       assert(authData.accessToken);
+      var token = authData.accessToken;
 
-      done();
+      var type = 'wx_card';
+      nodeWeixinAuth.ticket.determine(app, token, type, function (error) {
+        logger.debug(error);
+
+        var ticket = nodeWeixinSettings.get(app.id, type);
+        logger.debug('ticket %s', ticket.ticket);
+        assert(ticket.ticket);
+
+        done();
+      });
     });
   });
 });
@@ -80,12 +89,12 @@ describe('weixin oauth', function () {
   // it('profile', function (done) {
   //   nodeWeixinAuth.tokenize(app, function (error, json) {
   //     var accessToken = json.access_token;
-  //     var openId = process.env.APP_OPENID;
+  //     var openid = process.env.APP_OPENID;
   //     var nock = require('nock');
 
   //     var params = {
   //       access_token: accessToken,
-  //       openid: openId
+  //       openid: openid
   //     };
   //     var url = 'https://api.weixin.qq.com';
 
@@ -96,7 +105,7 @@ describe('weixin oauth', function () {
   //         errcode: 1
   //       });
 
-  //     nodeWeixinOauth.profile(openId, accessToken, function (err, body) {
+  //     nodeWeixinOauth.profile(openid, accessToken, function (err, body) {
   //       logger.debug('err %s', err);
   //       logger.debug('body %s', JSON.stringify(body));
   //       assert.equal(true, !err);
@@ -109,8 +118,8 @@ describe('weixin oauth', function () {
 describe('weixin user', function () {
   var nodeWeixinUser = require('node-weixin-user');
   it('profile', function (done) {
-    var openId = process.env.APP_OPENID;
-    nodeWeixinUser.profile(app, openId, function (err, data) {
+    var openid = process.env.APP_OPENID;
+    nodeWeixinUser.profile(app, openid, function (err, data) {
       logger.debug('err %s', err);
       logger.debug('data %s', JSON.stringify(data));
 
@@ -135,8 +144,8 @@ describe('weixin pay', function () {
 
 
   it('prepay', function (done) {
-    var openId = process.env.APP_OPENID;
-    var params = { openid: openId,
+    var openid = process.env.APP_OPENID;
+    var params = { openid: openid,
                    spbill_create_ip: '1.202.241.25',
                    notify_url: config.wxpay_noti_url,
                    body: '测试支付',
@@ -285,26 +294,32 @@ describe('weixin link', function () {
 });
 describe('weixin jssdk', function () {
   it('ticket', function (done) {
-    var url = 'http://test.tttalk.org/test.html'
-    var nodeWeixinJssdk = require('node-weixin-jssdk');
+    var url = 'http://test.tttalk.org/test.html';
     nodeWeixinAuth.determine(app, function () {
       var authData = nodeWeixinSettings.get(app.id, 'auth');
-      nodeWeixinJssdk.getTicket(app, function(err, ticket) {
-        var timestamp = String((new Date().getTime() / 1000).toFixed(0));
-        var sha1 = crypto.createHash('sha1');
-        sha1.update(timestamp);
-        var noncestr = sha1.digest('hex');
-        var str = 'jsapi_ticket=' + ticket + '&noncestr='+ noncestr+'&timestamp=' + timestamp + '&url=' + url;
-        var signature = crypto.createHash('sha1').update(str).digest('hex');
-        logger.info("%s => %s", str, signature);
 
-        var sig = {
-          appId: config.app.id,
-          timestamp: timestamp,
-          nonceStr: noncestr,
-          signature: signature
-        };
-        logger.info(sig);
+      var type = 'jsapi';
+      nodeWeixinAuth.ticket.determine(app, authData.accessToken, type, function(err) {
+        if (err) {
+          cb(err);
+        } else {
+          var ticket = nodeWeixinSettings.get(app.id, type).ticket;
+          var timestamp = String((new Date().getTime() / 1000).toFixed(0));
+          var sha1 = crypto.createHash('sha1');
+          sha1.update(timestamp);
+          var noncestr = sha1.digest('hex');
+          var str = 'jsapi_ticket=' + ticket + '&noncestr='+ noncestr+'&timestamp=' + timestamp + '&url=' + url;
+          var signature = crypto.createHash('sha1').update(str).digest('hex');
+          logger.info("%s => %s", str, signature);
+
+          var sig = {
+            appId: config.app.id,
+            timestamp: timestamp,
+            nonceStr: noncestr,
+            signature: signature
+          };
+          logger.info(sig);
+        }
       });
 
       done();
@@ -328,5 +343,23 @@ describe('weixin message', function () {
       done();
     });
   });
+});
+describe('weixin card', function () {
+  var openid = process.env.APP_OPENID;
 
+  it('list', function (done) {
+    nodeWeixinAuth.determine(app, function () {
+      var authData = nodeWeixinSettings.get(app.id, 'auth');
+      var nodeWeixinRequest = require('node-weixin-request');
+      var url = 'https://api.weixin.qq.com/card/user/getcardlist?access_token=' + authData.accessToken;
+      nodeWeixinRequest.json(url, {
+        openid: openid,
+        card_id: ""
+      }, function(err, json) {
+        logger.info(err);
+        logger.info(json);
+        done();
+      });
+    });
+  });
 });
