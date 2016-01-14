@@ -125,11 +125,11 @@ router.post('/', function(req, res, next) {
     var content = msg.Content;
     tttalk.saveText(msgid, from_lang, to_lang, content, msg.FromUserName, function(err, results) {
       if (err) {
-        logger.err("saveText: %s", err);
+        logger.error("saveText: %s", err);
       } else {
         tttalk.requestTranslate(msgid, msg.FromUserName, from_lang, to_lang, 'text',content, function(err, results) {
           if (err) {
-            logger.err("requestTranslate: %s", err);
+            logger.error("requestTranslate: %s", err);
           } else {
             var key = msgid;
             redisClient.set(key, key);
@@ -170,11 +170,11 @@ router.post('/', function(req, res, next) {
     file.on('finish', function() {
       tttalk.savePhoto(msgid, from_lang, to_lang, filename, msg.FromUserName, function(err, results) {
         if (err) {
-          logger.err("saveText: %s", err);
+          logger.error("saveText: %s", err);
         } else {
           tttalk.requestTranslate(msgid, msg.FromUserName, from_lang, to_lang, 'photo', filename, function(err, results) {
             if (err) {
-              logger.err("savePhoto: %s", err);
+              logger.error("savePhoto: %s", err);
             }
           });
         }
@@ -200,7 +200,7 @@ router.post('/', function(req, res, next) {
     file.on('finish', function() {
       tttalk.saveVoice(msgid, from_lang, to_lang, filename, msg.FromUserName, function(err, results) {
         if (err) {
-          logger.err("saveText: %s", err);
+          logger.error("saveText: %s", err);
         } else {
           tttalk.requestTranslate(msgid, msg.FromUserName, from_lang, to_lang, 'voice', filename, function(err, results) {
             if (err) {
@@ -259,12 +259,13 @@ router.post('/', function(req, res, next) {
             });
           }
         });
+
+        //发送卡券
+        var cardId = config.cardId;
+        service.api.wxcard(app, msg.FromUserName, cardId, function(err, data) {
+          if (err) logger.error(err);
+        });
       }
-      //发送卡券
-      var cardId = config.cardId;
-      service.api.wxcard(app, msg.FromUserName, cardId, function(err, data) {
-        if (err) logger.error(err);
-      });
       //获取用户信息
       nodeWeixinUser.profile(app, msg.FromUserName, function (err, data) {
         logger.debug('err %s', err);
