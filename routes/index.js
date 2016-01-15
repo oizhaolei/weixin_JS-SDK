@@ -145,8 +145,7 @@ router.post('/change_account', function (req, res, next) {
   logger.info(req.body);
   var username = req.body.username;
   var sex = req.body.sex;
-  var birthday = req.body.birthday;
-  tttalk.change_account(openid, username, sex, birthday, function(err, accountData) {
+  tttalk.change_account(openid, username, sex, function(err, accountData) {
     res.redirect('/profile?openid=' + openid);
   });
 });

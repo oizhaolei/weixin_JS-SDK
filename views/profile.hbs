@@ -1,6 +1,3 @@
-{{#extend "css"}}
-<link href="http://www.bootcss.com/p/bootstrap-datetimepicker/bootstrap-datetimepicker/css/datetimepicker.css" rel="stylesheet">
-{{/extend}}
  <div class="panel panel-primary">
   <div class="panel-heading">
    <h3 class="panel-title">个人信息</h3>
@@ -22,11 +19,6 @@
             <option value="1">男</option>
             <option value="2">女</option>
           </select>
-       </div>
-       </p>
-       <div class="input-group">
-         <span class="input-group-addon">生日</span>
-         <input type="text" class="form-control" id="birthday" name="birthday" value="{{account.birthday}}" data-date-format="yyyy-mm-dd" readonly>
        </div>
        </p>
        <button type="submit" class="btn btn-primary btn-block">提交</button>
@@ -51,14 +43,7 @@
   </div>
  </div>
 {{#extend "scripts"}}
-<script src="http://www.bootcss.com/p/bootstrap-datetimepicker/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
 <script>
   $("#sex").val("{{account.sex}}");
-  $('#birthday').datetimepicker({
-            format: 'yyyy-mm-dd',
-            autoclose: true,
-            minView: 'month',
-            language: 'zh-CN'
-        });
 </script>
 {{/extend}}
