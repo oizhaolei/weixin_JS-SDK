@@ -334,7 +334,7 @@ describe('weixin message', function () {
     var service = nodeWeixinMessage.service;
 
     var openid = process.env.APP_OPENID;
-    var cardId = config.cardId;
+    var cardId = config.card.first_pay;
     var outerId =1; //test
 
     service.api.wxcard(app, openid, cardId, outerId, function(err, data) {

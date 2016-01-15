@@ -39,8 +39,8 @@ AccountDao.prototype = {
     var args = [ openid, openid, up_penid, 0, 0, openid ];
     this.mainPool.query(sql, args, function(err, results){
 
-      if (!err && (results[1].affectedRows === 0 || results[2].length === 0)) err = 'no data change';
       if (err) logger.error(err);
+      if (!err && (results[1].affectedRows === 0 || results[2].length === 0)) err = 'no data change';
 
       var oldAccount = results[0].length > 0 ? results[0][0] : null;
       var newAccount = results[2].length > 0 ? results[2][0] : null;
@@ -67,8 +67,8 @@ AccountDao.prototype = {
     args.push(openid);
 
     this.mainPool.query(sql, args, function(err, results){
-      if (!err && (results[0].affectedRows === 0 || results[1].length === 0)) err = 'no data change';
       if (err) logger.error(err);
+      if (!err && (results[0].affectedRows === 0 || results[1].length === 0)) err = 'no data change';
 
       callback(err, results[0], results[1][0]);
     });
@@ -80,9 +80,9 @@ AccountDao.prototype = {
     var args=[ openid ];
 
     this.mainPool.query(sql, args, function(err, results){
+      if (err) logger.error(err);
       if (!err && results.affectedRows === 0) err = 'no data change';
       callback(err, results);
-      if (err) logger.error(err);
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   }

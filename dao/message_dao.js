@@ -16,9 +16,9 @@ MessageDao.prototype = {
     var sql = 'insert into  tbl_message (msgid, from_lang, to_lang, filetype, from_content, openid, create_date) values (?,?,?,?,?,?,utc_timestamp(3))';
     var args = [ msgid, from_lang, to_lang, filetype, content, openid ];
     this.mainPool.query(sql, args, function(err, results) {
+      if (err) logger.error(err);
       if (!err && results.affectedRows === 0)
         err = 'no data change';
-      if (err) logger.error(err);
 
       callback(err, results);
     });
@@ -37,8 +37,8 @@ MessageDao.prototype = {
     args.push(msgid);
 
     this.mainPool.query(sql, args, function(err, results){
-      if (!err && (results[0].affectedRows === 0 || results[1].length === 0)) err = 'no data change';
       if (err) logger.error(err);
+      if (!err && (results[0].affectedRows === 0 || results[1].length === 0)) err = 'no data change';
 
       callback(err, results[0], results[1][0]);
     });

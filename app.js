@@ -82,6 +82,25 @@ app.use(function(req, res, next) {
   next();
 });
 
+var nodeWeixinSettings = require('node-weixin-settings');
+nodeWeixinSettings.registerSet(function(id, key, value) {
+  logger.debug('registerSet %s %s %s', id, key, JSON.stringify(value));
+  if (!config.app[id]) {
+    config.app[id] = {};
+  }
+  config.app[id][key] = value;
+});
+nodeWeixinSettings.registerGet(function(id, key) {
+  logger.debug('registerGet %s %s', id, key);
+  if (config.app[id] && config.app[id][key]) {
+    var value = config.app[id][key];
+    logger.debug('registerGet %s %s %s', id, key, JSON.stringify(value));
+    return value;
+  }
+  return null;
+});
+
+
 var routes = require('./routes/index');
 app.use('/', routes);
 

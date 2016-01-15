@@ -32,8 +32,8 @@ describe('tttalk', function () {
             // 给推荐人奖励
             tttalk.wxPay(up_openid,{
               transaction_id: 'createAccount' + seed,
-              total_fee: config.subscribe_fee,
-              cash_fee: '0',
+              total_fee: config.subscribe_reward,
+              cash_fee: config.subscribe_reward,
               fee_type: 'CNY',
               result_code: 'SUCCESS',
               return_code: 'SUCCESS',
@@ -41,7 +41,7 @@ describe('tttalk', function () {
             }, function(err, account) {
               account_dao.getByOpenid(up_openid, function(err, newUpAccount) {
                 assert.equal(oldUpAccount.openid, newUpAccount.openid);
-                assert.equal(newUpAccount.balance-oldUpAccount.balance, config.subscribe_fee);
+                assert.equal(newUpAccount.balance-oldUpAccount.balance, config.subscribe_reward);
 
                 callback();
               });

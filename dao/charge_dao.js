@@ -45,8 +45,8 @@ ChargeDao.prototype = {
     var sql = 'insert into  tbl_user_charge (transaction_id, openid, cash_fee, total_fee, user_balance, out_trade_no, bank_type, fee_type, time_end, trade_type, memo, create_date) values (?,?,?,?,?,?,?,?,?,?,?,utc_timestamp(3));SELECT * FROM tbl_user_charge where transaction_id = ?' ;
     var args = [ transaction_id, openid, cash_fee, total_fee, user_balance, out_trade_no, bank_type, fee_type, time_end, trade_type, memo, transaction_id ];
     this.mainPool.query(sql, args, function(err, results){
-      if (!err && (results[0].affectedRows === 0 || results[1].length === 0)) err = 'no data change';
       if (err) logger.error(err);
+      if (!err && (results[0].affectedRows === 0 || results[1].length === 0)) err = 'no data change';
 
       callback(err, results[0], results[1][0]);
     });

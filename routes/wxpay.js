@@ -4,6 +4,7 @@ var logger = require('log4js').getLogger('routers/wxpay.js');
 
 var path = require('path');
 var fs = require('fs');
+var async = require('async');
 
 var express = require('express');
 var router = express.Router();
@@ -18,6 +19,7 @@ i18n.configure({
 var app = config.app;
 
 var tttalk = require('../lib/tttalk');
+var wxcard = require('../lib/wxcard');
 
 var nodeWeixinMessage = require('node-weixin-message');
 
@@ -82,20 +84,52 @@ router.get('/pay', function (req, res, next) {
 //   trade_type: 'JSAPI',
 //   transaction_id: '1006600349201601082576188135'
 // }
-router.all('/noti', wxpay.useWXCallback(function(msg, req, res, next){
+router.all('/noti', wxpay.useWXCallback(function(wxpay, req, res, next){
   logger.info(req.wxmessage);
   var wxmessage = req.wxmessage;
   var openid = wxmessage.openid;
   wxmessage.memo = 'wxpay';
 
-  tttalk.wxPay(openid, wxmessage, function(err, account){
-    var service = nodeWeixinMessage.service;
-    var content = i18n.__('wxpay_success', req.wxmessage.total_fee, account.balance);
-    service.api.text(app, msg.FromUserName, content, function(error, data) {
-      if (error) {
-        logger.info("%s, %s", data.errcode, data.errmsg);
-      }
-    });
+  tttalk.wxPay(openid, wxmessage, function(err, account, charge){
+    if (err) {
+      logger.error(err);
+    } else {
+      // 充值成功消息
+      var service = nodeWeixinMessage.service;
+      var content = i18n.__('wxpay_success', charge.cash_fee, account.balance);
+      service.api.text(app, openid, content, function(error, data) {
+        if (error) {
+          logger.info("%s, %s", data.errcode, data.errmsg);
+        }
+      });
+      //检查有否可用的卡券
+      wxcard.list(config.card.first_pay, function(err, list) {
+        async.each(list, function(card, callback) {
+          wxcard.consume(card, function(err, json) {
+            if (err) {
+              callback(err);
+            } else {
+              var openid = json.openid;
+              var fee = card.reduce_cost;
+              tttalk._charge(openid, fee, card.code, card.card_id, '', 'wxcard', '', '', 'first_pay', function(err, account, charge) {
+                if (err) {
+                  callback(err);
+                } else {
+                  callback();
+                  var content = i18n.__('card_consume_success', charge.cash_fee, account.balance);
+                  service.api.text(app, openid, content, function(error, data) {
+                    if (error) {
+                      logger.info("%s, %s", data.errcode, data.errmsg);
+                    }
+                  });
+                }
+              });
+            }
+          });
+        }, function(err) {
+        });
+      });
+    }
 
   });
 

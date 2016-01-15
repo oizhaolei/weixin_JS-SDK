@@ -46,22 +46,6 @@ var to_lang = 'EN';
 var app = config.app;
 
 var nodeWeixinSettings = require('node-weixin-settings');
-nodeWeixinSettings.registerSet(function(id, key, value) {
-  logger.debug('registerSet %s %s %s', id, key, JSON.stringify(value));
-  if (!app[id]) {
-    app[id] = {};
-  }
-  app[id][key] = value;
-});
-nodeWeixinSettings.registerGet(function(id, key) {
-  logger.debug('registerGet %s %s', id, key);
-  if (app[id] && app[id][key]) {
-    var value = app[id][key];
-    logger.debug('registerGet %s', JSON.stringify(value));
-    return value;
-  }
-  return null;
-});
 
 var nodeWeixinAuth = require('node-weixin-auth');
 var nodeWeixinMessage = require('node-weixin-message');
@@ -118,7 +102,11 @@ router.post('/', function(req, res, next) {
       explicitArray : false,
       ignoreAttrs : true
     }, function(error, json) {
-      messages.parse(json.xml);
+      try {
+        messages.parse(json.xml);
+      } catch (e) {
+        logger.error(e);
+      }
     });
   });
 
@@ -247,28 +235,30 @@ router.post('/', function(req, res, next) {
       var text = reply.text(msg.ToUserName, msg.FromUserName, i18n.__('subscribe_success', parseFloat(account.balance) / 100));
       res.send(text);
 
-      if (!oldAccount && up_openid) {
-        // 给推荐人奖励
-        tttalk.wxPay(up_openid,{
-          transaction_id: msg.MsgId,
-          total_fee: config.subscribe_fee,
-          cash_fee: '0',
-          fee_type: 'CNY',
-          result_code: 'SUCCESS',
-          return_code: 'SUCCESS',
-          memo : 'subscribe'
-        }, function(err, upAccount) {
-          if (err) {
-            logger.error(err);
-          } else {
-            service.api.text(app, msg.FromUserName, i18n.__('subscribe_share_fee', upAccount.nickname, parseFloat(config.subscribe_fee) / 100, config.share_rules_url), function(err, data) {
-              if (err) logger.error(err);
-            });
-          }
-        });
+      if (!oldAccount) { //初次关注
+        if (up_openid) {
+          // 给推荐人奖励
+          tttalk.wxPay(up_openid,{
+            transaction_id: msg.MsgId,
+            total_fee: config.subscribe_reward,
+            cash_fee: '0',
+            fee_type: 'CNY',
+            result_code: 'SUCCESS',
+            return_code: 'SUCCESS',
+            memo : 'subscribe'
+          }, function(err, upAccount) {
+            if (err) {
+              logger.error(err);
+            } else {
+              service.api.text(app, msg.FromUserName, i18n.__('subscribe_share_fee', upAccount.nickname, parseFloat(config.subscribe_reward) / 100, config.share_rules_url), function(err, data) {
+                if (err) logger.error(err);
+              });
+            }
+          });
+        }
 
-        //发送卡券
-        var cardId = config.cardId;
+        //初次关注发送卡券
+        var cardId = config.card.first_pay;
         service.api.wxcard(app, msg.FromUserName, cardId, OUTER_ID_SUBSCRIBE, function(err, data) {
           if (err) logger.error(err);
         });
@@ -322,12 +312,6 @@ router.post('/', function(req, res, next) {
     case 'usage_translate' :
       var text = reply.text(msg.ToUserName, msg.FromUserName, i18n.__('usage_translate'));
       res.send(text);
-
-      //发送卡券
-      var cardId = config.cardId;
-      service.api.wxcard(app, msg.FromUserName, cardId, OUTER_ID_TEST, function(err, data) {
-        if (err) logger.error(err);
-      });
       break;
     default :
       res.send("success");

@@ -118,7 +118,7 @@ router.get('/share_to_friend', function (req, res, next) {
       res.send("success");
     } else {
       var qrCodeUrl = util.format('https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=%s', json.ticket);
-      var info = i18n.__('share_to_friend', parseFloat(config.subscribe_fee) / 100, config.share_rules_url);
+      var info = i18n.__('share_to_friend', parseFloat(config.subscribe_reward) / 100, config.share_rules_url);
 
       res.render('share_to_friend', {
         layout : 'layout',
