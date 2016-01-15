@@ -94,11 +94,11 @@ router.all('/noti', wxpay.useWXCallback(function(wxpay, req, res, next){
     if (err) {
       logger.error(err);
     } else {
-      // 充值成功消息
+      logger.info("account: %s", JSON.stringify(account));
       var service = nodeWeixinMessage.service;
-      var content = i18n.__('wxpay_success', charge.cash_fee, account.balance);
-      service.api.text(app, openid, content, function(error, data) {
-        if (error) {
+      var content = i18n.__('wxpay_success', parseFloat(charge.cash_fee)/100, parseFloat(account.balance)/100);
+      service.api.text(app, openid, content, function(err, data) {
+        if (err || data.errcode !== 0) {
           logger.info("%s, %s", data.errcode, data.errmsg);
         }
       });
@@ -111,14 +111,14 @@ router.all('/noti', wxpay.useWXCallback(function(wxpay, req, res, next){
             } else {
               var openid = json.openid;
               var fee = card.reduce_cost;
-              tttalk._charge(openid, fee, card.code, card.card_id, '', 'wxcard', '', '', 'first_pay', function(err, account, charge) {
+              tttalk._charge(openid, 0, fee, card.code, card.card_id, '', 'wxcard', '', '', 'first_pay', function(err, account, charge) {
                 if (err) {
                   callback(err);
                 } else {
                   callback();
-                  var content = i18n.__('card_consume_success', charge.cash_fee, account.balance);
-                  service.api.text(app, openid, content, function(error, data) {
-                    if (error) {
+                  var content = i18n.__('card_consume_success', parseFloat(charge.cash_fee)/100, parseFloat(account.balance)/100);
+                  service.api.text(app, openid, content, function(err, data) {
+                    if (err || data.errcode !== 0) {
                       logger.info("%s, %s", data.errcode, data.errmsg);
                     }
                   });

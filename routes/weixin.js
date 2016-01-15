@@ -134,8 +134,8 @@ router.post('/', function(req, res, next) {
               redisClient.get(key, function(err, reply) {
                 if (reply) {
                   // 客服API消息回复
-                  service.api.text(app, msg.FromUserName, i18n.__('translating_pls_wait'), function(error, data) {
-                    if (error) {
+                  service.api.text(app, msg.FromUserName, i18n.__('translating_pls_wait'), function(err, data) {
+                    if (err || data.errcode !== 0) {
                       logger.info("%s, %s", data.errcode, data.errmsg);
                     }
                   });
@@ -251,7 +251,9 @@ router.post('/', function(req, res, next) {
               logger.error(err);
             } else {
               service.api.text(app, msg.FromUserName, i18n.__('subscribe_share_fee', upAccount.nickname, parseFloat(config.subscribe_reward) / 100, config.share_rules_url), function(err, data) {
-                if (err) logger.error(err);
+                if (err || data.errcode !== 0) {
+                  logger.info("%s, %s", data.errcode, data.errmsg);
+                }
               });
             }
           });
@@ -260,7 +262,9 @@ router.post('/', function(req, res, next) {
         //初次关注发送卡券
         var cardId = config.card.first_pay;
         service.api.wxcard(app, msg.FromUserName, cardId, OUTER_ID_SUBSCRIBE, function(err, data) {
-          if (err) logger.error(err);
+          if (err || data.errcode !== 0) {
+            logger.info("%s, %s", data.errcode, data.errmsg);
+          }
         });
       }
       //获取用户信息
@@ -347,7 +351,9 @@ router.post('/translate_callback', function(req, res, next) {
     } else {
       // 客服API消息回复
       service.api.text(app, message.openid, to_content, function(err, data) {
-        logger.info('text: %s, %s', err, JSON.stringify(data));
+        if (err || data.errcode !== 0) {
+          logger.info("%s, %s", data.errcode, data.errmsg);
+        }
       });
 
       console.log('message: %s', JSON.stringify(message));

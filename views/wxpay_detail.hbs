@@ -3,8 +3,8 @@
    <h3 class="panel-title">请支付</h3>
   </div>
   <div class="panel-body">
-    <h5>{{ params.body }}{{ params.detail }}</h5>
-    <button class="btn btn-primary btn-block" id="chooseWXPay">支付</button>
+    <h4>{{ params.body }}{{ params.detail }}</h4>
+    <button class="btn btn-lg btn-primary btn-block" id="chooseWXPay">支付</button>
   </div>
 </div>
 
@@ -28,6 +28,7 @@
              msg: msg
          }
      });
+    WeixinJSBridge.call('closeWindow');
  }
     </script>
 {{/extend}}
