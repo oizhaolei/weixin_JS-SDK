@@ -18,6 +18,7 @@ i18n.configure({
 
 var app = config.app;
 
+var charge_dao = require('../dao/charge_dao');
 var tttalk = require('../lib/tttalk');
 var wxcard = require('../lib/wxcard');
 
@@ -102,32 +103,42 @@ router.all('/noti', wxpay.useWXCallback(function(wxpay, req, res, next){
           logger.info("%s, %s", data.errcode, data.errmsg);
         }
       });
-      //检查有否可用的卡券
-      wxcard.list(config.card.first_pay, function(err, list) {
-        async.each(list, function(card, callback) {
-          wxcard.consume(card, function(err, json) {
-            if (err) {
-              callback(err);
-            } else {
-              var openid = json.openid;
-              var fee = card.reduce_cost;
-              tttalk._charge(openid, 0, fee, card.code, card.card_id, '', 'wxcard', '', '', 'first_pay', function(err, account, charge) {
+      //初次充值?
+      charge_dao.findCharges(openid, {
+        openid:openid,
+        memo:'wxpay'
+      }, function(err, charges) {
+        if (charges.length === 0) {
+          //检查有否可用的卡券
+          wxcard.list(openid, config.card.first_pay, function(err, list) {
+            async.each(list, function(card, callback) {
+              wxcard.consume(card, function(err, json) {
                 if (err) {
                   callback(err);
                 } else {
-                  callback();
-                  var content = i18n.__('card_consume_success', parseFloat(charge.cash_fee)/100, parseFloat(account.balance)/100);
-                  service.api.text(app, openid, content, function(err, data) {
-                    if (err || data.errcode !== 0) {
-                      logger.info("%s, %s", data.errcode, data.errmsg);
+                  var openid = json.openid;
+                  var fee = card.reduce_cost;
+                  tttalk._charge(openid, 0, fee, card.code, card.card_id, '', 'wxcard', '', '', 'first_pay', function(err, account, charge) {
+                    if (err) {
+                      callback(err);
+                    } else {
+                      callback();
+                      var content = i18n.__('card_consume_success', parseFloat(charge.cash_fee)/100, parseFloat(account.balance)/100);
+                      service.api.text(app, openid, content, function(err, data) {
+                        if (err || data.errcode !== 0) {
+                          logger.info("%s, %s", data.errcode, data.errmsg);
+                        }
+                      });
                     }
                   });
                 }
               });
-            }
+            }, function(err) {
+              logger.error(err);
+            });
           });
-        }, function(err) {
-        });
+        }
+
       });
     }
 

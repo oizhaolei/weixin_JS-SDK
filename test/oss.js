@@ -34,15 +34,14 @@ describe('oss', function () {
 
     }, function(callback) {
       console.log('upload');
-      oss.putObject(tempFile, dest, 'image/jpeg', 0, function(err, data) {
+      oss.putObject(tempFile, dest, 'image/jpeg', function(err, data) {
         callback();
       });
     }, function(callback) {
       console.log('check: %s', destUrl);
       request(destUrl, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-          callback();
-        }
+        console.log(response.statusCode);
+        callback();
       });
     }, function(callback) {
       console.log('delete: %s', dest);

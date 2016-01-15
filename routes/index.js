@@ -53,6 +53,10 @@ router.get('/oauth', function (req, res, next) {
         res.redirect('/wxpay/list?openid=' + openid);
         break;
 
+      case 'wxcard' :
+        res.redirect('/wxcard/list?openid=' + openid);
+        break;
+
       case 'share_to_friend' :
         res.redirect('/share_to_friend?openid=' + openid);
         break;
@@ -92,16 +96,16 @@ router.get('/profile', function (req, res, next) {
 
 //fee_history
 router.get('/fee_history', function (req, res, next) {
-var openid = req.query.openid;
-tttalk.fee_history(openid, function(err, accountData, feeHistoryData, chargeHistoryData) {
- res.render('fee_history', {
-   layout : 'layout',
-   title : '我的账单',
-   account : accountData,
-   feeHistory : feeHistoryData,
-   chargeHistory : chargeHistoryData
- });
-});
+  var openid = req.query.openid;
+  tttalk.fee_history(openid, function(err, accountData, feeHistoryData, chargeHistoryData) {
+    res.render('fee_history', {
+      layout : 'layout',
+      title : '我的账单',
+      account : accountData,
+      feeHistory : feeHistoryData,
+      chargeHistory : chargeHistoryData
+    });
+  });
 });
 
 // share_to_friend

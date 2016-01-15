@@ -63,14 +63,22 @@ MessageDao.prototype = {
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },
 
-  findFeeHistory : function (openid, callback) {
-    var sql='SELECT * FROM tbl_account where openid = ?;SELECT * FROM tbl_message where openid = ? order by create_date desc limit 50;SELECT * FROM tbl_user_charge where openid = ? order by create_date desc limit 50' ;
-    var args=[ openid, openid, openid ];
+  findMessages : function (openid, where, callback) {
+    if (!callback) {
+      callback = where;
+      where = null;
+    }
+    var sql='',
+        args=[openid];
+    _.forEach(where, function(n, key) {
+      sql += ' and ' + key + '=?';
+      args.push(where[key]);
+    });
+    sql='SELECT * FROM tbl_message where openid = ?'  + sql + ' order by create_date desc limit 50' ;
 
     this.readonlyPool.query(sql, args, function(err, results){
-      if (!results[0] || results[0].length === 0) err = 'no account: ' + openid;
       if (err) logger.error(err);
-      callback(err, results[0][0], results[1], results[2]);
+      callback(err, results);
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   }

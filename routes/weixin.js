@@ -102,11 +102,7 @@ router.post('/', function(req, res, next) {
       explicitArray : false,
       ignoreAttrs : true
     }, function(error, json) {
-      try {
-        messages.parse(json.xml);
-      } catch (e) {
-        logger.error(e);
-      }
+      messages.parse(json.xml);
     });
   });
 

@@ -8,9 +8,9 @@ describe('wxcard', function () {
     var openid = process.env.APP_OPENID;
     var card_id = config.card.first_pay;
     wxcard.list(openid, card_id, function(err, cards) {
-      console.log(err);
-      console.log(cards);
       assert(!err);
+      assert(cards);
+      console.log(err);
       done();
     });
   });

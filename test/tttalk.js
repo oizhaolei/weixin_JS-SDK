@@ -20,6 +20,19 @@ var fee = 23;
 var from_content_length = 2;
 
 describe('tttalk', function () {
+  it('fee_history', function (done) {
+    var openid = process.env.APP_OPENID;
+    tttalk.fee_history(openid, function(err, accountData, feeHistoryData, chargeHistoryData) {
+      assert(!err);
+      assert(accountData);
+      assert.equal(accountData.openid, openid);
+      assert(feeHistoryData);
+      assert(feeHistoryData.length > 0);
+      assert(chargeHistoryData);
+      assert(chargeHistoryData.length > 0);
+      done();
+    });
+  });
   it('text translate', function (done) {
     async.waterfall([function(callback) {
       account_dao.createAccount(openid, up_openid, function(err, oldAccount, results, account) {

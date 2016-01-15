@@ -25,19 +25,24 @@
         },
         {
           "name": "APP下载",
-          "type": "view",
-          "url": "http://test.tttalk.org/download.html"
+          "type": "media_id",
+          "media_id": "9Vmi6zM0BO1dV--aPLNwVZ2TF9aMkpjMRFW5M6DKBVw"
         }
       ]
     },
     {
-      "type": "click",
-      "key":"usage_translate",
+      "type": "media_id",
+      "media_id":"9Vmi6zM0BO1dV--aPLNwVWZe2D_OLtIM3CtaRUj8JlQ",
       "name": "我要翻译"
     },
     {
       "name": "我的中心",
       "sub_button": [
+        {
+          "type": "view",
+          "name": "我的优惠券",
+          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://test.tttalk.org/oauth?action=wxcard&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
+        },
         {
           "type": "view",
           "name": "充值",

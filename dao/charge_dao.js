@@ -58,9 +58,29 @@ ChargeDao.prototype = {
     var args=[ transaction_id ];
 
     this.mainPool.query(sql, args, function(err, results){
+      if (err) logger.error(err);
       if (!err && results.affectedRows === 0) err = 'no data change';
       callback(err, results);
+    });
+    logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
+  },
+  findCharges : function (openid, where, callback) {
+    if (!callback) {
+      callback = where;
+      where = null;
+    }
+    var sql='',
+        args=[openid];
+    _.forEach(where, function(n, key) {
+      sql += ' and ' + key + '=?';
+      args.push(where[key]);
+    });
+
+    sql='SELECT * FROM tbl_user_charge where openid = ?'  + sql + ' order by create_date desc limit 50' ;
+
+    this.readonlyPool.query(sql, args, function(err, results){
       if (err) logger.error(err);
+      callback(err, results);
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   }
