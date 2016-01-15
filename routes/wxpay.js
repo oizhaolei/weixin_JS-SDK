@@ -89,14 +89,18 @@ router.all('/noti', wxpay.useWXCallback(function(msg, req, res, next){
   wxmessage.memo = 'wxpay';
 
   tttalk.wxPay(openid, wxmessage, function(err, account){
-    var service = nodeWeixinMessage.service;
-    var content = i18n.__('wxpay_success', req.wxmessage.total_fee, account.balance);
-    service.api.text(app, msg.FromUserName, content, function(error, data) {
-      if (error) {
-        logger.info("%s, %s", data.errcode, data.errmsg);
-      }
-    });
-
+    if(!err){
+      logger.info("account: %s", JSON.stringify(account));
+      var service = nodeWeixinMessage.service;
+      var content = i18n.__('wxpay_success', parseFloat(req.wxmessage.total_fee)/100, parseFloat(account.balance)/100);
+      service.api.text(app, openid, content, function(error, data) {
+        if (error) {
+          logger.info("%s, %s", data.errcode, data.errmsg);
+        }
+      });
+    } else {
+      logger.info("wxPay err: %s", JSON.stringify(err));
+    }
   });
 
   res.status(200).send();
