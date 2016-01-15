@@ -1,9 +1,13 @@
 <div class="panel panel-primary">
   <div class="panel-heading">
-   <h3 class="panel-title">请支付</h3>
+   <h3 class="panel-title">确认支付</h3>
   </div>
   <div class="panel-body">
-    <h4>{{ params.body }}{{ params.detail }}</h4>
+    <div class="jumbotron">
+      <h3>
+                        将为您<strong>{{ params.body }}{{ params.detail }}</strong>，请确认后支付。
+      </h3>
+    </div>
     <button class="btn btn-lg btn-primary btn-block" id="chooseWXPay">支付</button>
   </div>
 </div>

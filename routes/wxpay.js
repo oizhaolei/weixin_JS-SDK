@@ -132,8 +132,7 @@ router.all('/noti', wxpay.useWXCallback(function(wxpay, req, res, next){
     }
 
   });
-
-  res.status(200).send();
+  res.success();
 }));
 
 module.exports = router;
