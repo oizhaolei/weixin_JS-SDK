@@ -10,21 +10,19 @@
   <table class="table table-striped">
    <thead>
     <tr>
-     <td><h5>日期</h5></td>
-     <td><h5>内容</h5></td>
-     <td><h5>结果</h5></td>
-     <td><h5>费用</h5></td>
-     <td><h5>余额</h5></td>
+     <th>日期</th>
+     <th>内容</th>
+     <th>结果</th>
+     <th><span>费用</span></th>
     </tr>
    </thead>
    <tbody>
      {{#each feeHistory}}
     <tr>
-     <td><h5>{{{convUtcDateString create_date}}}</h5></td>
-     <td><h5>{{from_content}}</h5></td>
-     <td><h5>{{to_content}}</h5></td>
-     <td><h5>{{{fen2yuan fee}}}元</h5></td>
-     <td><h5>{{{fen2yuan user_balance}}}元</h5></td>
+     <td>{{{convUtcDateString create_date}}}</td>
+     <td>{{from_content}}</td>
+     <td>{{to_content}}</td>
+     <td>&nbsp;{{{fen2yuan fee}}}&nbsp;元&nbsp;</td>
     </tr>
     {{/each}}
    </tbody>
@@ -37,19 +35,19 @@
   <table class="table table-striped">
    <thead>
     <tr>
-     <td><h5>日期</h5></td>
-     <td><h5>事件</h5></td>
-     <td><h5>费用</h5></td>
-     <td><h5>余额</h5></td>
+     <th>日期</th>
+     <th>事件</th>
+     <th>费用</th>
+     <th>余额</th>
     </tr>
    </thead>
    <tbody>
      {{#each chargeHistory}}
     <tr>
-     <td><h5>{{{convUtcDateString create_date}}}</h5></td>
-     <td><h5>{{memo}}</h5></td>
-     <td><h5>{{{fen2yuan total_fee}}}元</h5></td>
-     <td><h5>{{{fen2yuan user_balance}}}元</h5></td>
+     <td>{{{convUtcDateString create_date}}}</td>
+     <td>{{memo}}</td>
+     <td>{{{fen2yuan total_fee}}}元</td>
+     <td>{{{fen2yuan user_balance}}}元</td>
     </tr>
     {{/each}}
    </tbody>
