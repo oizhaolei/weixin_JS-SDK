@@ -93,10 +93,11 @@ router.get('/profile', function (req, res, next) {
 //fee_history
 router.get('/fee_history', function (req, res, next) {
 var openid = req.query.openid;
-tttalk.fee_history(openid, function(err, feeHistoryData, chargeHistoryData) {
+tttalk.fee_history(openid, function(err, accountData, feeHistoryData, chargeHistoryData) {
  res.render('fee_history', {
    layout : 'layout',
    title : '我的账单',
+   account : accountData,
    feeHistory : feeHistoryData,
    chargeHistory : chargeHistoryData
  });
