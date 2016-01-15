@@ -90,7 +90,7 @@ router.all('/noti', wxpay.useWXCallback(function(wxpay, req, res, next){
   var openid = wxmessage.openid;
   wxmessage.memo = 'wxpay';
 
-  tttalk.wxPay(openid, wxmessage, function(err, account, charge){
+  tttalk.wxPay(openid, wxmessage, function(err, account, charge) {
     if (err) {
       logger.error(err);
     } else {
