@@ -45,30 +45,30 @@ var to_lang = 'EN';
 
 var app = config.app;
 
-var nodeWeixinSettings = require('node-weixin-settings');
+var nwSettings = require('node-weixin-settings');
 
-var nodeWeixinAuth = require('node-weixin-auth');
-var nodeWeixinMessage = require('node-weixin-message');
-var messages = nodeWeixinMessage.messages;
-var reply = nodeWeixinMessage.reply;
-var service = nodeWeixinMessage.service;
+var nwAuth = require('node-weixin-auth');
+var nwMessage = require('node-weixin-message');
+var messages = nwMessage.messages;
+var reply = nwMessage.reply;
+var service = nwMessage.service;
 
-var nodeWeixinUser = require('node-weixin-user');
+var nwUser = require('node-weixin-user');
 // Start
 
 router.post('/getSignature', function (req, res, next) {
   var url = req.body.url;
   logger.info(url);
 
-  nodeWeixinAuth.determine(app, function () {
-    var authData = nodeWeixinSettings.get(app.id, 'auth');
+  nwAuth.determine(app, function () {
+    var authData = nwSettings.get(app.id, 'auth');
 
     var type = 'jsapi';
-    nodeWeixinAuth.ticket.determine(app, authData.accessToken, type, function(err) {
+    nwAuth.ticket.determine(app, authData.accessToken, type, function(err) {
       if (err) {
         next(err);
       } else {
-        var ticket = nodeWeixinSettings.get(app.id, type).ticket;
+        var ticket = nwSettings.get(app.id, type).ticket;
         var timestamp = String((new Date().getTime() / 1000).toFixed(0));
         var sha1 = crypto.createHash('sha1');
         sha1.update(timestamp);
@@ -184,7 +184,7 @@ router.post('/', function(req, res, next) {
     var filename = msg.MediaId + '.amr';
     var file = fs.createWriteStream(path.join(config.tmpDirectory,  filename));
 
-    var authData = nodeWeixinSettings.get(app.id, 'auth');
+    var authData = nwSettings.get(app.id, 'auth');
     var url = util.format('http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s', authData.accessToken, msg.MediaId);
     logger.info("voice url: %s", url);
     request(url).pipe(file);
@@ -264,7 +264,7 @@ router.post('/', function(req, res, next) {
         });
       }
       //获取用户信息
-      nodeWeixinUser.profile(app, msg.FromUserName, function (err, data) {
+      nwUser.profile(app, msg.FromUserName, function (err, data) {
         logger.debug('err %s', err);
         logger.debug('data %s', JSON.stringify(data));
         if(!err){

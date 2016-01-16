@@ -18,7 +18,7 @@ AccountDao.prototype = {
     this.readonlyPool.query(sql, args, function(err, results){
       if(err) {
         callback(err);
-      } else if(results && results.length == 1) {
+      } else if(results && results.length === 1) {
         var account = results[0];
         callback(null, account);
       } else {

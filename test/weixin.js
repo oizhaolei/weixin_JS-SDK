@@ -14,22 +14,30 @@ var async = require('async');
 var app = config.app;
 
 var nwc = require('node-weixin-config');
-var nodeWeixinAuth = require("node-weixin-auth");
-var nodeWeixinSettings = require('node-weixin-settings');
-nodeWeixinSettings.registerSet(function(id, key, value) {
-  logger.warn('registerSet %s %s %s', id, key, JSON.stringify(value));
-  if (!app[id]) {
-    app[id] = {};
-  }
-  app[id][key] = value;
+var nwAuth = require("node-weixin-auth");
+var readFile = function(filename) {
+  var buf = fs.readFileSync(path.join(config.tmpdir, filename), "utf8");
+  return buf;
+};
+
+var writeFile = function(filename, str) {
+  fs.writeFileSync(path.join(config.tmpdir, filename), str, "utf8");
+};
+var nwSettings = require('node-weixin-settings');
+var prefix = 'test_';
+nwSettings.registerSet(function(id, key, value) {
+  logger.debug('registerSet %s %s %s', id, key, JSON.stringify(value));
+  writeFile(prefix + id + '_' + key, JSON.stringify(value));
 });
-nodeWeixinSettings.registerGet(function(id, key) {
-  if (app[id] && app[id][key]) {
-    var value = app[id][key];
-    logger.debug('registerGet %s %s: %s', id, key, JSON.stringify(value));
-    return value;
+nwSettings.registerGet(function(id, key) {
+  var value = null;
+  try{
+    value = JSON.parse(readFile(prefix + id + '_' + key));
+    logger.debug('registerGet %s %s %s', id, key, JSON.stringify(value));
+  } catch (e) {
+    logger.error(e);
   }
-  return null;
+  return  value;
 });
 
 
@@ -44,7 +52,7 @@ nwc.urls.jssdk.init(jssdk);
 
 describe('weixin auth', function () {
   it('tokenize', function (done) {
-    nodeWeixinAuth.tokenize(app, function (error, json) {
+    nwAuth.tokenize(app, function (error, json) {
       var accessToken = json.access_token;
       logger.debug('token %s', accessToken);
       assert(accessToken);
@@ -53,16 +61,16 @@ describe('weixin auth', function () {
     });
   });
   it('determine', function (done) {
-    nodeWeixinAuth.determine(app, function (error) {
-      var authData = nodeWeixinSettings.get(app.id, 'auth');
+    nwAuth.determine(app, function (error) {
+      var authData = nwSettings.get(app.id, 'auth');
       assert(authData.accessToken);
       var token = authData.accessToken;
 
       var type = 'wx_card';
-      nodeWeixinAuth.ticket.determine(app, token, type, function (error) {
+      nwAuth.ticket.determine(app, token, type, function (error) {
         logger.debug(error);
 
-        var ticket = nodeWeixinSettings.get(app.id, type);
+        var ticket = nwSettings.get(app.id, type);
         logger.debug('ticket %s', ticket.ticket);
         assert(ticket.ticket);
 
@@ -72,7 +80,7 @@ describe('weixin auth', function () {
   });
 });
 describe('weixin oauth', function () {
-  var nodeWeixinOauth = require('node-weixin-oauth');
+  var nwOauth = require('node-weixin-oauth');
 
   //Init Oauth
   var oauth = {
@@ -87,7 +95,7 @@ describe('weixin oauth', function () {
 
 
   // it('profile', function (done) {
-  //   nodeWeixinAuth.tokenize(app, function (error, json) {
+  //   nwAuth.tokenize(app, function (error, json) {
   //     var accessToken = json.access_token;
   //     var openid = process.env.APP_OPENID;
   //     var nock = require('nock');
@@ -105,7 +113,7 @@ describe('weixin oauth', function () {
   //         errcode: 1
   //       });
 
-  //     nodeWeixinOauth.profile(openid, accessToken, function (err, body) {
+  //     nwOauth.profile(openid, accessToken, function (err, body) {
   //       logger.debug('err %s', err);
   //       logger.debug('body %s', JSON.stringify(body));
   //       assert.equal(true, !err);
@@ -116,10 +124,10 @@ describe('weixin oauth', function () {
   // });
 });
 describe('weixin user', function () {
-  var nodeWeixinUser = require('node-weixin-user');
+  var nwUser = require('node-weixin-user');
   it('profile', function (done) {
     var openid = process.env.APP_OPENID;
-    nodeWeixinUser.profile(app, openid, function (err, data) {
+    nwUser.profile(app, openid, function (err, data) {
       logger.debug('err %s', err);
       logger.debug('data %s', JSON.stringify(data));
 
@@ -128,7 +136,7 @@ describe('weixin user', function () {
   });
 });
 describe('weixin pay', function () {
-  var nodeWeixinPay = require('node-weixin-pay');
+  var nwPay = require('node-weixin-pay');
 
   //Init Merchant
   var merchant = {
@@ -155,7 +163,7 @@ describe('weixin pay', function () {
                    appid: app.id,
                    mch_id: merchant.id,
                    nonce_str: 'XjUw56N8MjeCUqHCwqgiKwr2CJVgYUpe' };
-    var sign = nodeWeixinPay.sign(merchant, params);
+    var sign = nwPay.sign(merchant, params);
     logger.debug('sign %s', sign);
 
     var conf = {
@@ -164,7 +172,7 @@ describe('weixin pay', function () {
       certificate: certificate
     };
     logger.info('unified: %s', JSON.stringify(config));
-    nodeWeixinPay.api.order.unified(conf, params, function(error, data) {
+    nwPay.api.order.unified(conf, params, function(error, data) {
       logger.info('unified: %s, %s', error, JSON.stringify(data));
       done();
     });
@@ -295,15 +303,15 @@ describe('weixin link', function () {
 describe('weixin jssdk', function () {
   it('ticket', function (done) {
     var url = 'http://test.tttalk.org/test.html';
-    nodeWeixinAuth.determine(app, function () {
-      var authData = nodeWeixinSettings.get(app.id, 'auth');
+    nwAuth.determine(app, function () {
+      var authData = nwSettings.get(app.id, 'auth');
 
       var type = 'jsapi';
-      nodeWeixinAuth.ticket.determine(app, authData.accessToken, type, function(err) {
+      nwAuth.ticket.determine(app, authData.accessToken, type, function(err) {
         if (err) {
           cb(err);
         } else {
-          var ticket = nodeWeixinSettings.get(app.id, type).ticket;
+          var ticket = nwSettings.get(app.id, type).ticket;
           var timestamp = String((new Date().getTime() / 1000).toFixed(0));
           var sha1 = crypto.createHash('sha1');
           sha1.update(timestamp);
@@ -330,8 +338,8 @@ describe('weixin jssdk', function () {
 });
 describe('weixin message', function () {
   it('wxcard', function (done) {
-    var nodeWeixinMessage = require('node-weixin-message');
-    var service = nodeWeixinMessage.service;
+    var nwMessage = require('node-weixin-message');
+    var service = nwMessage.service;
 
     var openid = process.env.APP_OPENID;
     var cardId = config.card.first_pay;
@@ -348,11 +356,11 @@ describe('weixin card', function () {
   var openid = process.env.APP_OPENID;
 
   it('list', function (done) {
-    nodeWeixinAuth.determine(app, function () {
-      var authData = nodeWeixinSettings.get(app.id, 'auth');
-      var nodeWeixinRequest = require('node-weixin-request');
+    nwAuth.determine(app, function () {
+      var authData = nwSettings.get(app.id, 'auth');
+      var nwRequest = require('node-weixin-request');
       var url = 'https://api.weixin.qq.com/card/user/getcardlist?access_token=' + authData.accessToken;
-      nodeWeixinRequest.json(url, {
+      nwRequest.json(url, {
         openid: openid,
         card_id: ""
       }, function(err, json) {

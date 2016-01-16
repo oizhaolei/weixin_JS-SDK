@@ -1,6 +1,7 @@
 "use strict";
 ////set DEBUG=handle & node .\bin\www
 var config = require('./config.json');
+var fs = require("fs");
 
 var express = require('express');
 var app = express();
@@ -82,14 +83,28 @@ app.use(function(req, res, next) {
   next();
 });
 
-var nodeWeixinSettings = require('node-weixin-settings');
-nodeWeixinSettings.registerSet(function(id, key, value) {
+var readFile = function(filename) {
+  var buf = fs.readFileSync(path.join(config.tmpdir, filename), "utf8");
+  return buf;
+};
+
+var writeFile = function(filename, str) {
+  fs.writeFileSync(path.join(config.tmpdir, filename), str, "utf8");
+};
+var nwSettings = require('node-weixin-settings');
+var prefix = 'wx_';
+nwSettings.registerSet(function(id, key, value) {
   logger.debug('registerSet %s %s %s', id, key, JSON.stringify(value));
-  app.set('wx_' + id + '_' + key, value);
+  writeFile(prefix + id + '_' + key, JSON.stringify(value));
 });
-nodeWeixinSettings.registerGet(function(id, key) {
-  var value = app.get('wx_' + id + '_' + key);
-  logger.debug('registerGet %s %s %s', id, key, JSON.stringify(value));
+nwSettings.registerGet(function(id, key) {
+  var value = null;
+  try{
+    value = JSON.parse(readFile(prefix + id + '_' + key));
+    logger.debug('registerGet %s %s %s', id, key, JSON.stringify(value));
+  } catch (e) {
+    logger.error(e);
+  }
   return  value;
 });
 

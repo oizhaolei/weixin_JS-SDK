@@ -18,13 +18,13 @@ var tttalk = require('../lib/tttalk');
 var app = config.app;
 
 var getOpenid = function(config, code, cb) {
-    request.get('https://api.weixin.qq.com/sns/oauth2/access_token?appid=' + config.app.id + '&secret=' + config.app.secret + '&code=' + code + '&grant_type=authorization_code', function(error, res, body) {
+  var url = util.format('https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code', config.app.id, config.app.secret, code);
+  request.get(url, function(error, res, body) {
         if (error) {
             cb('getOpenId error', error);
         }
         else {
             try {
-                logger.info(JSON.parse(body));
                 var openid = JSON.parse(body).openid;
                 cb(null, openid);
             }
@@ -111,8 +111,8 @@ router.get('/fee_history', function (req, res, next) {
 // share_to_friend
 router.get('/share_to_friend', function (req, res, next) {
   var openid = req.query.openid;
-  var nodeWeixinLink = require('node-weixin-link');
-  nodeWeixinLink.qrcode.permanent.createString(app, openid, function (err, json) {
+  var nwLink = require('node-weixin-link');
+  nwLink.qrcode.permanent.createString(app, openid, function (err, json) {
     if (err) {
       res.send("success");
     } else {

@@ -22,7 +22,7 @@ var charge_dao = require('../dao/charge_dao');
 var tttalk = require('../lib/tttalk');
 var wxcard = require('../lib/wxcard');
 
-var nodeWeixinMessage = require('node-weixin-message');
+var nwMessage = require('node-weixin-message');
 
 var WXPay = require('weixin-pay');
 var wxpay = new WXPay({
@@ -96,7 +96,7 @@ router.all('/noti', wxpay.useWXCallback(function(wxpay, req, res, next){
       logger.error(err);
     } else {
       logger.info("account: %s", JSON.stringify(account));
-      var service = nodeWeixinMessage.service;
+      var service = nwMessage.service;
       var content = i18n.__('wxpay_success', parseFloat(charge.cash_fee)/100, parseFloat(account.balance)/100);
       service.api.text(app, openid, content, function(err, data) {
         if (err || data.errcode !== 0) {
