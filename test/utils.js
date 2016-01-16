@@ -13,6 +13,9 @@ var writeFile = function(filename, str) {
   fs.writeFileSync(path.join(config.tmpdir, filename), str, "utf8");
 };
 
+var randomInt = function(low, high) {
+  return Math.floor(Math.random() * (high - low) + low);
+};
 describe('utils', function () {
 
   it('util', function (done) {
@@ -22,6 +25,10 @@ describe('utils', function () {
     assert(!'');
     assert(!null);
 
+    done();
+  });
+  it('random', function (done) {
+    console.log(randomInt(0, 99));
     done();
   });
   it('file io', function (done) {

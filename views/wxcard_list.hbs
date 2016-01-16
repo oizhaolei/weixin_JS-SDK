@@ -1,14 +1,37 @@
- <div class="panel panel-primary">
-  <table class="table table-striped">
-   <tbody>
-     {{#each card_list}}
-    <tr>
-     <td><h5><a href="/wxcard/consume?openid={{openid}}&code={{code}}&card_id={{card_id}}">{{code}}</a>xpay</h5></td>
-     <td><h5>{{card_id}}</h5></td>
-    </tr>
+<div class="panel panel-primary">
+    <table class="table">
+        <tbody>
+            {{#each card_list}}
+                <tr>
+                    <td  class="center-block">
+                        <div class="row">
+                            <div class="col-sm-12">{{cash.base_info.brand_name}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">{{cash.base_info.title}}</div>
+                        </div>
+                        <div class="row">
+                            <button type="button" class="btn btn-info consume-btn" code="{{code}}" card_id="{{card_id}}">立即使用</button>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">{{cash.base_info.sub_title}}</div>
+                        </div>
+                    </td>
+                </tr>
     {{else}}
-   没有相关数据
-    {{/each}}
-   </tbody>
-  </table>
- </div>
+                没有相关数据
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+{{#extend "scripts"}}
+    <script>
+     $('.consume-btn').click(function () {
+         var openid = '{{openid}}';
+         var card_id = $( this ).attr('card_id');
+         var code = $( this ).attr('code');
+         window.location.href = '/wxcard/consume?openid=' + openid + '&code=' + code + '&card_id=' + card_id;
+     });
+    </script>
+{{/extend}}

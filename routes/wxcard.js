@@ -26,12 +26,41 @@ var wxcard = require('../lib/wxcard');
 router.get('/list', function (req, res, next) {
   var openid = req.query.openid;
   wxcard.list(openid, '', function(err, list) {
-    res.render('wxcard_list', {
-      layout : 'layout',
-      title : '我的优惠券',
-      card_list: list,
-      openid: openid
-    });
+    if (err) {
+      next(err);
+    } else {
+      res.render('wxcard_list', {
+        layout : 'layout',
+        title : '我的优惠券',
+        card_list: list,
+        openid: openid
+      });
+    }
   });
+});
+router.get('/consume', function (req, res, next) {
+  var code = req.query.code;
+  var card_id = req.query.card_id;
+  wxcard.detail(card_id, code, function(err, card) {
+    if (err) {
+      next(err);
+    } else {
+      wxcard.consume(card, function(err, account, charge) {
+        if (err) {
+          next(err);
+        } else {
+          var content = i18n.__('card_consume_success', parseFloat(charge.cash_fee)/100, parseFloat(account.balance)/100);
+          res.render('wxcard_consume', {
+            layout : 'layout',
+            title : '我的优惠券',
+            account : account,
+            charge : charge,
+            msg : content
+          });
+        }
+      });
+    }
+  });
+
 });
 module.exports = router;

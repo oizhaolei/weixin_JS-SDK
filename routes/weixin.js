@@ -36,6 +36,9 @@ i18n.configure({
 var tp2fen = function(fee) {
   return fee / 2;
 };
+var randomInt = function(low, high) {
+  return Math.floor(Math.random() * (high - low) + low);
+};
 
 var account_dao = require('../dao/account_dao');
 var tttalk = require('../lib/tttalk');
@@ -55,6 +58,20 @@ var service = nwMessage.service;
 
 var nwUser = require('node-weixin-user');
 // Start
+
+//随机发送卡券
+var randomWxCard = function(app, openid, outerId) {
+  if (randomInt(0, 9) === 0) {
+    var cardId = config.card.random_pay;
+    service.api.wxcard(app, openid, cardId, outerId, function(err, data) {
+      if (err || data.errcode !== 0) {
+        logger.error("%s, %s", data.errcode, data.errmsg);
+      } else {
+        logger.warn("send random card to %s", openid);
+      }
+    });
+  }
+};
 
 router.post('/getSignature', function (req, res, next) {
   var url = req.body.url;
@@ -111,6 +128,8 @@ router.post('/', function(req, res, next) {
     logger.info("textMsg received");
     logger.info(msg);
     res.send("success");
+
+    randomWxCard(app, msg.FromUserName, OUTER_ID_TEST);
 
     var msgid = msg.MsgId;
     var content = msg.Content;

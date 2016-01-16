@@ -108,21 +108,20 @@ router.all('/noti', wxpay.useWXCallback(function(wxpay, req, res, next){
         openid:openid,
         memo:'wxpay'
       }, function(err, charges) {
-        if (charges.length === 0) {
+        if (charges.length === 1) {
           //检查有否可用的卡券
-          wxcard.list(openid, config.card.first_pay, function(err, list) {
-            async.each(list, function(card, callback) {
-              wxcard.consume(card, function(err, json) {
+          wxcard.list(openid, config.card.first_pay, function(err, card_list) {
+            async.each(card_list, function(card, callback) {
+              var card_id = card.card_id;
+              var code = card.code;
+              wxcard.detail(card_id, code, function(err, card) {
                 if (err) {
                   callback(err);
                 } else {
-                  var openid = json.openid;
-                  var fee = card.reduce_cost;
-                  tttalk._charge(openid, 0, fee, card.code, card.card_id, '', 'wxcard', '', '', 'first_pay', function(err, account, charge) {
+                  wxcard.consume(card, function(err, account, charge) {
                     if (err) {
                       callback(err);
                     } else {
-                      callback();
                       var content = i18n.__('card_consume_success', parseFloat(charge.cash_fee)/100, parseFloat(account.balance)/100);
                       service.api.text(app, openid, content, function(err, data) {
                         if (err || data.errcode !== 0) {
