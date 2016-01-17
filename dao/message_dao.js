@@ -44,7 +44,6 @@ MessageDao.prototype = {
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },
-
   getMessage : function(msgid, callback) {
     var sql = 'select * from tbl_message where msgid = ?;';
     var args = [ msgid ];
@@ -63,18 +62,18 @@ MessageDao.prototype = {
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },
 
-  findMessages : function (openid, where, callback) {
+  findMessages : function (where, callback) {
     if (!callback) {
       callback = where;
       where = null;
     }
     var sql='',
-        args=[openid];
+        args=[];
     _.forEach(where, function(n, key) {
-      sql += ' and ' + key + '=?';
+      sql += ' ' + key + '=? and ';
       args.push(where[key]);
     });
-    sql='SELECT * FROM tbl_message where openid = ?'  + sql + ' order by create_date desc limit 50' ;
+    sql='SELECT * FROM tbl_message where '  + sql.substring(0, sql.length - 4) + ' order by create_date desc limit 50' ;
 
     this.readonlyPool.query(sql, args, function(err, results){
       if (err) logger.error(err);

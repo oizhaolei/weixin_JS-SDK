@@ -45,7 +45,9 @@ router.get('/consume', function (req, res, next) {
     if (err) {
       next(err);
     } else {
-      wxcard.consume(card, function(err, account, charge) {
+      var reduce_cost = card.reduce_cost;
+      //核销
+      wxcard.consume(card_id, code, reduce_cost, function(err, account, charge) {
         if (err) {
           next(err);
         } else {

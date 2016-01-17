@@ -44,7 +44,7 @@ var account_dao = require('../dao/account_dao');
 var tttalk = require('../lib/tttalk');
 
 var from_lang = 'CN';
-var to_lang = 'EN';
+var to_lang = 'KR';
 
 var app = config.app;
 

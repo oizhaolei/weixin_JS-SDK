@@ -24,7 +24,7 @@ var writeFile = function(filename, str) {
   fs.writeFileSync(path.join(config.tmpdir, filename), str, "utf8");
 };
 var nwSettings = require('node-weixin-settings');
-var prefix = 'test_';
+var prefix = 'wx_';
 nwSettings.registerSet(function(id, key, value) {
   logger.debug('registerSet %s %s %s', id, key, JSON.stringify(value));
   writeFile(prefix + id + '_' + key, JSON.stringify(value));
@@ -193,7 +193,7 @@ describe('weixin link', function () {
         //json.ticket
 
         var qrCodeUrl = util.format('https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=%s', json.ticket);
-        var dest = util.format('/tmp/qrcode_%s.jpg', json.ticket);
+        var dest = util.format('/tmp/qrcode_%s.jpg', json.ticket.split('/').join(''));
         logger.info('%s to %s', qrCodeUrl, dest);
 
         var file = fs.createWriteStream(dest);

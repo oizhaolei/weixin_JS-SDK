@@ -13,6 +13,7 @@ var AccountDao = function() {
 AccountDao.prototype = {
 
   getByOpenid : function (openid, callback) {
+
     var sql = 'SELECT * FROM tbl_account where openid = ?' ;
     var args = [ openid ];
     this.readonlyPool.query(sql, args, function(err, results){
@@ -53,9 +54,9 @@ AccountDao.prototype = {
     var sql='',
         args=[];
     _.forEach(data, function(n, key) {
-      if ('password' == key) {
+      if ('password' === key) {
         sql += key + '=password(?),';
-      } else if ('fee' == key) {
+      } else if ('fee' === key) {
         sql += 'balance=balance+?,';
       } else {
         sql += key + '=?,';

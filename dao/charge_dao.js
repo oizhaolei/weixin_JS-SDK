@@ -64,19 +64,19 @@ ChargeDao.prototype = {
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },
-  findCharges : function (openid, where, callback) {
+  findCharges : function (where, callback) {
     if (!callback) {
       callback = where;
       where = null;
     }
     var sql='',
-        args=[openid];
+        args=[];
     _.forEach(where, function(n, key) {
-      sql += ' and ' + key + '=?';
+      sql += ' ' + key + '=? and ';
       args.push(where[key]);
     });
 
-    sql='SELECT * FROM tbl_user_charge where openid = ?'  + sql + ' order by create_date desc limit 50' ;
+    sql='SELECT * FROM tbl_user_charge where '  + sql.substring(0, sql.length - 4) + ' order by create_date desc limit 50' ;
 
     this.readonlyPool.query(sql, args, function(err, results){
       if (err) logger.error(err);

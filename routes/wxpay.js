@@ -104,9 +104,9 @@ router.all('/noti', wxpay.useWXCallback(function(wxpay, req, res, next){
         }
       });
       //初次充值?
-      charge_dao.findCharges(openid, {
-        openid:openid,
-        memo:'wxpay'
+      charge_dao.findCharges({
+        openid : openid,
+        memo : config.card.first_pay
       }, function(err, charges) {
         if (charges.length === 1) {
           //检查有否可用的卡券
@@ -118,10 +118,15 @@ router.all('/noti', wxpay.useWXCallback(function(wxpay, req, res, next){
                 if (err) {
                   callback(err);
                 } else {
-                  wxcard.consume(card, function(err, account, charge) {
+                  var card_id = card.card_id;
+                  var code = card.code;
+                  var reduce_cost = card.reduce_cost;
+                  //核销
+                  wxcard.consume(card_id, code, reduce_cost, function(err, account, charge) {
                     if (err) {
                       callback(err);
                     } else {
+                      //通知
                       var content = i18n.__('card_consume_success', parseFloat(charge.cash_fee)/100, parseFloat(account.balance)/100);
                       service.api.text(app, openid, content, function(err, data) {
                         if (err || data.errcode !== 0) {
