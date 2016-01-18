@@ -70,6 +70,58 @@ var randomWxCard = function(app, openid, outerId) {
   }
 };
 
+var userSubscribe = function(openid, up_openid, msgid) {
+    account_dao.createAccount(openid, up_openid, function(err, oldAccount, results, account) {
+
+      if (!oldAccount) { //初次关注
+        if (up_openid) {
+          // 给推荐人奖励
+          tttalk.wxPay(up_openid,{
+            transaction_id: msgid,
+            total_fee: config.subscribe_reward,
+            cash_fee: '0',
+            fee_type: 'CNY',
+            result_code: 'SUCCESS',
+            return_code: 'SUCCESS',
+            trade_type : 'subscribe',
+            memo : openid
+          }, function(err, upAccount) {
+            if (err) {
+              logger.error(err);
+            } else {
+              wxservice.text(openid, i18n.__('subscribe_share_fee', upAccount.nickname, parseFloat(config.subscribe_reward) / 100, config.share_rules_url), function(err, data) {
+              });
+            }
+          });
+        }
+
+        //初次关注发送卡券
+        var cardId = config.card.first_pay;
+        wxservice.wxcard(openid, cardId, OUTER_ID_SUBSCRIBE, function(err, data) {
+        });
+      }
+      //获取用户信息
+      nwUser.profile(app, openid, function (err, data) {
+        logger.debug('err %s', err);
+        logger.debug('data %s', JSON.stringify(data));
+        if(!err){
+          account_dao.updateAccount(data.openid, {
+            nickname : data.nickname,
+            portrait : data.headimgurl,
+            sex : data.sex,
+            language : data.language,
+            city : data.city,
+            province : data.province,
+            country : data.country,
+            delete_flag : 0
+          }, function(err, results, account) {
+            //
+          });
+        }
+      });
+    });
+};
+
 router.post('/getSignature', function (req, res, next) {
   var url = req.body.url;
   logger.info(url);
@@ -119,18 +171,19 @@ router.post('/', function(req, res, next) {
     logger.info(msg);
     res.send("success");
 
-    randomWxCard(app, msg.FromUserName, OUTER_ID_TEST);
+    var openid = msg.FromUserName;
+    randomWxCard(app, openid, OUTER_ID_TEST);
 
     var msgid = msg.MsgId;
     var content = msg.Content;
-    tttalk.saveText(msgid, from_lang, to_lang, content, msg.FromUserName, function(err, results) {
+    tttalk.saveText(msgid, from_lang, to_lang, content, openid, function(err, results) {
       if (err) {
         logger.error("saveText: %s", err);
       } else {
-        tttalk.requestTranslate(msgid, msg.FromUserName, from_lang, to_lang, 'text',content, function(err, results) {
+        tttalk.requestTranslate(msgid, openid, from_lang, to_lang, 'text',content, function(err, results) {
           if (err) {
             logger.error("saveText: %s", err);
-            wxservice.text(msg.FromUserName, results, function(err, data) {
+            wxservice.text(openid, results, function(err, data) {
             });
           } else {
             var key = msgid;
@@ -141,7 +194,7 @@ router.post('/', function(req, res, next) {
               redisClient.get(key, function(err, reply) {
                 if (reply) {
                   // 客服API消息回复
-                  wxservice.text(msg.FromUserName, i18n.__('translating_pls_wait'), function(err, data) {
+                  wxservice.text(openid, i18n.__('translating_pls_wait'), function(err, data) {
                   });
                   redisClient.del(key);
                 }
@@ -157,7 +210,9 @@ router.post('/', function(req, res, next) {
   messages.on.image(function(msg) {
     logger.info("imageMsg received");
     logger.info(msg);
-    var text = reply.text(msg.ToUserName, msg.FromUserName, i18n.__('translating_pls_wait'));
+
+    var openid = msg.FromUserName;
+    var text = reply.text(msg.ToUserName, openid, i18n.__('translating_pls_wait'));
     res.send(text);
 
     var msgid = msg.MsgId;
@@ -167,14 +222,14 @@ router.post('/', function(req, res, next) {
 
     request(url).pipe(file);
     file.on('finish', function() {
-      tttalk.savePhoto(msgid, from_lang, to_lang, filename, msg.FromUserName, function(err, results) {
+      tttalk.savePhoto(msgid, from_lang, to_lang, filename, openid, function(err, results) {
         if (err) {
           logger.error("saveText: %s", err);
         } else {
-          tttalk.requestTranslate(msgid, msg.FromUserName, from_lang, to_lang, 'photo', filename, function(err, results) {
+          tttalk.requestTranslate(msgid, openid, from_lang, to_lang, 'photo', filename, function(err, results) {
             if (err) {
               logger.error("savePhoto: %s", err);
-              wxservice.text(msg.FromUserName, results, function(err, data) {
+              wxservice.text(openid, results, function(err, data) {
               });
             }
           });
@@ -187,7 +242,8 @@ router.post('/', function(req, res, next) {
   messages.on.voice(function(msg) {
     logger.info("voiceMsg received");
     logger.info(msg);
-    var text = reply.text(msg.ToUserName, msg.FromUserName, i18n.__('translating_pls_wait'));
+    var openid = msg.FromUserName;
+    var text = reply.text(msg.ToUserName, openid, i18n.__('translating_pls_wait'));
     res.send(text);
 
     var msgid = msg.MsgId;
@@ -200,14 +256,14 @@ router.post('/', function(req, res, next) {
       logger.info("voice url: %s", url);
       request(url).pipe(file);
       file.on('finish', function() {
-        tttalk.saveVoice(msgid, from_lang, to_lang, filename, msg.FromUserName, function(err, results) {
+        tttalk.saveVoice(msgid, from_lang, to_lang, filename, openid, function(err, results) {
           if (err) {
             logger.error("saveText: %s", err);
           } else {
-            tttalk.requestTranslate(msgid, msg.FromUserName, from_lang, to_lang, 'voice', filename, function(err, results) {
+            tttalk.requestTranslate(msgid, openid, from_lang, to_lang, 'voice', filename, function(err, results) {
               if (err) {
                 logger.info("saveVoice: %s", err);
-                wxservice.text(msg.FromUserName, results, function(err, data) {
+                wxservice.text(openid, results, function(err, data) {
                 });
               }
             });
@@ -235,63 +291,16 @@ router.post('/', function(req, res, next) {
   messages.event.on.subscribe(function(msg) {
     logger.info("subscribe received");
     logger.info(msg);
-
     var openid = msg.FromUserName;
+    var text = reply.text(msg.ToUserName, openid, i18n.__('subscribe_success'));
+    res.send(text);
+
     var up_openid = '';
     if (msg.EventKey.indexOf('qrscene_') === 0) {
       up_openid = msg.EventKey.substring(8);
     }
-    account_dao.createAccount(openid, up_openid, function(err, oldAccount, results, account) {
-      var text = reply.text(msg.ToUserName, msg.FromUserName, i18n.__('subscribe_success', parseFloat(account.balance) / 100));
-      res.send(text);
 
-      if (!oldAccount) { //初次关注
-        if (up_openid) {
-          // 给推荐人奖励
-          tttalk.wxPay(up_openid,{
-            transaction_id: msg.MsgId,
-            total_fee: config.subscribe_reward,
-            cash_fee: '0',
-            fee_type: 'CNY',
-            result_code: 'SUCCESS',
-            return_code: 'SUCCESS',
-            trade_type : 'subscribe',
-            memo : openid
-          }, function(err, upAccount) {
-            if (err) {
-              logger.error(err);
-            } else {
-              wxservice.text(msg.FromUserName, i18n.__('subscribe_share_fee', upAccount.nickname, parseFloat(config.subscribe_reward) / 100, config.share_rules_url), function(err, data) {
-              });
-            }
-          });
-        }
-
-        //初次关注发送卡券
-        var cardId = config.card.first_pay;
-        wxservice.wxcard(msg.FromUserName, cardId, OUTER_ID_SUBSCRIBE, function(err, data) {
-        });
-      }
-      //获取用户信息
-      nwUser.profile(app, msg.FromUserName, function (err, data) {
-        logger.debug('err %s', err);
-        logger.debug('data %s', JSON.stringify(data));
-        if(!err){
-          account_dao.updateAccount(data.openid, {
-            nickname : data.nickname,
-            portrait : data.headimgurl,
-            sex : data.sex,
-            language : data.language,
-            city : data.city,
-            province : data.province,
-            country : data.country,
-            delete_flag : 0
-          }, function(err, results, account) {
-            //
-          });
-        }
-      });
-    });
+    userSubscribe(openid, up_openid, msg.MsgId);
   });
   messages.event.on.unsubscribe(function(msg) {
     logger.info("unsubscribe received");

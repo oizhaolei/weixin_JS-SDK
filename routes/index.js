@@ -82,6 +82,7 @@ router.get('/', function (req, res, next) {
 // profile
 router.get('/profile', function (req, res, next) {
   var openid = req.query.openid;
+  var msg = req.query.msg;
   tttalk.profile(openid, function(err, accountData) {
     var bind_action = (accountData.telephone==""||accountData.telephone==null)?'绑定':'更改';
     res.render('profile', {
@@ -145,6 +146,8 @@ router.post('/change_account', function (req, res, next) {
   var username = req.body.username;
   var sex = req.body.sex;
   tttalk.change_account(openid, username, sex, function(err, accountData) {
+    res.locals.msg = 'saved.';
+
     res.redirect('/profile?openid=' + openid);
   });
 });
