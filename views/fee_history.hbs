@@ -1,55 +1,59 @@
 <div class="panel panel-primary">
-  <div class="panel-heading">
-     <h3 class="panel-title">您当前余额为：<strong>{{{fen2yuan account.balance}}}</strong>元.</h3>
-  </div>
+    <div class="panel-heading">
+        <h3 class="panel-title">您当前余额为：<strong>{{{fen2yuan account.balance}}}</strong>元.</h3>
+    </div>
 </div>
-<div class="panel panel-primary">
-  <div class="panel-heading">
-   <h3 class="panel-title">消费履历</h3>
-  </div>
-  <table class="table table-striped">
-   <thead>
-    <tr>
-     <th>日期</th>
-     <th>内容</th>
-     <th>结果</th>
-     <th><span>费用</span></th>
-    </tr>
-   </thead>
-   <tbody>
-     {{#each feeHistory}}
-    <tr>
-     <td>{{{convUtcDateString create_date}}}</td>
-     <td>{{from_content}}</td>
-     <td>{{to_content}}</td>
-     <td>&nbsp;{{{fen2yuan fee}}}&nbsp;元&nbsp;</td>
-    </tr>
-    {{/each}}
-   </tbody>
-  </table>    
- </div>
- <div class="panel panel-primary">
-  <div class="panel-heading">
-   <h3 class="panel-title">充值履历</h3>
-  </div>
-  <table class="table table-striped">
-   <thead>
-    <tr>
-     <th>日期</th>
-     <th>事件</th>
-     <th>费用</th>
-     <th>余额</th>
-    </tr>
-   </thead>
-   <tbody>
-     {{#each chargeHistory}}
-    <tr>
-     <td>{{{convUtcDateString create_date}}}</td>
-     <td>{{trade_type}}</td>
-     <td>{{{fen2yuan total_fee}}}元</td>
-     <td>{{{fen2yuan user_balance}}}元</td>
-    </tr>
-    {{/each}}
-   </tbody>
-  </table>
- </div>
+<ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#fee_history">消费履历</a></li>
+    <li><a data-toggle="tab" href="#charge_history">充值履历</a></li>
+</ul>
+
+<div class="tab-content">
+    <div id="fee_history" class="tab-pane fade in active">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>日期</th>
+                    <th>内容</th>
+                    <th>费用</th>
+                    <th>余额</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each feeHistory}}
+                    <tr>
+                        <td>{{{convUtcDateString create_date}}}</td>
+                        <td>
+                            {{from_content}}<br/>
+                            {{to_content}}
+                        </td>
+                        <td>&nbsp;{{{fen2yuan fee}}}&nbsp;元&nbsp;</td>
+                        <td>&nbsp;{{{fen2yuan user_balance}}}&nbsp;元&nbsp;</td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+    <div id="charge_history" class="tab-pane fade">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>日期</th>
+                    <th>事件</th>
+                    <th>费用</th>
+                    <th>余额</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each chargeHistory}}
+                    <tr>
+                        <td>{{{convUtcDateString create_date}}}</td>
+                        <td>{{trade_type}}</td>
+                        <td>{{{fen2yuan total_fee}}}元</td>
+                        <td>{{{fen2yuan user_balance}}}元</td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>
