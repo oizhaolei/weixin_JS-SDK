@@ -34,10 +34,10 @@ describe('/mysql', function () {
       if (err) throw err;
       console.log(results);
       assert.equal(results.length, 3);
-      assert(results[0].affectedRows == 1);
-      assert(results[1].length == 1);
-      assert(results[1][0].openid == openid);
-      assert(results[2].affectedRows == 1);
+      assert.equal(results[0].affectedRows, 1);
+      assert.equal(results[1].length, 1);
+      assert.equal(results[1][0].openid, openid);
+      assert.equal(results[2].affectedRows, 1);
 
       done();
     });

@@ -187,7 +187,7 @@ wx.ready(function () {
   };
   // 3.1 识别音频并返回识别结果
   document.querySelector('#translateVoice').onclick = function () {
-    if (voice.localId == '') {
+    if (voice.localId === '') {
       _log('请先使用 startRecord 接口录制一段声音');
       return;
     }
@@ -235,7 +235,7 @@ wx.ready(function () {
 
   // 4.5 播放音频
   document.querySelector('#playVoice').onclick = function () {
-    if (voice.localId == '') {
+    if (voice.localId === '') {
       _log('请先使用 startRecord 接口录制一段声音');
       return;
     }
@@ -267,7 +267,7 @@ wx.ready(function () {
 
   // 4.8 上传语音
   document.querySelector('#uploadVoice').onclick = function () {
-    if (voice.localId == '') {
+    if (voice.localId === '') {
       _log('请先使用 startRecord 接口录制一段声音');
       return;
     }
@@ -282,7 +282,7 @@ wx.ready(function () {
 
   // 4.9 下载语音
   document.querySelector('#downloadVoice').onclick = function () {
-    if (voice.serverId == '') {
+    if (voice.serverId === '') {
       _log('请先使用 uploadVoice 上传声音');
       return;
     }
@@ -325,7 +325,7 @@ wx.ready(function () {
 
   // 5.3 上传图片
   document.querySelector('#uploadImage').onclick = function () {
-    if (images.localId.length == 0) {
+    if (images.localId.length === 0) {
       _log('请先使用 chooseImage 接口选择图片');
       return;
     }

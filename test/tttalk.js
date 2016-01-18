@@ -76,7 +76,7 @@ describe('tttalk', function () {
         console.log(err);
         console.log(message);
         assert(!err);
-        assert(message.msgid == id);
+        assert.equal(message.msgid, id);
         callback();
       });
     }, function(callback) {
@@ -94,7 +94,7 @@ describe('tttalk', function () {
         console.log(account);
         console.log(charge);
         assert(!err);
-        assert(account.openid == openid);
+        assert.equal(account.openid, openid);
         assert.equal(wxmessage.total_fee, charge.total_fee);
 
         callback();
@@ -122,8 +122,19 @@ describe('tttalk', function () {
         console.log(account);
         console.log(charge);
         assert(!err);
-        assert(account.openid == openid);
+        assert.equal(account.openid, openid);
         assert.equal(wxmessage.total_fee, charge.total_fee);
+
+        callback();
+      });
+    }, function(callback) {
+      var fee = 98;
+      tttalk._charge(openid, 0, fee, 'code', 'card_id', '', 'wxcard', '', '', 'card_id', function(err, account, charge) {
+        console.log(account);
+        console.log(charge);
+        assert(!err);
+        assert.equal(account.openid, openid);
+        assert.equal(fee, charge.total_fee);
 
         callback();
       });

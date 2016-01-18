@@ -19,7 +19,7 @@ ChargeDao.prototype = {
       if(err) {
         logger.error(err);
         callback(err);
-      } else if(results && results.length == 1) {
+      } else if(results && results.length === 1) {
         var charge = results[0];
         callback(null, charge);
       } else {

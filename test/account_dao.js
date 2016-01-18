@@ -51,7 +51,7 @@ describe('account dao', function () {
       account_dao.deleteAccount(
         openid, function(err, results) {
           assert(!err);
-          assert(results.affectedRows == 1);
+          assert.equal(results.affectedRows, 1);
           callback();
         });
     }], function(error, result) {

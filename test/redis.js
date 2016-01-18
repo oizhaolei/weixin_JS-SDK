@@ -26,7 +26,7 @@ describe('/redis', function () {
 
     redisClient.set(key, key);
     redisClient.get(key, function(err, reply) {
-      assert(reply == key);
+      assert.equal(reply, key);
       redisClient.del(key, function() {
         redisClient.get(key, function(err, reply) {
           assert(!reply);
@@ -43,7 +43,7 @@ describe('/redis', function () {
 
     redisClient.hset(key, field, value, function(){
       redisClient.hget(key, field,  function(err, reply) {
-        assert(reply == value);
+        assert.equal(reply, value);
         redisClient.hdel(key, field, function() {
           redisClient.hget(key, field, function(err, reply) {
             assert(!reply);
