@@ -31,9 +31,11 @@ i18n.configure({
   directory : path.join(__dirname, '../locales')
 });
 
-
 //T币换算成人民币分
 var tp2fen = function(fee) {
+  if (!fee) {
+    return 0;
+  }
   return fee / 2;
 };
 var randomInt = function(low, high) {
@@ -42,19 +44,17 @@ var randomInt = function(low, high) {
 
 var account_dao = require('../dao/account_dao');
 var tttalk = require('../lib/tttalk');
+var wxservice = require('../lib/wxservice');
 
 var from_lang = 'CN';
 var to_lang = 'KR';
 
 var app = config.app;
 
-var nwSettings = require('node-weixin-settings');
-
 var nwAuth = require('node-weixin-auth');
 var nwMessage = require('node-weixin-message');
 var messages = nwMessage.messages;
 var reply = nwMessage.reply;
-var service = nwMessage.service;
 
 var nwUser = require('node-weixin-user');
 // Start
@@ -63,12 +63,9 @@ var nwUser = require('node-weixin-user');
 var randomWxCard = function(app, openid, outerId) {
   if (randomInt(0, 9) === 0) {
     var cardId = config.card.random_pay;
-    service.api.wxcard(app, openid, cardId, outerId, function(err, data) {
-      if (err || data.errcode !== 0) {
-        logger.error("%s, %s", data.errcode, data.errmsg);
-      } else {
-        logger.warn("send random card to %s", openid);
-      }
+    logger.warn("send random card %s to %s", cardId, openid);
+    wxservice.wxcard(openid, cardId, outerId, function(err, data) {
+      //
     });
   }
 };
@@ -77,29 +74,24 @@ router.post('/getSignature', function (req, res, next) {
   var url = req.body.url;
   logger.info(url);
 
-  nwAuth.determine(app, function () {
-      nwSettings.get(app.id, 'auth', function(authData) {
+  nwAuth.determine(app, function (err, authData) {
+    var type = 'jsapi';
+    nwAuth.ticket.determine(app, authData.accessToken, type, function(err, ticket) {
+      var timestamp = String((new Date().getTime() / 1000).toFixed(0));
+      var sha1 = crypto.createHash('sha1');
+      sha1.update(timestamp);
+      var noncestr = sha1.digest('hex');
+      var str = 'jsapi_ticket=' + ticket + '&noncestr='+ noncestr+'&timestamp=' + timestamp + '&url=' + url;
+      logger.info(str);
+      var signature = crypto.createHash('sha1').update(str).digest('hex');
 
-        var type = 'jsapi';
-        nwAuth.ticket.determine(app, authData.accessToken, type, function() {
-          nwSettings.get(app.id, type, function(ticket) {
-            var timestamp = String((new Date().getTime() / 1000).toFixed(0));
-            var sha1 = crypto.createHash('sha1');
-            sha1.update(timestamp);
-            var noncestr = sha1.digest('hex');
-            var str = 'jsapi_ticket=' + ticket + '&noncestr='+ noncestr+'&timestamp=' + timestamp + '&url=' + url;
-            logger.info(str);
-            var signature = crypto.createHash('sha1').update(str).digest('hex');
-
-            res.json({
-              appId: config.app.id,
-              timestamp: timestamp,
-              nonceStr: noncestr,
-              signature: signature
-            });
-          });
-        });
+      res.json({
+        appId: config.app.id,
+        timestamp: timestamp,
+        nonceStr: noncestr,
+        signature: signature
       });
+    });
   });
 });
 
@@ -137,7 +129,9 @@ router.post('/', function(req, res, next) {
       } else {
         tttalk.requestTranslate(msgid, msg.FromUserName, from_lang, to_lang, 'text',content, function(err, results) {
           if (err) {
-            logger.error("requestTranslate: %s", err);
+            logger.error("saveText: %s", err);
+            wxservice.text(msg.FromUserName, results, function(err, data) {
+            });
           } else {
             var key = msgid;
             redisClient.set(key, key);
@@ -147,10 +141,7 @@ router.post('/', function(req, res, next) {
               redisClient.get(key, function(err, reply) {
                 if (reply) {
                   // 客服API消息回复
-                  service.api.text(app, msg.FromUserName, i18n.__('translating_pls_wait'), function(err, data) {
-                    if (err || data.errcode !== 0) {
-                      logger.info("%s, %s", data.errcode, data.errmsg);
-                    }
+                  wxservice.text(msg.FromUserName, i18n.__('translating_pls_wait'), function(err, data) {
                   });
                   redisClient.del(key);
                 }
@@ -183,6 +174,8 @@ router.post('/', function(req, res, next) {
           tttalk.requestTranslate(msgid, msg.FromUserName, from_lang, to_lang, 'photo', filename, function(err, results) {
             if (err) {
               logger.error("savePhoto: %s", err);
+              wxservice.text(msg.FromUserName, results, function(err, data) {
+              });
             }
           });
         }
@@ -201,7 +194,7 @@ router.post('/', function(req, res, next) {
     var filename = msg.MediaId + '.amr';
     var file = fs.createWriteStream(path.join(config.tmpDirectory,  filename));
 
-    nwSettings.get(app.id, 'auth', function(authData) {
+    nwAuth.determine(app, function (err, authData) {
 
       var url = util.format('http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s', authData.accessToken, msg.MediaId);
       logger.info("voice url: %s", url);
@@ -214,6 +207,8 @@ router.post('/', function(req, res, next) {
             tttalk.requestTranslate(msgid, msg.FromUserName, from_lang, to_lang, 'voice', filename, function(err, results) {
               if (err) {
                 logger.info("saveVoice: %s", err);
+                wxservice.text(msg.FromUserName, results, function(err, data) {
+                });
               }
             });
           }
@@ -265,10 +260,7 @@ router.post('/', function(req, res, next) {
             if (err) {
               logger.error(err);
             } else {
-              service.api.text(app, msg.FromUserName, i18n.__('subscribe_share_fee', upAccount.nickname, parseFloat(config.subscribe_reward) / 100, config.share_rules_url), function(err, data) {
-                if (err || data.errcode !== 0) {
-                  logger.info("%s, %s", data.errcode, data.errmsg);
-                }
+              wxservice.text(msg.FromUserName, i18n.__('subscribe_share_fee', upAccount.nickname, parseFloat(config.subscribe_reward) / 100, config.share_rules_url), function(err, data) {
               });
             }
           });
@@ -276,10 +268,7 @@ router.post('/', function(req, res, next) {
 
         //初次关注发送卡券
         var cardId = config.card.first_pay;
-        service.api.wxcard(app, msg.FromUserName, cardId, OUTER_ID_SUBSCRIBE, function(err, data) {
-          if (err || data.errcode !== 0) {
-            logger.info("%s, %s", data.errcode, data.errmsg);
-          }
+        wxservice.wxcard(msg.FromUserName, cardId, OUTER_ID_SUBSCRIBE, function(err, data) {
         });
       }
       //获取用户信息
@@ -311,7 +300,7 @@ router.post('/', function(req, res, next) {
     account_dao.updateAccount(msg.FromUserName, {
       delete_flag : 1
     }, function(err, results, account) {
-      logger.debug('deleteAccount logic');
+      logger.debug('unsubscribe %s', msg.FromUserName);
     });
   });
   messages.event.on.scan(function(msg) {
@@ -365,18 +354,10 @@ router.post('/translate_callback', function(req, res, next) {
       logger.info(err);
     } else {
       // 客服API消息回复
-      service.api.text(app, message.openid, to_content, function(err, data) {
-        if (err || data.errcode !== 0) {
-          logger.info("%s, %s", data.errcode, data.errmsg);
-        }
+      wxservice.text(message.openid, to_content, function(err, data) {
       });
 
       console.log('message: %s', JSON.stringify(message));
-      // var content = util.format( fee + '分\n您的余额： ' + parseFloat(message.user_balance) / 100 + '元');
-      // service.api.text(app, message.openid, content, function(err, data) {
-      //   // data.errcode
-      //   // data.errmsg
-      // });
     }
   });
 });

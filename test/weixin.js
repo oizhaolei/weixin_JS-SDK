@@ -51,31 +51,20 @@ nwc.urls.jssdk.init(jssdk);
 
 
 describe('weixin auth', function () {
-  it('tokenize', function (done) {
-    nwAuth.tokenize(app, function (error, token) {
-      assert(token);
-
-      done();
-    });
-  });
   it('determine', function (done) {
-    nwAuth.determine(app, function (error) {
-      nwSettings.get(app.id, 'auth', function(authData) {
+    nwAuth.determine(app, function (error, authData) {
         assert(authData.accessToken);
         var token = authData.accessToken;
 
         var type = 'wx_card';
-        nwAuth.ticket.determine(app, token, type, function (error) {
+      nwAuth.ticket.determine(app, token, type, function (error, ticket) {
           logger.debug(error);
 
-          nwSettings.get(app.id, type, function(ticket) {
             logger.debug('ticket %s', ticket.ticket);
             assert(ticket.ticket);
 
             done();
           });
-        });
-      });
     });
   });
 });
@@ -303,11 +292,9 @@ describe('weixin link', function () {
 describe('weixin jssdk', function () {
   it('ticket', function (done) {
     var url = 'http://test.tttalk.org/test.html';
-    nwAuth.determine(app, function () {
-      nwSettings.get(app.id, 'auth', function(authData) {
+    nwAuth.determine(app, function (err, authData) {
         var type = 'jsapi';
-        nwAuth.ticket.determine(app, authData.accessToken, type, function(err) {
-          nwSettings.get(app.id, type, function(ticket) {
+      nwAuth.ticket.determine(app, authData.accessToken, type, function(err, ticket) {
             var timestamp = String((new Date().getTime() / 1000).toFixed(0));
             var sha1 = crypto.createHash('sha1');
             sha1.update(timestamp);
@@ -328,10 +315,6 @@ describe('weixin jssdk', function () {
         });
 
       });
-    });
-
-  });
-
 });
 describe('weixin message', function () {
   it('wxcard', function (done) {
@@ -353,8 +336,7 @@ describe('weixin card', function () {
   var openid = process.env.APP_OPENID;
 
   it('list', function (done) {
-    nwAuth.determine(app, function () {
-      nwSettings.get(app.id, 'auth', function(authData) {
+    nwAuth.determine(app, function (err, authData) {
         var nwRequest = require('node-weixin-request');
         var url = 'https://api.weixin.qq.com/card/user/getcardlist?access_token=' + authData.accessToken;
         nwRequest.json(url, {
@@ -366,6 +348,5 @@ describe('weixin card', function () {
           done();
         });
       });
-    });
   });
 });
