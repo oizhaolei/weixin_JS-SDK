@@ -255,7 +255,8 @@ router.post('/', function(req, res, next) {
             fee_type: 'CNY',
             result_code: 'SUCCESS',
             return_code: 'SUCCESS',
-            memo : 'subscribe'
+            trade_type : 'subscribe',
+            memo : openid
           }, function(err, upAccount) {
             if (err) {
               logger.error(err);

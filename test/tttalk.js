@@ -50,7 +50,8 @@ describe('tttalk', function () {
               fee_type: 'CNY',
               result_code: 'SUCCESS',
               return_code: 'SUCCESS',
-              memo : 'subscribe'
+              trade_type : 'subscribe',
+              memo : openid
             }, function(err, account) {
               account_dao.getByOpenid(up_openid, function(err, newUpAccount) {
                 assert.equal(oldUpAccount.openid, newUpAccount.openid);
@@ -87,7 +88,8 @@ describe('tttalk', function () {
         fee_type: 'CNY',
         result_code: 'SUCCESS',
         return_code: 'SUCCESS',
-        memo : 'subscribe'
+        trade_type : 'subscribe',
+        memo : 'ss'
       };
       tttalk.wxPay(openid, wxmessage, function(err, account, charge) {
         console.log(err);
@@ -117,7 +119,6 @@ describe('tttalk', function () {
                         trade_type: 'JSAPI',
                         transaction_id: seed,
                       };
-      wxmessage.memo = 'test pay';
       tttalk.wxPay(openid, wxmessage, function(err, account, charge) {
         console.log(account);
         console.log(charge);

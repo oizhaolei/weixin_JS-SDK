@@ -19,7 +19,7 @@ describe('account dao', function () {
     var openid = process.env.APP_OPENID;
     charge_dao.findCharges({
       openid:openid,
-      memo:'wxpay'
+      trade_type:'JSAPI'
     }, function(err, charges) {
       assert(!err);
       assert(charges);

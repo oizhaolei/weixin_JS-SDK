@@ -66,7 +66,7 @@ router.get('/consume', function (req, res, next) {
         if (err) {
           next(err);
         } else {
-          var content = i18n.__('card_consume_success', parseFloat(charge.cash_fee)/100, parseFloat(account.balance)/100);
+          var content = i18n.__('card_consume_success', parseFloat(charge.total_fee)/100, parseFloat(account.balance)/100);
           res.render('wxcard_consume', {
             layout : 'layout',
             title : '我的优惠券',

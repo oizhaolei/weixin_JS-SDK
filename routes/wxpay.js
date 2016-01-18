@@ -93,13 +93,13 @@ router.all('/noti', wxpay.useWXCallback(function(wxpay, req, res, next){
       logger.error(err);
     } else {
       logger.info("account: %s", JSON.stringify(account));
-      var content = i18n.__('wxpay_success', parseFloat(charge.cash_fee)/100, parseFloat(account.balance)/100);
+      var content = i18n.__('wxpay_success', parseFloat(charge.total_fee)/100, parseFloat(account.balance)/100);
       wxservice.text(openid, content, function(err, data) {
       });
       //初次充值?
       charge_dao.findCharges({
         openid : openid,
-        memo : config.card.first_pay
+        trade_type : 'JSAPI'
       }, function(err, charges) {
         if (charges.length === 1) {
           //检查有否可用的卡券
@@ -120,7 +120,7 @@ router.all('/noti', wxpay.useWXCallback(function(wxpay, req, res, next){
                       callback(err);
                     } else {
                       //通知
-                      var content = i18n.__('card_consume_success', parseFloat(charge.cash_fee)/100, parseFloat(account.balance)/100);
+                      var content = i18n.__('card_consume_success', parseFloat(charge.total_fee)/100, parseFloat(account.balance)/100);
                       wxservice.text(openid, content, function(err, data) {
                       });
                     }
