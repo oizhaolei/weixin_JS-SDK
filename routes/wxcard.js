@@ -6,6 +6,7 @@ var path = require('path');
 
 var express = require('express');
 var router = express.Router();
+var async = require('async');
 
 var i18n = require("i18n");
 i18n.configure({
@@ -25,15 +26,30 @@ var wxcard = require('../lib/wxcard');
 // cardSign: '', // 卡券签名
 router.get('/list', function (req, res, next) {
   var openid = req.query.openid;
-  wxcard.list(openid, '', function(err, list) {
+  wxcard.list(openid, '', function(err, card_list) {
     if (err) {
       next(err);
     } else {
-      res.render('wxcard_list', {
-        layout : 'layout',
-        title : '我的优惠券',
-        card_list: list,
-        openid: openid
+      async.each(card_list, function(card, callback) {
+        var card_id = card.card_id;
+        var code = card.code;
+        wxcard.detail(card_id, code, function(err, card_detail) {
+          card.card_detail = card_detail;
+          callback();
+        });
+      }, function (err) {
+        if(err) {
+          console.log("err: " + err);
+        } else {
+          logger.debug('card_list: %s', JSON.stringify(card_list));
+
+          res.render('wxcard_list', {
+            layout : 'layout',
+            title : '我的优惠券',
+            card_list: card_list,
+            openid: openid
+          });
+        }
       });
     }
   });

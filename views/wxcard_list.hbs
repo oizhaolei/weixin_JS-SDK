@@ -1,37 +1,14 @@
-<div class="panel panel-primary">
-    <table class="table">
-        <tbody>
-            {{#each card_list}}
-                <tr>
-                    <td  class="center-block">
-                        <div class="row">
-                            <div class="col-sm-12">{{cash.base_info.brand_name}}</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-12">{{cash.base_info.title}}</div>
-                        </div>
-                        <div class="row">
-                            <button type="button" class="btn btn-info consume-btn" code="{{code}}" card_id="{{card_id}}">立即使用</button>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-12">{{cash.base_info.sub_title}}</div>
-                        </div>
-                    </td>
-                </tr>
-    {{else}}
-                没有相关数据
-            {{/each}}
-        </tbody>
-    </table>
+<div class="panel panel-primary"> 
+ <div class="panel-heading">
+  <h3 class="panel-title">翻译代金券</h3>
+ </div>
+ {{#each card_list}} 
+ <div class="list-group">
+   <a href="/wxcard/consume?openid={{openid}}&code={{code}}&card_id={{card_id}}" class="list-group-item">
+    <h4 class="list-group-item-heading">{{card_detail.cash.base_info.brand_name}}</h4>
+    <p class="list-group-item-text">{{card_detail.cash.base_info.title}}</p>
+    <button type="button" class="btn btn-primary">立即使用</button> 
+   </a>
+ </div>
+ {{/each}}
 </div>
-
-{{#extend "scripts"}}
-    <script>
-     $('.consume-btn').click(function () {
-         var openid = '{{openid}}';
-         var card_id = $( this ).attr('card_id');
-         var code = $( this ).attr('code');
-         window.location.href = '/wxcard/consume?openid=' + openid + '&code=' + code + '&card_id=' + card_id;
-     });
-    </script>
-{{/extend}}
