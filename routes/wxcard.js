@@ -64,9 +64,14 @@ router.get('/consume', function (req, res, next) {
       //核销
       wxcard.consume(card_id, code, reduce_cost, function(err, account, charge) {
         if (err) {
-          next(err);
+          var content = i18n.__('card_consume_error');
+          res.render('wxcard_consume', {
+            layout : 'layout',
+            title : '我的优惠券',
+            msg : content
+          });
         } else {
-          var content = i18n.__('card_consume_success', parseFloat(charge.cash_fee)/100, parseFloat(account.balance)/100);
+          var content = i18n.__('card_consume_success', parseFloat(charge.total_fee)/100, parseFloat(account.balance)/100);
           res.render('wxcard_consume', {
             layout : 'layout',
             title : '我的优惠券',
