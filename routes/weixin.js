@@ -81,7 +81,7 @@ router.post('/getSignature', function (req, res, next) {
       var sha1 = crypto.createHash('sha1');
       sha1.update(timestamp);
       var noncestr = sha1.digest('hex');
-      var str = 'jsapi_ticket=' + ticket + '&noncestr='+ noncestr+'&timestamp=' + timestamp + '&url=' + url;
+      var str = 'jsapi_ticket=' + ticket.ticket + '&noncestr='+ noncestr+'&timestamp=' + timestamp + '&url=' + url;
       logger.info(str);
       var signature = crypto.createHash('sha1').update(str).digest('hex');
 

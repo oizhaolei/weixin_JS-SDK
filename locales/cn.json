@@ -7,5 +7,6 @@
   "card_consume_success": "使用了卡券%s元, 账户余额为%s。",
   "balance_too_low": "您的当前余额为%d，请充值",
   "translating_pls_wait": "正在人工翻译中，请稍等。。。",
+  "card_consume_count_limit" : "此券每人限使用一张，多余的可赠送给朋友",
   "card_consume_error" : "该卡券不可用"
 }

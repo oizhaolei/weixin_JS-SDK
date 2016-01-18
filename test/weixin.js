@@ -57,36 +57,6 @@ describe('weixin oauth', function () {
     success: 'http://pay.domain.com/successAndReadyToPay'
   };
   nwc.urls.oauth.init(oauth);
-
-
-  // it('profile', function (done) {
-  //   nwAuth.tokenize(app, function (error, json) {
-  //     var accessToken = json.access_token;
-  //     var openid = process.env.APP_OPENID;
-  //     var nock = require('nock');
-
-  //     var params = {
-  //       access_token: accessToken,
-  //       openid: openid
-  //     };
-  //     var url = 'https://api.weixin.qq.com';
-
-  //     nock(url)
-  //       .post('/sns/auth')
-  //       .query(params)
-  //       .reply(200, {
-  //         errcode: 1
-  //       });
-
-  //     nwOauth.profile(openid, accessToken, function (err, body) {
-  //       logger.debug('err %s', err);
-  //       logger.debug('body %s', JSON.stringify(body));
-  //       assert.equal(true, !err);
-  //       assert.equal(true, !!body);
-  //       done();
-  //     });
-  //   });
-  // });
 });
 describe('weixin user', function () {
   var nwUser = require('node-weixin-user');
