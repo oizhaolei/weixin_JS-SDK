@@ -1,6 +1,8 @@
 // 微信卡券
 var path = require('path');
 
+var logger = require('log4js').getLogger('routers/wxcard.js');
+
 var express = require('express');
 var router = express.Router();
 var async = require('async');
