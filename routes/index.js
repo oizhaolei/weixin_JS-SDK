@@ -121,9 +121,11 @@ router.get('/share_to_friend', function (req, res, next) {
 
       res.render('share_to_friend', {
         layout : 'layout',
-        title : '个人资料',
+        title : '分享有奖',
         info : info,
-        qrcode : qrCodeUrl
+        qrcode : qrCodeUrl,
+        share_msg : '点击右上角分享 赢20元奖励',
+        share_memo : '您是TTTalk翻译秘书的老朋友啦，已为您备好专属邀请二维码，即刻分享，每成功邀请1位，即获20元翻译费，多邀多得哦'
       });
     }
   });
