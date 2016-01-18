@@ -34,6 +34,9 @@ i18n.configure({
 
 //T币换算成人民币分
 var tp2fen = function(fee) {
+  if (!fee) {
+    return 0;
+  }
   return fee / 2;
 };
 var randomInt = function(low, high) {
@@ -47,8 +50,6 @@ var from_lang = 'CN';
 var to_lang = 'KR';
 
 var app = config.app;
-
-var nwSettings = require('node-weixin-settings');
 
 var nwAuth = require('node-weixin-auth');
 var nwMessage = require('node-weixin-message');
@@ -77,29 +78,24 @@ router.post('/getSignature', function (req, res, next) {
   var url = req.body.url;
   logger.info(url);
 
-  nwAuth.determine(app, function () {
-      nwSettings.get(app.id, 'auth', function(authData) {
+  nwAuth.determine(app, function (err, authData) {
+    var type = 'jsapi';
+    nwAuth.ticket.determine(app, authData.accessToken, type, function(err, ticket) {
+      var timestamp = String((new Date().getTime() / 1000).toFixed(0));
+      var sha1 = crypto.createHash('sha1');
+      sha1.update(timestamp);
+      var noncestr = sha1.digest('hex');
+      var str = 'jsapi_ticket=' + ticket + '&noncestr='+ noncestr+'&timestamp=' + timestamp + '&url=' + url;
+      logger.info(str);
+      var signature = crypto.createHash('sha1').update(str).digest('hex');
 
-        var type = 'jsapi';
-        nwAuth.ticket.determine(app, authData.accessToken, type, function() {
-          nwSettings.get(app.id, type, function(ticket) {
-            var timestamp = String((new Date().getTime() / 1000).toFixed(0));
-            var sha1 = crypto.createHash('sha1');
-            sha1.update(timestamp);
-            var noncestr = sha1.digest('hex');
-            var str = 'jsapi_ticket=' + ticket + '&noncestr='+ noncestr+'&timestamp=' + timestamp + '&url=' + url;
-            logger.info(str);
-            var signature = crypto.createHash('sha1').update(str).digest('hex');
-
-            res.json({
-              appId: config.app.id,
-              timestamp: timestamp,
-              nonceStr: noncestr,
-              signature: signature
-            });
-          });
-        });
+      res.json({
+        appId: config.app.id,
+        timestamp: timestamp,
+        nonceStr: noncestr,
+        signature: signature
       });
+    });
   });
 });
 
@@ -201,7 +197,7 @@ router.post('/', function(req, res, next) {
     var filename = msg.MediaId + '.amr';
     var file = fs.createWriteStream(path.join(config.tmpDirectory,  filename));
 
-    nwSettings.get(app.id, 'auth', function(authData) {
+    nwAuth.determine(app, function (err, authData) {
 
       var url = util.format('http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s', authData.accessToken, msg.MediaId);
       logger.info("voice url: %s", url);
