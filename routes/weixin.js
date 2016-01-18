@@ -78,30 +78,28 @@ router.post('/getSignature', function (req, res, next) {
   logger.info(url);
 
   nwAuth.determine(app, function () {
-    var authData = nwSettings.get(app.id, 'auth');
+      nwSettings.get(app.id, 'auth', function(authData) {
 
-    var type = 'jsapi';
-    nwAuth.ticket.determine(app, authData.accessToken, type, function(err) {
-      if (err) {
-        next(err);
-      } else {
-        var ticket = nwSettings.get(app.id, type).ticket;
-        var timestamp = String((new Date().getTime() / 1000).toFixed(0));
-        var sha1 = crypto.createHash('sha1');
-        sha1.update(timestamp);
-        var noncestr = sha1.digest('hex');
-        var str = 'jsapi_ticket=' + ticket + '&noncestr='+ noncestr+'&timestamp=' + timestamp + '&url=' + url;
-        logger.info(str);
-        var signature = crypto.createHash('sha1').update(str).digest('hex');
+        var type = 'jsapi';
+        nwAuth.ticket.determine(app, authData.accessToken, type, function() {
+          nwSettings.get(app.id, type, function(ticket) {
+            var timestamp = String((new Date().getTime() / 1000).toFixed(0));
+            var sha1 = crypto.createHash('sha1');
+            sha1.update(timestamp);
+            var noncestr = sha1.digest('hex');
+            var str = 'jsapi_ticket=' + ticket + '&noncestr='+ noncestr+'&timestamp=' + timestamp + '&url=' + url;
+            logger.info(str);
+            var signature = crypto.createHash('sha1').update(str).digest('hex');
 
-        res.json({
-          appId: config.app.id,
-          timestamp: timestamp,
-          nonceStr: noncestr,
-          signature: signature
+            res.json({
+              appId: config.app.id,
+              timestamp: timestamp,
+              nonceStr: noncestr,
+              signature: signature
+            });
+          });
         });
-      }
-    });
+      });
   });
 });
 
@@ -203,21 +201,23 @@ router.post('/', function(req, res, next) {
     var filename = msg.MediaId + '.amr';
     var file = fs.createWriteStream(path.join(config.tmpDirectory,  filename));
 
-    var authData = nwSettings.get(app.id, 'auth');
-    var url = util.format('http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s', authData.accessToken, msg.MediaId);
-    logger.info("voice url: %s", url);
-    request(url).pipe(file);
-    file.on('finish', function() {
-      tttalk.saveVoice(msgid, from_lang, to_lang, filename, msg.FromUserName, function(err, results) {
-        if (err) {
-          logger.error("saveText: %s", err);
-        } else {
-          tttalk.requestTranslate(msgid, msg.FromUserName, from_lang, to_lang, 'voice', filename, function(err, results) {
-            if (err) {
-              logger.info("saveVoice: %s", err);
-            }
-          });
-        }
+    nwSettings.get(app.id, 'auth', function(authData) {
+
+      var url = util.format('http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s', authData.accessToken, msg.MediaId);
+      logger.info("voice url: %s", url);
+      request(url).pipe(file);
+      file.on('finish', function() {
+        tttalk.saveVoice(msgid, from_lang, to_lang, filename, msg.FromUserName, function(err, results) {
+          if (err) {
+            logger.error("saveText: %s", err);
+          } else {
+            tttalk.requestTranslate(msgid, msg.FromUserName, from_lang, to_lang, 'voice', filename, function(err, results) {
+              if (err) {
+                logger.info("saveVoice: %s", err);
+              }
+            });
+          }
+        });
       });
     });
   });

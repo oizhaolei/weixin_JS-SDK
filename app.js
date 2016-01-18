@@ -93,11 +93,12 @@ var writeFile = function(filename, str) {
 };
 var nwSettings = require('node-weixin-settings');
 var prefix = 'wx_';
-nwSettings.registerSet(function(id, key, value) {
+nwSettings.registerSet(function(id, key, value, cb) {
   logger.debug('registerSet %s %s %s', id, key, JSON.stringify(value));
   writeFile(prefix + id + '_' + key, JSON.stringify(value));
+  cb(null);
 });
-nwSettings.registerGet(function(id, key) {
+nwSettings.registerGet(function(id, key, cb) {
   var value = null;
   try{
     value = JSON.parse(readFile(prefix + id + '_' + key));
@@ -105,7 +106,7 @@ nwSettings.registerGet(function(id, key) {
   } catch (e) {
     logger.error(e);
   }
-  return  value;
+  cb(value);
 });
 
 

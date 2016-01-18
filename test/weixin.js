@@ -25,11 +25,12 @@ var writeFile = function(filename, str) {
 };
 var nwSettings = require('node-weixin-settings');
 var prefix = 'wx_';
-nwSettings.registerSet(function(id, key, value) {
+nwSettings.registerSet(function(id, key, value, cb) {
   logger.debug('registerSet %s %s %s', id, key, JSON.stringify(value));
   writeFile(prefix + id + '_' + key, JSON.stringify(value));
+  cb(null);
 });
-nwSettings.registerGet(function(id, key) {
+nwSettings.registerGet(function(id, key, cb) {
   var value = null;
   try{
     value = JSON.parse(readFile(prefix + id + '_' + key));
@@ -37,9 +38,8 @@ nwSettings.registerGet(function(id, key) {
   } catch (e) {
     logger.error(e);
   }
-  return  value;
+  if (cb) cb(value);
 });
-
 
 nwc.app.init(app);
 
@@ -52,29 +52,29 @@ nwc.urls.jssdk.init(jssdk);
 
 describe('weixin auth', function () {
   it('tokenize', function (done) {
-    nwAuth.tokenize(app, function (error, json) {
-      var accessToken = json.access_token;
-      logger.debug('token %s', accessToken);
-      assert(accessToken);
+    nwAuth.tokenize(app, function (error, token) {
+      assert(token);
 
       done();
     });
   });
   it('determine', function (done) {
     nwAuth.determine(app, function (error) {
-      var authData = nwSettings.get(app.id, 'auth');
-      assert(authData.accessToken);
-      var token = authData.accessToken;
+      nwSettings.get(app.id, 'auth', function(authData) {
+        assert(authData.accessToken);
+        var token = authData.accessToken;
 
-      var type = 'wx_card';
-      nwAuth.ticket.determine(app, token, type, function (error) {
-        logger.debug(error);
+        var type = 'wx_card';
+        nwAuth.ticket.determine(app, token, type, function (error) {
+          logger.debug(error);
 
-        var ticket = nwSettings.get(app.id, type);
-        logger.debug('ticket %s', ticket.ticket);
-        assert(ticket.ticket);
+          nwSettings.get(app.id, type, function(ticket) {
+            logger.debug('ticket %s', ticket.ticket);
+            assert(ticket.ticket);
 
-        done();
+            done();
+          });
+        });
       });
     });
   });
@@ -304,33 +304,30 @@ describe('weixin jssdk', function () {
   it('ticket', function (done) {
     var url = 'http://test.tttalk.org/test.html';
     nwAuth.determine(app, function () {
-      var authData = nwSettings.get(app.id, 'auth');
+      nwSettings.get(app.id, 'auth', function(authData) {
+        var type = 'jsapi';
+        nwAuth.ticket.determine(app, authData.accessToken, type, function(err) {
+          nwSettings.get(app.id, type, function(ticket) {
+            var timestamp = String((new Date().getTime() / 1000).toFixed(0));
+            var sha1 = crypto.createHash('sha1');
+            sha1.update(timestamp);
+            var noncestr = sha1.digest('hex');
+            var str = 'jsapi_ticket=' + ticket + '&noncestr='+ noncestr+'&timestamp=' + timestamp + '&url=' + url;
+            var signature = crypto.createHash('sha1').update(str).digest('hex');
+            logger.info("%s => %s", str, signature);
 
-      var type = 'jsapi';
-      nwAuth.ticket.determine(app, authData.accessToken, type, function(err) {
-        if (err) {
-          cb(err);
-        } else {
-          var ticket = nwSettings.get(app.id, type).ticket;
-          var timestamp = String((new Date().getTime() / 1000).toFixed(0));
-          var sha1 = crypto.createHash('sha1');
-          sha1.update(timestamp);
-          var noncestr = sha1.digest('hex');
-          var str = 'jsapi_ticket=' + ticket + '&noncestr='+ noncestr+'&timestamp=' + timestamp + '&url=' + url;
-          var signature = crypto.createHash('sha1').update(str).digest('hex');
-          logger.info("%s => %s", str, signature);
+            var sig = {
+              appId: config.app.id,
+              timestamp: timestamp,
+              nonceStr: noncestr,
+              signature: signature
+            };
+            logger.info(sig);
+            done();
+          });
+        });
 
-          var sig = {
-            appId: config.app.id,
-            timestamp: timestamp,
-            nonceStr: noncestr,
-            signature: signature
-          };
-          logger.info(sig);
-        }
       });
-
-      done();
     });
 
   });
@@ -357,16 +354,17 @@ describe('weixin card', function () {
 
   it('list', function (done) {
     nwAuth.determine(app, function () {
-      var authData = nwSettings.get(app.id, 'auth');
-      var nwRequest = require('node-weixin-request');
-      var url = 'https://api.weixin.qq.com/card/user/getcardlist?access_token=' + authData.accessToken;
-      nwRequest.json(url, {
-        openid: openid,
-        card_id: ""
-      }, function(err, json) {
-        logger.info(err);
-        logger.info(json);
-        done();
+      nwSettings.get(app.id, 'auth', function(authData) {
+        var nwRequest = require('node-weixin-request');
+        var url = 'https://api.weixin.qq.com/card/user/getcardlist?access_token=' + authData.accessToken;
+        nwRequest.json(url, {
+          openid: openid,
+          card_id: ""
+        }, function(err, json) {
+          logger.info(err);
+          logger.info(json);
+          done();
+        });
       });
     });
   });
