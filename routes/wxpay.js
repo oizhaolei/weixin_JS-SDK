@@ -16,14 +16,10 @@ i18n.configure({
   directory : path.join(__dirname, '../locales')
 });
 
-var app = config.app;
-
 var charge_dao = require('../dao/charge_dao');
 var tttalk = require('../lib/tttalk');
 var wxcard = require('../lib/wxcard');
 var wxservice = require('../lib/wxservice');
-
-var nwMessage = require('node-weixin-message');
 
 var WXPay = require('weixin-pay');
 var wxpay = new WXPay({
