@@ -29,18 +29,18 @@ nwc.urls.jssdk.init(jssdk);
 describe('weixin auth', function () {
   it('determine', function (done) {
     nwAuth.determine(app, function (error, authData) {
-        assert(authData.accessToken);
-        var token = authData.accessToken;
+      assert(authData.accessToken);
+      var token = authData.accessToken;
 
-        var type = 'wx_card';
+      var type = 'wx_card';
       nwAuth.ticket.determine(app, token, type, function (error, ticket) {
-          logger.debug(error);
+        logger.debug(error);
 
-            logger.debug('ticket %s', ticket.ticket);
-            assert(ticket.ticket);
+        logger.debug('ticket %s', ticket.ticket);
+        assert(ticket.ticket);
 
-            done();
-          });
+        done();
+      });
     });
   });
 });
@@ -239,28 +239,26 @@ describe('weixin jssdk', function () {
   it('ticket', function (done) {
     var url = 'http://test.tttalk.org/test.html';
     nwAuth.determine(app, function (err, authData) {
-        var type = 'jsapi';
+      var type = 'jsapi';
       nwAuth.ticket.determine(app, authData.accessToken, type, function(err, ticket) {
-            var timestamp = String((new Date().getTime() / 1000).toFixed(0));
-            var sha1 = crypto.createHash('sha1');
-            sha1.update(timestamp);
-            var noncestr = sha1.digest('hex');
-            var str = 'jsapi_ticket=' + ticket + '&noncestr='+ noncestr+'&timestamp=' + timestamp + '&url=' + url;
-            var signature = crypto.createHash('sha1').update(str).digest('hex');
-            logger.info("%s => %s", str, signature);
+        var timestamp = String((new Date().getTime() / 1000).toFixed(0));
+        var noncestr = crypto.createHash('sha1').update(timestamp).digest('hex');
+        var str = 'jsapi_ticket=' + ticket + '&noncestr='+ noncestr+'&timestamp=' + timestamp + '&url=' + url;
+        var signature = crypto.createHash('sha1').update(str).digest('hex');
+        logger.info("%s => %s", str, signature);
 
-            var sig = {
-              appId: config.app.id,
-              timestamp: timestamp,
-              nonceStr: noncestr,
-              signature: signature
-            };
-            logger.info(sig);
-            done();
-          });
-        });
-
+        var sig = {
+          appId: config.app.id,
+          timestamp: timestamp,
+          nonceStr: noncestr,
+          signature: signature
+        };
+        logger.info(sig);
+        done();
       });
+    });
+
+  });
 });
 describe('weixin message', function () {
   it('wxcard', function (done) {
@@ -283,16 +281,16 @@ describe('weixin card', function () {
 
   it('list', function (done) {
     nwAuth.determine(app, function (err, authData) {
-        var nwRequest = require('node-weixin-request');
-        var url = 'https://api.weixin.qq.com/card/user/getcardlist?access_token=' + authData.accessToken;
-        nwRequest.json(url, {
-          openid: openid,
-          card_id: ""
-        }, function(err, json) {
-          logger.info(err);
-          logger.info(json);
-          done();
-        });
+      var nwRequest = require('node-weixin-request');
+      var url = 'https://api.weixin.qq.com/card/user/getcardlist?access_token=' + authData.accessToken;
+      nwRequest.json(url, {
+        openid: openid,
+        card_id: ""
+      }, function(err, json) {
+        logger.info(err);
+        logger.info(json);
+        done();
       });
+    });
   });
 });

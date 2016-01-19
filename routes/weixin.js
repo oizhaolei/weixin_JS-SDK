@@ -3,6 +3,7 @@
 var config = require('../config.json');
 var logger = require('log4js').getLogger('routers/weixin.js');
 var crypto = require('crypto');
+var util = require('util');
 
 var path = require('path');
 
@@ -45,11 +46,8 @@ router.post('/getSignature', function (req, res, next) {
     var type = 'jsapi';
     nwAuth.ticket.determine(app, authData.accessToken, type, function(err, ticket) {
       var timestamp = String((new Date().getTime() / 1000).toFixed(0));
-      var sha1 = crypto.createHash('sha1');
-      sha1.update(timestamp);
-      var noncestr = sha1.digest('hex');
+      var noncestr = crypto.createHash('sha1').update(timestamp).digest('hex');
       var str = 'jsapi_ticket=' + ticket.ticket + '&noncestr='+ noncestr+'&timestamp=' + timestamp + '&url=' + url;
-      logger.info(str);
       var signature = crypto.createHash('sha1').update(str).digest('hex');
 
       res.json({
@@ -106,7 +104,7 @@ router.post('/', function(req, res, next) {
     var mediaid = msg.MediaId;
     var picurl = msg.PicUrl;
 
-    on.onImage(openid, mediaid, msgid, picurl);
+    on.onImage(openid, mediaid, picurl, msgid);
   });
 
   // 监听语音消息
@@ -120,7 +118,11 @@ router.post('/', function(req, res, next) {
     var msgid = msg.MsgId;
     var mediaid = msg.MediaId;
 
-    on.onVoice(openid, mediaid, msgid);
+    nwAuth.determine(app, function (err, authData) {
+      var url = util.format('http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s', authData.accessToken, mediaid);
+      logger.info("voice url: %s", url);
+      on.onVoice(openid, mediaid, url, msgid);
+    });
   });
 
   // 监听位置消息
