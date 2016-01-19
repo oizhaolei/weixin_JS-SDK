@@ -113,12 +113,15 @@ router.get('/fee_history', function (req, res, next) {
 // share_to_friend
 router.get('/share_to_friend', function (req, res, next) {
   var openid = req.query.openid;
+  
+  var share_msg = i18n.__('share_to_friend_msg', config.share_to_friend_money);
+  var share_memo = i18n.__('share_to_friend_memo', config.share_to_friend_money);
   res.render('share_to_friend', {
     layout : 'layout',
     title : '分享有奖',
     openid : openid,
-    share_msg : '分享就有机会赢20元奖励',
-    share_memo : '您是TTTalk翻译秘书的老朋友啦，已为您备好专属邀请二维码，点击即刻分享，页面加载完成后，点击右上角分享。每成功邀请1位，即获20元翻译费，多邀多得哦!'
+    share_msg : share_msg,
+    share_memo : share_memo
   });
 });
 
@@ -130,15 +133,15 @@ router.get('/share_to_friend_qrcode', function (req, res, next) {
       res.send("success");
     } else {
       var qrCodeUrl = util.format('https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=%s', json.ticket);
-      var info = i18n.__('share_to_friend', parseFloat(config.subscribe_reward) / 100, config.share_rules_url);
-
+      
+      var share_msg = i18n.__('share_to_friend_qrcode_msg');
+      var share_memo = i18n.__('share_to_friend_qrcode_memo');
       res.render('share_to_friend_qrcode', {
         layout : 'layout',
         title : '分享给好友',
-        info : info,
         qrcode : qrCodeUrl,
-        share_msg : '长按二维码，点击识别即可关注公众号，关注有奖。',
-        share_memo : '你还在为寻找中韩翻译而苦恼吗？TTTalk翻译秘书帮您解决问题，人工翻译，专业而准确.'
+        share_msg : share_msg,
+        share_memo : share_memo
       });
     }
   });
