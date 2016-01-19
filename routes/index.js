@@ -114,8 +114,8 @@ router.get('/fee_history', function (req, res, next) {
 router.get('/share_to_friend', function (req, res, next) {
   var openid = req.query.openid;
   
-  var share_msg = i18n.__('share_to_friend_msg', config.share_to_friend_money);
-  var share_memo = i18n.__('share_to_friend_memo', config.share_to_friend_money);
+  var share_msg = i18n.__('share_to_friend_msg', parseFloat(config.subscribe_reward) / 100);
+  var share_memo = i18n.__('share_to_friend_memo', parseFloat(config.subscribe_reward) / 100);
   res.render('share_to_friend', {
     layout : 'layout',
     title : '分享有奖',
