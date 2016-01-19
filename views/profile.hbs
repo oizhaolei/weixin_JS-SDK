@@ -26,7 +26,7 @@
           </select>
         </div>
         </p>
-        <button type="submit" class="btn btn-primary btn-lg btn-block">提交</button>
+        <button type="submit" class="btn btn-primary btn-lg btn-block active">提交</button>
       </div>
     </form>
   </div>
@@ -41,7 +41,7 @@
         <input type="hidden" id="openid" name="openid" value="{{openid}}" /> 
         <input type="text" class="form-control" id="telephone" name="telephone" value="{{account.telephone}}"placeholder="请输入手机号码" onkeyup="this.value=this.value.replace(/\D/g,'')" />
         <span class="input-group-btn">
-          <button class="btn btn-primary" type="submit">{{bind_action}}</button>
+          <button class="btn btn-primary active" type="submit">{{bind_action}}</button>
         </span>
       </div>
     </form>
