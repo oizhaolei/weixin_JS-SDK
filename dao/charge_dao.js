@@ -16,14 +16,11 @@ ChargeDao.prototype = {
     var sql = 'SELECT * FROM tbl_user_charge where transaction_id = ?' ;
     var args = [ transaction_id ];
     this.readonlyPool.query(sql, args, function(err, results){
-      if(err) {
-        logger.error(err);
-        callback(err);
-      } else if(results && results.length === 1) {
+      if(results && results.length === 1) {
         var charge = results[0];
         callback(null, charge);
       } else {
-        callback(err, null);
+        callback(err);
       }
       if (err) logger.error(err);
     });

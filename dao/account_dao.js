@@ -17,16 +17,12 @@ AccountDao.prototype = {
     var sql = 'SELECT * FROM tbl_account where openid = ?' ;
     var args = [ openid ];
     this.readonlyPool.query(sql, args, function(err, results){
-      if(err) {
-        callback(err);
-      } else if(results && results.length === 1) {
+      if(results && results.length === 1) {
         var account = results[0];
         callback(null, account);
       } else {
-        err = 'user not exists.';
         callback(err);
       }
-      if (err) logger.error(err);
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },

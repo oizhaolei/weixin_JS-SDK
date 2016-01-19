@@ -14,6 +14,7 @@ i18n.configure({
   directory : path.join(__dirname, '../locales')
 });
 
+var account_dao = require('../dao/account_dao');
 var tttalk = require('../lib/tttalk');
 var app = config.app;
 
@@ -83,7 +84,7 @@ router.get('/', function (req, res, next) {
 router.get('/profile', function (req, res, next) {
   var openid = req.query.openid;
   var msg = req.query.msg;
-  tttalk.profile(openid, function(err, accountData) {
+  account_dao.getByOpenid(openid, function(err, accountData) {
     var bind_action = accountData.telephone ? '绑定' : '更改';
     res.render('profile', {
       layout : 'layout',
@@ -113,7 +114,7 @@ router.get('/fee_history', function (req, res, next) {
 // share_to_friend
 router.get('/share_to_friend', function (req, res, next) {
   var openid = req.query.openid;
-  
+
   var share_msg = i18n.__('share_to_friend_msg', parseFloat(config.subscribe_reward) / 100);
   var share_memo = i18n.__('share_to_friend_memo', parseFloat(config.subscribe_reward) / 100);
   res.render('share_to_friend', {
@@ -133,7 +134,7 @@ router.get('/share_to_friend_qrcode', function (req, res, next) {
       res.send("success");
     } else {
       var qrCodeUrl = util.format('https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=%s', json.ticket);
-      
+
       var share_msg = i18n.__('share_to_friend_qrcode_msg');
       var share_memo = i18n.__('share_to_friend_qrcode_memo');
       res.render('share_to_friend_qrcode', {
@@ -151,7 +152,9 @@ router.get('/share_to_friend_qrcode', function (req, res, next) {
 router.post('/bind_telphone', function (req, res, next) {
   var openid = req.body.openid;
   var telephone = req.body.telephone;
-  tttalk.bind_telphone(openid, telephone, function(err) {
+  account_dao.updateAccount(openid, {
+    telephone : telephone
+  }, function(err, results, account) {
     var url = '/profile?openid=' + openid + '&msg=' + encodeURIComponent(err ? err : 'saved');
     res.redirect(url);
   });
@@ -163,7 +166,10 @@ router.post('/change_account', function (req, res, next) {
   logger.info(req.body);
   var username = req.body.username;
   var sex = req.body.sex;
-  tttalk.change_account(openid, username, sex, function(err) {
+  account_dao.updateAccount(openid, {
+    username : username,
+    sex : sex
+  }, function(err, results, account) {
     var url = '/profile?openid=' + openid + '&msg=' + encodeURIComponent(err ? err : 'saved');
     res.redirect(url);
   });

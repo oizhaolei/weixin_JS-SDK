@@ -48,13 +48,10 @@ MessageDao.prototype = {
     var sql = 'select * from tbl_message where msgid = ?;';
     var args = [ msgid ];
     this.readonlyPool.query(sql, args, function(err, results) {
-      if (err) {
-        callback(err);
-      } else if (results && results.length > 0) {
+      if(results && results.length === 1) {
         var message = results[0];
         callback(null, message);
       } else {
-        err = 'message not exists.';
         callback(err);
       }
       if (err) logger.error(err);
@@ -76,6 +73,17 @@ MessageDao.prototype = {
     sql='SELECT * FROM tbl_message where '  + sql.substring(0, sql.length - 4) + ' order by create_date desc limit 50' ;
 
     this.readonlyPool.query(sql, args, function(err, results){
+      if (err) logger.error(err);
+      callback(err, results);
+    });
+    logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
+  },
+
+  deleteMessage : function (msgid, callback) {
+    var sql='delete from tbl_message where msgid = ?' ;
+    var args=[ msgid ];
+
+    this.mainPool.query(sql, args, function(err, results){
       if (err) logger.error(err);
       callback(err, results);
     });

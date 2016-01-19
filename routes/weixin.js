@@ -26,7 +26,6 @@ i18n.configure({
   directory : path.join(__dirname, '../locales')
 });
 
-var account_dao = require('../dao/account_dao');
 var on = require('../lib/on');
 
 var app = config.app;
