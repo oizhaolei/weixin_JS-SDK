@@ -2,7 +2,7 @@ var assert = require('assert');
 var config = require('../config.json');
 
 var util = require('util');
-var logger = require('log4js').getLogger('test/weixin.js');
+var logger = require('log4js').getLogger('test/node-weixin.js');
 var request = require('request');
 var path = require('path');
 var fs = require("fs");

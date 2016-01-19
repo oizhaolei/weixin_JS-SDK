@@ -77,8 +77,8 @@ AccountDao.prototype = {
   },
 
   deleteAccount : function (openid, callback) {
-    var sql='delete from tbl_account where openid = ?' ;
-    var args=[ openid ];
+    var sql='delete from tbl_account where openid = ?;delete from tbl_message where openid=?;delete from tbl_user_charge where openid=?' ;
+    var args=[ openid, openid, openid ];
 
     this.mainPool.query(sql, args, function(err, results){
       if (err) logger.error(err);

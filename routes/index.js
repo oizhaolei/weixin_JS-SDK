@@ -84,10 +84,11 @@ router.get('/profile', function (req, res, next) {
   var openid = req.query.openid;
   var msg = req.query.msg;
   tttalk.profile(openid, function(err, accountData) {
-    var bind_action = (accountData.telephone==""||accountData.telephone==null)?'绑定':'更改';
+    var bind_action = accountData.telephone ? '绑定' : '更改';
     res.render('profile', {
       layout : 'layout',
       title : '个人资料',
+      msg : msg,
       account : accountData,
       openid : openid,
       bind_action : bind_action
@@ -136,8 +137,9 @@ router.get('/share_to_friend', function (req, res, next) {
 router.post('/bind_telphone', function (req, res, next) {
   var openid = req.body.openid;
   var telephone = req.body.telephone;
-  tttalk.bind_telphone(openid, telephone, function(err, accountData) {
-    res.redirect('/profile?openid=' + openid);
+  tttalk.bind_telphone(openid, telephone, function(err) {
+    var url = '/profile?openid=' + openid + '&msg=' + encodeURIComponent(err ? err : 'saved');
+    res.redirect(url);
   });
 });
 
@@ -147,10 +149,9 @@ router.post('/change_account', function (req, res, next) {
   logger.info(req.body);
   var username = req.body.username;
   var sex = req.body.sex;
-  tttalk.change_account(openid, username, sex, function(err, accountData) {
-    res.locals.msg = 'saved.';
-
-    res.redirect('/profile?openid=' + openid);
+  tttalk.change_account(openid, username, sex, function(err) {
+    var url = '/profile?openid=' + openid + '&msg=' + encodeURIComponent(err ? err : 'saved');
+    res.redirect(url);
   });
 });
 

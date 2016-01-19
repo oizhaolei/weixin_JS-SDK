@@ -1,15 +1,9 @@
 // 微信消息回调接口
-// 80端口
-var OUTER_ID_TEST = 0;
-var OUTER_ID_SUBSCRIBE = 1;
 
 var config = require('../config.json');
 var logger = require('log4js').getLogger('routers/weixin.js');
-var util = require('util');
-var fs = require("fs");
 var crypto = require('crypto');
 
-var request = require('request');
 var path = require('path');
 
 var redis = require("redis");
@@ -31,23 +25,8 @@ i18n.configure({
   directory : path.join(__dirname, '../locales')
 });
 
-//T币换算成人民币分
-var tp2fen = function(fee) {
-  if (!fee) {
-    return 0;
-  }
-  return fee / 2;
-};
-var randomInt = function(low, high) {
-  return Math.floor(Math.random() * (high - low) + low);
-};
-
 var account_dao = require('../dao/account_dao');
-var tttalk = require('../lib/tttalk');
-var wxservice = require('../lib/wxservice');
-
-var from_lang = 'CN';
-var to_lang = 'KR';
+var on = require('../lib/on');
 
 var app = config.app;
 
@@ -56,71 +35,7 @@ var nwMessage = require('node-weixin-message');
 var messages = nwMessage.messages;
 var reply = nwMessage.reply;
 
-var nwUser = require('node-weixin-user');
 // Start
-
-//随机发送卡券
-var randomWxCard = function(app, openid, outerId) {
-  if (randomInt(0, 9) === 0) {
-    var cardId = config.card.random_pay;
-    logger.warn("send random card %s to %s", cardId, openid);
-    wxservice.wxcard(openid, cardId, outerId, function(err, data) {
-      //
-    });
-  }
-};
-
-var userSubscribe = function(openid, up_openid, msgid) {
-    account_dao.createAccount(openid, up_openid, function(err, oldAccount, results, account) {
-
-      if (!oldAccount) { //初次关注
-        if (up_openid) {
-          // 给推荐人奖励
-          tttalk.wxPay(up_openid,{
-            transaction_id: msgid,
-            total_fee: config.subscribe_reward,
-            cash_fee: '0',
-            fee_type: 'CNY',
-            result_code: 'SUCCESS',
-            return_code: 'SUCCESS',
-            trade_type : 'subscribe',
-            memo : openid
-          }, function(err, upAccount) {
-            if (err) {
-              logger.error(err);
-            } else {
-              wxservice.text(openid, i18n.__('subscribe_share_fee', upAccount.nickname, parseFloat(config.subscribe_reward) / 100, config.share_rules_url), function(err, data) {
-              });
-            }
-          });
-        }
-
-        //初次关注发送卡券
-        var cardId = config.card.first_pay;
-        wxservice.wxcard(openid, cardId, OUTER_ID_SUBSCRIBE, function(err, data) {
-        });
-      }
-      //获取用户信息
-      nwUser.profile(app, openid, function (err, data) {
-        logger.debug('err %s', err);
-        logger.debug('data %s', JSON.stringify(data));
-        if(!err){
-          account_dao.updateAccount(data.openid, {
-            nickname : data.nickname,
-            portrait : data.headimgurl,
-            sex : data.sex,
-            language : data.language,
-            city : data.city,
-            province : data.province,
-            country : data.country,
-            delete_flag : 0
-          }, function(err, results, account) {
-            //
-          });
-        }
-      });
-    });
-};
 
 router.post('/getSignature', function (req, res, next) {
   var url = req.body.url;
@@ -172,38 +87,10 @@ router.post('/', function(req, res, next) {
     res.send("success");
 
     var openid = msg.FromUserName;
-    randomWxCard(app, openid, OUTER_ID_TEST);
-
     var msgid = msg.MsgId;
     var content = msg.Content;
-    tttalk.saveText(msgid, from_lang, to_lang, content, openid, function(err, results) {
-      if (err) {
-        logger.error("saveText: %s", err);
-      } else {
-        tttalk.requestTranslate(msgid, openid, from_lang, to_lang, 'text',content, function(err, results) {
-          if (err) {
-            logger.error("saveText: %s", err);
-            wxservice.text(openid, results, function(err, data) {
-            });
-          } else {
-            var key = msgid;
-            redisClient.set(key, key);
 
-            //延迟发送客服消息
-            setTimeout(function() {
-              redisClient.get(key, function(err, reply) {
-                if (reply) {
-                  // 客服API消息回复
-                  wxservice.text(openid, i18n.__('translating_pls_wait'), function(err, data) {
-                  });
-                  redisClient.del(key);
-                }
-              });
-            }, 4*1000);
-          }
-        });
-      }
-    });
+    on.onText(openid, content, msgid);
   });
 
   // 监听图片消息
@@ -216,26 +103,10 @@ router.post('/', function(req, res, next) {
     res.send(text);
 
     var msgid = msg.MsgId;
-    var filename = msg.MediaId + '.jpg';
-    var file = fs.createWriteStream(path.join(config.tmpDirectory,  filename));
-    var url = msg.PicUrl;
+    var mediaid = msg.MediaId;
+    var picurl = msg.PicUrl;
 
-    request(url).pipe(file);
-    file.on('finish', function() {
-      tttalk.savePhoto(msgid, from_lang, to_lang, filename, openid, function(err, results) {
-        if (err) {
-          logger.error("saveText: %s", err);
-        } else {
-          tttalk.requestTranslate(msgid, openid, from_lang, to_lang, 'photo', filename, function(err, results) {
-            if (err) {
-              logger.error("savePhoto: %s", err);
-              wxservice.text(openid, results, function(err, data) {
-              });
-            }
-          });
-        }
-      });
-    });
+    on.onImage(openid, mediaid, msgid, picurl);
   });
 
   // 监听语音消息
@@ -247,30 +118,9 @@ router.post('/', function(req, res, next) {
     res.send(text);
 
     var msgid = msg.MsgId;
-    var filename = msg.MediaId + '.amr';
-    var file = fs.createWriteStream(path.join(config.tmpDirectory,  filename));
+    var mediaid = msg.MediaId;
 
-    nwAuth.determine(app, function (err, authData) {
-
-      var url = util.format('http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s', authData.accessToken, msg.MediaId);
-      logger.info("voice url: %s", url);
-      request(url).pipe(file);
-      file.on('finish', function() {
-        tttalk.saveVoice(msgid, from_lang, to_lang, filename, openid, function(err, results) {
-          if (err) {
-            logger.error("saveText: %s", err);
-          } else {
-            tttalk.requestTranslate(msgid, openid, from_lang, to_lang, 'voice', filename, function(err, results) {
-              if (err) {
-                logger.info("saveVoice: %s", err);
-                wxservice.text(openid, results, function(err, data) {
-                });
-              }
-            });
-          }
-        });
-      });
-    });
+    on.onVoice(openid, mediaid, msgid);
   });
 
   // 监听位置消息
@@ -300,18 +150,15 @@ router.post('/', function(req, res, next) {
       up_openid = msg.EventKey.substring(8);
     }
 
-    userSubscribe(openid, up_openid, msg.MsgId);
+    on.onSubscribe(openid, up_openid, msg.MsgId);
   });
   messages.event.on.unsubscribe(function(msg) {
     logger.info("unsubscribe received");
     logger.info(msg);
     res.send("success");
-    // 用户取消关注
-    account_dao.updateAccount(msg.FromUserName, {
-      delete_flag : 1
-    }, function(err, results, account) {
-      logger.debug('unsubscribe %s', msg.FromUserName);
-    });
+
+    var openid = msg.FromUserName;
+    on.onUnsubscribe(openid);
   });
   messages.event.on.scan(function(msg) {
     logger.info("scan received");
@@ -349,26 +196,9 @@ router.post('/', function(req, res, next) {
 });
 router.post('/translate_callback', function(req, res, next) {
   var params = req.body;
-
-  var msgid = params.callback_id;
-  var from_content_length = params.from_content_length;
-  var to_content = params.to_content;
-  var fee = tp2fen(params.fee);
-
-  //取消 delayed job
-  redisClient.del(msgid);
   logger.debug('params: %s' , JSON.stringify(params));
+  res.send("success");
 
-  tttalk.translate_callback(msgid, to_content, fee, from_content_length,  function(err, message) {
-    if (err) {
-      logger.info(err);
-    } else {
-      // 客服API消息回复
-      wxservice.text(message.openid, to_content, function(err, data) {
-      });
-
-      console.log('message: %s', JSON.stringify(message));
-    }
-  });
+  on.onTranslateCallback(params);
 });
 module.exports = router;
