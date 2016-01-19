@@ -11,7 +11,7 @@ describe('account dao', function () {
     }, function(err, charges) {
       assert(!err);
       assert(charges);
-      assert(charges.length > 0);
+      assert(charges.length >= 0);
       done();
     });
   });
@@ -23,7 +23,7 @@ describe('account dao', function () {
     }, function(err, charges) {
       assert(!err);
       assert(charges);
-      assert(charges.length > 0);
+      assert(charges.length >= 0);
       done();
     });
   });

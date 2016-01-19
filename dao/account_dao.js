@@ -82,8 +82,7 @@ AccountDao.prototype = {
 
     this.mainPool.query(sql, args, function(err, results){
       if (err) logger.error(err);
-      if (!err && results.affectedRows === 0) err = 'no data change';
-      callback(err, results);
+      callback(err, results[0]);
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   }

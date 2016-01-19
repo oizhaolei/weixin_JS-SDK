@@ -27,9 +27,9 @@ describe('tttalk', function () {
       assert(accountData);
       assert.equal(accountData.openid, openid);
       assert(feeHistoryData);
-      assert(feeHistoryData.length > 0);
+      assert(feeHistoryData.length >= 0);
       assert(chargeHistoryData);
-      assert(chargeHistoryData.length > 0);
+      assert(chargeHistoryData.length >= 0);
       done();
     });
   });
@@ -44,7 +44,7 @@ describe('tttalk', function () {
           account_dao.getByOpenid(up_openid, function(err, oldUpAccount) {
             // 给推荐人奖励
             tttalk.wxPay(up_openid,{
-              transaction_id: 'createAccount' + seed,
+              transaction_id: 'tttalk' + seed++,
               total_fee: config.subscribe_reward,
               cash_fee: config.subscribe_reward,
               fee_type: 'CNY',
@@ -82,7 +82,7 @@ describe('tttalk', function () {
       });
     }, function(callback) {
       var wxmessage = {
-        transaction_id: '100660' + seed,
+        transaction_id: 'tttalk' + seed++,
         cash_fee: '0',
         total_fee: '1',
         fee_type: 'CNY',
@@ -117,9 +117,10 @@ describe('tttalk', function () {
                         time_end: '20160108130216',
                         total_fee: '1',
                         trade_type: 'JSAPI',
-                        transaction_id: seed,
+                        transaction_id: 'tttalk' + seed++,
                       };
       tttalk.wxPay(openid, wxmessage, function(err, account, charge) {
+        console.log(err);
         console.log(account);
         console.log(charge);
         assert(!err);
@@ -130,7 +131,9 @@ describe('tttalk', function () {
       });
     }, function(callback) {
       var fee = 98;
-      tttalk._charge(openid, 0, fee, 'code', 'card_id', '', 'wxcard', '', '', 'card_id', function(err, account, charge) {
+      var code = 'tttalk' + seed++;
+      tttalk._charge(openid, 0, fee, code, 'card_id', '', 'wxcard', '', '', 'card_id', function(err, account, charge) {
+        console.log(err);
         console.log(account);
         console.log(charge);
         assert(!err);
