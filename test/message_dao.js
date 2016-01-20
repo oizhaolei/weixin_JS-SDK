@@ -27,7 +27,19 @@ describe('message_dao', function () {
     message_dao.saveMessage(msgid, from_lang, to_lang, filetype, content, openid, function(err, results) {
       assert(!err);
       assert(results);
-      assert(results.affectedRows === 1);
+      assert.equal(results.affectedRows, 1);
+      done();
+    });
+  });
+  it('updateMessage', function (done) {
+    var to_content = 'hello';
+    message_dao.updateMessage(msgid, {
+      to_content : to_content
+    }, function(err, results, message) {
+      assert(!err);
+      assert.equal(results.affectedRows, 1);
+      assert(message);
+      assert.equal(message.to_content, to_content);
       done();
     });
   });
