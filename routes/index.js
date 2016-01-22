@@ -85,15 +85,19 @@ router.get('/profile', function (req, res, next) {
   var openid = req.query.openid;
   var msg = req.query.msg;
   account_dao.getByOpenid(openid, function(err, accountData) {
-    var bind_action = accountData.telephone ? '绑定' : '更改';
-    res.render('profile', {
-      layout : 'layout',
-      title : '个人资料',
-      msg : msg,
-      account : accountData,
-      openid : openid,
-      bind_action : bind_action
-    });
+    if (err) {
+      next(err);
+    } else {
+      var bind_action = accountData.telephone ? '绑定' : '更改';
+      res.render('profile', {
+        layout : 'layout',
+        title : '个人资料',
+        msg : msg,
+        account : accountData,
+        openid : openid,
+        bind_action : bind_action
+      });
+    }
   });
 });
 
@@ -101,13 +105,17 @@ router.get('/profile', function (req, res, next) {
 router.get('/fee_history', function (req, res, next) {
   var openid = req.query.openid;
   tttalk.fee_history(openid, function(err, accountData, feeHistoryData, chargeHistoryData) {
-    res.render('fee_history', {
-      layout : 'layout',
-      title : '我的账单',
-      account : accountData,
-      feeHistory : feeHistoryData,
-      chargeHistory : chargeHistoryData
-    });
+    if (err) {
+      next(err);
+    } else {
+      res.render('fee_history', {
+        layout : 'layout',
+        title : '我的账单',
+        account : accountData,
+        feeHistory : feeHistoryData,
+        chargeHistory : chargeHistoryData
+      });
+    }
   });
 });
 
@@ -131,7 +139,7 @@ router.get('/share_to_friend_qrcode', function (req, res, next) {
   var nwLink = require('node-weixin-link');
   nwLink.qrcode.permanent.createString(app, openid, function (err, json) {
     if (err) {
-      res.send("success");
+      next(err);
     } else {
       var qrCodeUrl = util.format('https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=%s', json.ticket);
 
@@ -155,8 +163,12 @@ router.post('/bind_telphone', function (req, res, next) {
   account_dao.updateAccount(openid, {
     telephone : telephone
   }, function(err, results, account) {
-    var url = '/profile?openid=' + openid + '&msg=' + encodeURIComponent(err ? err : 'saved');
-    res.redirect(url);
+    if (err) {
+      next(err);
+    } else {
+      var url = '/profile?openid=' + openid + '&msg=' + encodeURIComponent(err ? err : 'saved');
+      res.redirect(url);
+    }
   });
 });
 
@@ -170,8 +182,12 @@ router.post('/change_account', function (req, res, next) {
     username : username,
     sex : sex
   }, function(err, results, account) {
-    var url = '/profile?openid=' + openid + '&msg=' + encodeURIComponent(err ? err : 'saved');
-    res.redirect(url);
+    if (err) {
+      next(err);
+    } else {
+      var url = '/profile?openid=' + openid + '&msg=' + encodeURIComponent(err ? err : 'saved');
+      res.redirect(url);
+    }
   });
 });
 

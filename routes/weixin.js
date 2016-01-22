@@ -35,6 +35,123 @@ var nwMessage = require('node-weixin-message');
 var messages = nwMessage.messages;
 var reply = nwMessage.reply;
 
+// 监听文本消息
+messages.on.text(function(msg, res) {
+  logger.info("textMsg received");
+  logger.info(msg);
+  res.send("success");
+
+  var openid = msg.FromUserName;
+  var msgid = msg.MsgId;
+  var content = msg.Content;
+
+  on.onText(openid, content, msgid);
+});
+
+// 监听图片消息
+messages.on.image(function(msg, res) {
+  logger.info("imageMsg received");
+  logger.info(msg);
+
+  var openid = msg.FromUserName;
+  var text = reply.text(msg.ToUserName, openid, i18n.__('translating_pls_wait'));
+  res.send(text);
+
+  var msgid = msg.MsgId;
+  var mediaid = msg.MediaId;
+  var picurl = msg.PicUrl;
+
+  on.onImage(openid, mediaid, picurl, msgid);
+});
+
+// 监听语音消息
+messages.on.voice(function(msg, res) {
+  logger.info("voiceMsg received");
+  logger.info(msg);
+  var openid = msg.FromUserName;
+  var text = reply.text(msg.ToUserName, openid, i18n.__('translating_pls_wait'));
+  res.send(text);
+
+  var msgid = msg.MsgId;
+  var mediaid = msg.MediaId;
+
+  nwAuth.determine(app, function (err, authData) {
+    var url = util.format('http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s', authData.accessToken, mediaid);
+    logger.info("voice url: %s", url);
+    on.onVoice(openid, mediaid, url, msgid);
+  });
+});
+
+// 监听位置消息
+messages.on.location(function(msg, res) {
+  logger.info("locationMsg received");
+  logger.info(msg);
+  res.send("success");
+});
+
+// 监听链接消息
+messages.on.link(function(msg, res) {
+  logger.info("linkMsg received");
+  logger.info(msg);
+  res.send("success");
+});
+
+//监听事件消息
+messages.event.on.subscribe(function(msg, res) {
+  logger.info("subscribe received");
+  logger.info(msg);
+  var openid = msg.FromUserName;
+  var text = reply.text(msg.ToUserName, openid, i18n.__('subscribe_success'));
+  res.send(text);
+
+  var up_openid = '';
+  if (msg.EventKey.indexOf('qrscene_') === 0) {
+    up_openid = msg.EventKey.substring(8);
+  }
+
+  on.onSubscribe(openid, up_openid, msg.MsgId);
+});
+messages.event.on.unsubscribe(function(msg, res) {
+  logger.info("unsubscribe received");
+  logger.info(msg);
+  res.send("success");
+
+  var openid = msg.FromUserName;
+  on.onUnsubscribe(openid);
+});
+messages.event.on.scan(function(msg, res) {
+  logger.info("scan received");
+  logger.info(msg);
+  res.send("success");
+});
+messages.event.on.location(function(msg, res) {
+  logger.info("location received");
+  logger.info(msg);
+  res.send("success");
+});
+messages.event.on.click(function(msg, res) {
+  logger.info("click received");
+  logger.info(msg);
+  switch (msg.EventKey) {
+  case 'usage_translate' :
+    var text = reply.text(msg.ToUserName, msg.FromUserName, i18n.__('usage_translate'));
+    res.send(text);
+    break;
+    default :
+    res.send("success");
+  }
+});
+messages.event.on.view(function(msg, res) {
+  logger.info("view received");
+  logger.info(msg);
+  res.send("success");
+});
+messages.event.on.templatesendjobfinish(function(msg, res) {
+  logger.info("templatesendjobfinish received");
+  logger.info(msg);
+  res.send("success");
+});
+
 // Start
 
 router.post('/getSignature', function (req, res, next) {
@@ -73,125 +190,8 @@ router.post('/', function(req, res, next) {
       explicitArray : false,
       ignoreAttrs : true
     }, function(error, json) {
-      messages.parse(json.xml);
+      messages.parse(json.xml, res);
     });
-  });
-
-  // 监听文本消息
-  messages.on.text(function(msg) {
-    logger.info("textMsg received");
-    logger.info(msg);
-    res.send("success");
-
-    var openid = msg.FromUserName;
-    var msgid = msg.MsgId;
-    var content = msg.Content;
-
-    on.onText(openid, content, msgid);
-  });
-
-  // 监听图片消息
-  messages.on.image(function(msg) {
-    logger.info("imageMsg received");
-    logger.info(msg);
-
-    var openid = msg.FromUserName;
-    var text = reply.text(msg.ToUserName, openid, i18n.__('translating_pls_wait'));
-    res.send(text);
-
-    var msgid = msg.MsgId;
-    var mediaid = msg.MediaId;
-    var picurl = msg.PicUrl;
-
-    on.onImage(openid, mediaid, picurl, msgid);
-  });
-
-  // 监听语音消息
-  messages.on.voice(function(msg) {
-    logger.info("voiceMsg received");
-    logger.info(msg);
-    var openid = msg.FromUserName;
-    var text = reply.text(msg.ToUserName, openid, i18n.__('translating_pls_wait'));
-    res.send(text);
-
-    var msgid = msg.MsgId;
-    var mediaid = msg.MediaId;
-
-    nwAuth.determine(app, function (err, authData) {
-      var url = util.format('http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s', authData.accessToken, mediaid);
-      logger.info("voice url: %s", url);
-      on.onVoice(openid, mediaid, url, msgid);
-    });
-  });
-
-  // 监听位置消息
-  messages.on.location(function(msg) {
-    logger.info("locationMsg received");
-    logger.info(msg);
-    res.send("success");
-  });
-
-  // 监听链接消息
-  messages.on.link(function(msg) {
-    logger.info("linkMsg received");
-    logger.info(msg);
-    res.send("success");
-  });
-
-//监听事件消息
-  messages.event.on.subscribe(function(msg) {
-    logger.info("subscribe received");
-    logger.info(msg);
-    var openid = msg.FromUserName;
-    var text = reply.text(msg.ToUserName, openid, i18n.__('subscribe_success'));
-    res.send(text);
-
-    var up_openid = '';
-    if (msg.EventKey.indexOf('qrscene_') === 0) {
-      up_openid = msg.EventKey.substring(8);
-    }
-
-    on.onSubscribe(openid, up_openid, msg.MsgId);
-  });
-  messages.event.on.unsubscribe(function(msg) {
-    logger.info("unsubscribe received");
-    logger.info(msg);
-    res.send("success");
-
-    var openid = msg.FromUserName;
-    on.onUnsubscribe(openid);
-  });
-  messages.event.on.scan(function(msg) {
-    logger.info("scan received");
-    logger.info(msg);
-    res.send("success");
-  });
-  messages.event.on.location(function(msg) {
-    logger.info("location received");
-    logger.info(msg);
-    res.send("success");
-  });
-  messages.event.on.click(function(msg) {
-    logger.info("click received");
-    logger.info(msg);
-    switch (msg.EventKey) {
-    case 'usage_translate' :
-      var text = reply.text(msg.ToUserName, msg.FromUserName, i18n.__('usage_translate'));
-      res.send(text);
-      break;
-    default :
-      res.send("success");
-    }
-  });
-  messages.event.on.view(function(msg) {
-    logger.info("view received");
-    logger.info(msg);
-    res.send("success");
-  });
-  messages.event.on.templatesendjobfinish(function(msg) {
-    logger.info("templatesendjobfinish received");
-    logger.info(msg);
-    res.send("success");
   });
 
 });
