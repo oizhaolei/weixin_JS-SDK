@@ -1,7 +1,6 @@
 var assert = require('assert');
 var config = require('../config.json');
 
-var async = require('async');
 var moment = require("moment");
 var seed = moment().unix() ;
 
