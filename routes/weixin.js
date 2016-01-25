@@ -35,14 +35,19 @@ var nwMessage = require('node-weixin-message');
 var reply = nwMessage.reply;
 
 // Start
-
-router.post('/getSignature', function (req, res, next) {
+router.all('/getSignature', function (req, res, next) {
   var url = req.body.url;
-  logger.info(url);
+  logger.info('url: %s', url);
 
   nwAuth.determine(app, function (err, authData) {
+    if (err) {
+      throw new Error(err);
+    }
     var type = 'jsapi';
     nwAuth.ticket.determine(app, authData.accessToken, type, function(err, ticket) {
+      if (err) {
+        throw new Error(err);
+      }
       var timestamp = String((new Date().getTime() / 1000).toFixed(0));
       var noncestr = crypto.createHash('sha1').update(timestamp).digest('hex');
       var str = 'jsapi_ticket=' + ticket.ticket + '&noncestr='+ noncestr+'&timestamp=' + timestamp + '&url=' + url;
@@ -56,6 +61,19 @@ router.post('/getSignature', function (req, res, next) {
       });
     });
   });
+});
+
+router.get('/', function (req, res, next) {
+  var signature = req.query.signature;
+  var timestamp = req.query.timestamp;
+  var nonce = req.query.nonce;
+  var echostr = req.query.echostr;
+  if(nwAuth.check(config.app.token, signature, timestamp, nonce)){
+    res.send(echostr);
+  }else{
+    res.send('invalid request');
+  }
+
 });
 
 router.post('/', function(req, res, next) {
