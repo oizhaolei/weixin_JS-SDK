@@ -237,7 +237,7 @@ describe('weixin link', function () {
 });
 describe('weixin jssdk', function () {
   it('ticket', function (done) {
-    var url = 'http://test.tttalk.org/test.html';
+    var url = 'http://wechat.tttalk.org/test.html';
     nwAuth.determine(app, function (err, authData) {
       var type = 'jsapi';
       nwAuth.ticket.determine(app, authData.accessToken, type, function(err, ticket) {

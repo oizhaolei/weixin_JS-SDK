@@ -7,13 +7,6 @@ var util = require('util');
 
 var path = require('path');
 
-var redis = require("redis");
-var redisClient = redis.createClient(config.redis);
-
-redisClient.on("error", function (err) {
-  console.log("Error " + err);
-});
-
 var express = require('express');
 var router = express.Router();
 
