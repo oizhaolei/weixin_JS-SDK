@@ -1,4 +1,4 @@
- <div class="panel panel-primary">
+<div class="panel panel-primary">
   <div class="panel-heading">
    <h3 class="panel-title">TTTalk翻译秘书</h3>
   </div>
@@ -8,3 +8,34 @@
      <h5 class="text-muted">{{share_memo}}<h5>
   </div>
 </div>
+{{#extend "scripts"}}
+<script src="/jweixin-1.0.0.js" > </script>
+<script>
+   $.ajax({
+        url: '/weixin/getsignature',
+        type: 'post',
+        data: {
+            url: location.href.split('#')[0]
+        }
+    }).done(function(r) {
+        wx.config({
+            appId: r.appId,
+            timestamp: r.timestamp,
+            nonceStr: r.nonceStr,
+            signature: r.signature,
+            jsApiList: [
+                'onMenuShareAppMessage'
+            ]
+        });
+    });
+    wx.ready(function() {
+    var shareData = {
+      title: 'TTTalk翻译秘书',
+      desc: '你还在为看不懂韩语而苦恼吗？那请你关注TTTalk翻译，它会为你帮你搞定这一切，赶紧关注吧。',
+      imgUrl: 'http://file.tttalk.org/public/weixin_logo.png'
+    };
+    wx.onMenuShareAppMessage(shareData);
+    wx.onMenuShareTimeline(shareData);
+    });
+</script > 
+{{/extend}}
