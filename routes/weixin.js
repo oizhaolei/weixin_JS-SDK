@@ -20,6 +20,7 @@ i18n.configure({
 });
 
 var on = require('../lib/on');
+var wxservice = require('../lib/wxservice');
 
 var app = config.app;
 
@@ -76,7 +77,6 @@ router.post('/', function(req, res, next) {
   messages.on.text(function(msg, res) {
     logger.info("textMsg received");
     logger.info(msg);
-    res.send("success");
 
     var openid = msg.FromUserName;
     var msgid = msg.MsgId;
@@ -92,7 +92,8 @@ router.post('/', function(req, res, next) {
 
     var openid = msg.FromUserName;
     var text = reply.text(msg.ToUserName, openid, i18n.__('translating_pls_wait'));
-    res.send(text);
+    wxservice.text(openid, text, function(err, data) {
+    });
 
     var msgid = msg.MsgId;
     var mediaid = msg.MediaId;
@@ -107,7 +108,8 @@ router.post('/', function(req, res, next) {
     logger.info(msg);
     var openid = msg.FromUserName;
     var text = reply.text(msg.ToUserName, openid, i18n.__('translating_pls_wait'));
-    res.send(text);
+    wxservice.text(openid, text, function(err, data) {
+    });
 
     var msgid = msg.MsgId;
     var mediaid = msg.MediaId;
@@ -123,14 +125,12 @@ router.post('/', function(req, res, next) {
   messages.on.location(function(msg, res) {
     logger.info("locationMsg received");
     logger.info(msg);
-    res.send("success");
   });
 
   // 监听链接消息
   messages.on.link(function(msg, res) {
     logger.info("linkMsg received");
     logger.info(msg);
-    res.send("success");
   });
 
   //监听事件消息
@@ -139,7 +139,8 @@ router.post('/', function(req, res, next) {
     logger.info(msg);
     var openid = msg.FromUserName;
     var text = reply.text(msg.ToUserName, openid, i18n.__('subscribe_success'));
-    res.send(text);
+    wxservice.text(openid, text, function(err, data) {
+    });
 
     var up_openid = '';
     if (msg.EventKey.indexOf('qrscene_') === 0) {
@@ -151,7 +152,6 @@ router.post('/', function(req, res, next) {
   messages.event.on.unsubscribe(function(msg, res) {
     logger.info("unsubscribe received");
     logger.info(msg);
-    res.send("success");
 
     var openid = msg.FromUserName;
     on.onUnsubscribe(openid);
@@ -159,34 +159,30 @@ router.post('/', function(req, res, next) {
   messages.event.on.scan(function(msg, res) {
     logger.info("scan received");
     logger.info(msg);
-    res.send("success");
   });
   messages.event.on.location(function(msg, res) {
     logger.info("location received");
     logger.info(msg);
-    res.send("success");
   });
   messages.event.on.click(function(msg, res) {
     logger.info("click received");
     logger.info(msg);
     switch (msg.EventKey) {
     case 'usage_translate' :
-      var text = reply.text(msg.ToUserName, msg.FromUserName, i18n.__('usage_translate'));
-      res.send(text);
+      var openid = msg.FromUserName;
+      var text = i18n.__('usage_translate');
+      wxservice.text(openid, text, function(err, data) {
+      });
       break;
-      default :
-      res.send("success");
     }
   });
   messages.event.on.view(function(msg, res) {
     logger.info("view received");
     logger.info(msg);
-    res.send("success");
   });
   messages.event.on.templatesendjobfinish(function(msg, res) {
     logger.info("templatesendjobfinish received");
     logger.info(msg);
-    res.send("success");
   });
 
   // 获取XML内容
@@ -198,7 +194,8 @@ router.post('/', function(req, res, next) {
 
   // 内容接收完毕
   req.on('end', function() {
-    x2j.parseString(xml, {
+   res.send("success");
+   x2j.parseString(xml, {
       explicitArray : false,
       ignoreAttrs : true
     }, function(err, json) {
