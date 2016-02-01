@@ -40,9 +40,9 @@ router.get('/list', function (req, res, next) {
 });
 
 // 支付
-router.get('/pay', function (req, res, next) {
-  var openid = req.query.openid;
-  var fee = req.query.fee;
+router.post('/pay', function (req, res, next) {
+  var openid = req.body.openid;
+  var fee = req.body.fee;
 
   var detail = parseFloat(fee)/100 + '元';
   var requestParams = {
@@ -56,12 +56,7 @@ router.get('/pay', function (req, res, next) {
   };
   wxpay.getBrandWCPayRequestParams(requestParams, function(err, result){
     logger.info("getBrandWCPayRequestParams: %s, %s", JSON.stringify(requestParams), JSON.stringify(result));
-    res.render('wxpay_detail', {
-      layout : 'layout',
-      title : '微信支付',
-      params : requestParams,
-      payargs : result
-    });
+    res.json(result);
   });
 });
 // 回调 处理商户业务逻辑

@@ -24,6 +24,14 @@ var wxcard = require('../lib/wxcard');
 // nonceStr: '', // 卡券签名随机串
 // signType: '', // 签名方式，默认'SHA1'
 // cardSign: '', // 卡券签名
+router.get('/', function (req, res, next) {
+  var openid = req.query.openid;
+  res.render('wxcard_list', {
+    layout : 'layout',
+    title : '我的优惠券',
+    openid : openid
+  });
+});
 router.get('/list', function (req, res, next) {
   var openid = req.query.openid;
   wxcard.list(openid, '', function(err, card_list) {
@@ -44,11 +52,7 @@ router.get('/list', function (req, res, next) {
         } else {
           logger.debug('card_list: %s', JSON.stringify(card_list));
 
-          res.render('wxcard_list', {
-            layout : 'layout',
-            title : '我的优惠券',
-            card_list: card_list
-          });
+          res.json( card_list );
         }
       });
     }
@@ -68,6 +72,7 @@ router.get('/consume', function (req, res, next) {
       res.render('wxcard_consume', {
         layout : 'layout',
         title : '我的优惠券',
+        openid : openid,
         msg : content
       });
     } else {
@@ -84,6 +89,7 @@ router.get('/consume', function (req, res, next) {
               res.render('wxcard_consume', {
                 layout : 'layout',
                 title : '我的优惠券',
+                openid : openid,
                 msg : content
               });
             } else {
@@ -93,6 +99,7 @@ router.get('/consume', function (req, res, next) {
                 title : '我的优惠券',
                 account : account,
                 charge : charge,
+                openid : openid,
                 msg : content
               });
             }

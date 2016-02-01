@@ -1,20 +1,71 @@
-{{#each card_list}}
-<div class="panel">
- <div class="panel-heading">
-  <h5>{{card_detail.cash.base_info.brand_name}}</h5>
- </div>
- <div class="panel-body">
-  <h3 class="text-center"><strong>{{card_detail.cash.base_info.title}}</strong><h3>
-  <h5 class="text-center text-muted">{{card_detail.cash.base_info.sub_title}}<h5>
-  <a href="/wxcard/consume?openid={{openid}}&code={{code}}&card_id={{card_id}}" class="weui_btn weui_btn_plain_primary">立即使用</button></a>
- </div>
-</div>
-{{else}}
-<div class="weui_msg">
-    <div class="weui_icon_area"><i class="weui_icon_msg weui_icon_warn"></i></i></div>
-    <div class="weui_text_area">
-        <h2 class="weui_msg_title"></h2>
-        <p class="weui_msg_desc">没有相关数据</p>
+<div id="loadingToast" class="weui_loading_toast" style="display:none;">
+    <div class="weui_mask_transparent"></div>
+    <div class="weui_toast">
+        <div class="weui_loading">
+            <!-- :) -->
+            <div class="weui_loading_leaf weui_loading_leaf_0"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_1"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_2"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_3"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_4"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_5"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_6"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_7"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_8"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_9"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_10"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_11"></div>
+        </div>
+        <p class="weui_toast_content">数据加载中</p>
     </div>
 </div>
-{{/each}}
+<script id="card-template" type="text/x-handlebars-template">
+    \{{#if card_list}}
+        \{{#each card_list}}
+            <div class="panel">
+                <div class="panel-heading">
+                    <h5>\{{card_detail.cash.base_info.brand_name}}</h5>
+                </div>
+                <div class="panel-body">
+                    <h3 class="text-center"><strong>\{{card_detail.cash.base_info.title}}</strong></h3>
+                    <h5 class="text-center text-muted">\{{card_detail.cash.base_info.sub_title}}</h5>
+                    <a href="/wxcard/consume?openid=\{{openid}}&code=\{{code}}&card_id=\{{card_id}}" class="weui_btn weui_btn_plain_primary">立即使用</a>
+                </div>
+            </div>
+        \{{/each}}
+    \{{else}}
+        <div class="weui_msg">
+            <div class="weui_icon_area"><i class="weui_icon_msg weui_icon_warn"></i></i></div>
+            <div class="weui_text_area">
+                <h2 class="weui_msg_title"></h2>
+                <p class="weui_msg_desc">没有相关数据</p>
+            </div>
+        </div>
+    \{{/if}}
+</script>
+
+
+<div id="cards">
+</div>
+
+{{#extend "scripts"}}
+    <script src="/bower_components/handlebars/handlebars.min.js"></script>
+    <script>
+     $(function () {
+         var $loadingToast = $('#loadingToast');
+         if ($loadingToast.css('display') != 'none') {
+             return;
+         }
+
+         $loadingToast.show();
+         $.ajax( {
+             url: '/wxcard/list?openid={{openid}}'
+         }).then(function(data) {
+             var template = Handlebars.compile($('#card-template').html());
+             $('#cards').html(template({ card_list : data }));
+
+             $loadingToast.hide();
+         });
+     });
+    </script>
+{{/extend}}

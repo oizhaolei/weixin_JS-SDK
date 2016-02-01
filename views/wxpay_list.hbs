@@ -5,24 +5,59 @@
   <div class="bd spacing">
     <div class="row">
       <div class="panel-body col-xs-6">
-        <a href="/wxpay/pay?openid={{openid}}&amp;fee=1" class="weui_btn weui_btn_plain_primary">0.01元</a>
+        <a fee="1" class="weui_btn weui_btn_plain_primary btn-pay">0.01元</a>
       </div>
       <div class="panel-body col-xs-6">
-        <a href="/wxpay/pay?openid={{openid}}&amp;fee=100" class="weui_btn weui_btn_plain_primary">1.00元</a>
+        <a fee="100" class="weui_btn weui_btn_plain_primary btn-pay">1.00元</a>
       </div>
       <div class="panel-body col-xs-6">
-        <a href="/wxpay/pay?openid={{openid}}&amp;fee=1000" class="weui_btn weui_btn_plain_primary">10.00元</a>
+        <a fee="1000" class="weui_btn weui_btn_plain_primary btn-pay">10.00元</a>
       </div>
       <div class="panel-body col-xs-6">
-        <a href="/wxpay/pay?openid={{openid}}&amp;fee=5000" class="weui_btn weui_btn_plain_primary">50.00元</a>
+        <a fee="5000" class="weui_btn weui_btn_plain_primary btn-pay">50.00元</a>
       </div>
       <div class="panel-body col-xs-6">
-        <a href="/wxpay/pay?openid={{openid}}&amp;fee=10000" class="weui_btn weui_btn_plain_primary">100.00元</a>
+        <a fee="10000" class="weui_btn weui_btn_plain_primary btn-pay">100.00元</a>
       </div>
       <div class="panel-body col-xs-6">
-        <a href="/wxpay/pay?openid={{openid}}&amp;fee=20000" class="weui_btn weui_btn_plain_primary">200.00元</a>
+        <a fee="20000" class="weui_btn weui_btn_plain_primary btn-pay">200.00元</a>
       </div>
     </div>
 
   </div>
 </div>
+
+{{#extend "scripts"}}
+    <script src="/jweixin-1.0.0.js"></script>
+    <script>
+     $(function () {
+         $('.btn-pay').click(function () {
+             var fee = $(this).attr("fee");
+             $.ajax({
+                 url: '/wxpay/pay',
+                 type: 'post',
+                 data: {
+                     openid: '{{openid}}',
+                     fee : fee
+                 }
+             }).then(function(data) {
+                 WeixinJSBridge.invoke('getBrandWCPayRequest', data, function(res){
+                     _log(res);
+                     WeixinJSBridge.call('closeWindow');
+                 });
+             });
+
+         });
+     });
+
+     function _log(msg) {
+         $.ajax({
+             url: '/log',
+             type: 'post',
+             data: {
+                 msg: msg
+             }
+         });
+     }
+    </script>
+{{/extend}}

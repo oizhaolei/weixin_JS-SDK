@@ -55,7 +55,7 @@ router.get('/oauth', function (req, res, next) {
         break;
 
       case 'wxcard' :
-        res.redirect('/wxcard/list?openid=' + openid);
+        res.redirect('/wxcard/?openid=' + openid);
         break;
 
       case 'share_to_friend' :
