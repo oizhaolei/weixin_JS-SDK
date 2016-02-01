@@ -28,7 +28,7 @@ router.get('/', function (req, res, next) {
   var openid = req.query.openid;
   res.render('wxcard_list', {
     layout : 'layout',
-    title : '我的优惠券',
+    title : '我的卡券',
     openid : openid
   });
 });
@@ -71,7 +71,7 @@ router.get('/consume', function (req, res, next) {
       //已经使用过此券
       res.render('wxcard_consume', {
         layout : 'layout',
-        title : '我的优惠券',
+        title : '我的卡券',
         openid : openid,
         msg : content
       });
@@ -88,7 +88,7 @@ router.get('/consume', function (req, res, next) {
               var content = i18n.__('card_consume_error');
               res.render('wxcard_consume', {
                 layout : 'layout',
-                title : '我的优惠券',
+                title : '我的卡券',
                 openid : openid,
                 msg : content
               });
@@ -96,7 +96,7 @@ router.get('/consume', function (req, res, next) {
               var content = i18n.__('card_consume_success', parseFloat(charge.total_fee)/100, parseFloat(account.balance)/100);
               res.render('wxcard_consume', {
                 layout : 'layout',
-                title : '我的优惠券',
+                title : '我的卡券',
                 account : account,
                 charge : charge,
                 openid : openid,
