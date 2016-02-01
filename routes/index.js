@@ -156,31 +156,17 @@ router.get('/share_to_friend_qrcode', function (req, res, next) {
   });
 });
 
-//bind_telphone
-router.post('/bind_telphone', function (req, res, next) {
-  var openid = req.body.openid;
-  var telephone = req.body.telephone;
-  account_dao.updateAccount(openid, {
-    telephone : telephone
-  }, function(err, results, account) {
-    if (err) {
-      next(err);
-    } else {
-      var url = '/profile?openid=' + openid + '&msg=' + encodeURIComponent(err ? err : 'saved');
-      res.redirect(url);
-    }
-  });
-});
-
 //change account
 router.post('/change_account', function (req, res, next) {
   var openid = req.body.openid;
   logger.info(req.body);
   var username = req.body.username;
   var sex = req.body.sex;
+  var telephone = req.body.telephone;
   account_dao.updateAccount(openid, {
     username : username,
-    sex : sex
+    sex : sex,
+    telephone : telephone
   }, function(err, results, account) {
     if (err) {
       next(err);

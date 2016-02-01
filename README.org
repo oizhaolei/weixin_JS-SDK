@@ -12,6 +12,7 @@ http://wechat.tttalk.org/wxpay/
 ** 安装
  - npm install; bower install
  - cp  config.json.sample config.json
+ - gulp less
  - rsync -avz --exclude ./cache.json --exclude .git  --delete -e "ssh -p 22000" ./ zhaolei@test:/work/test/weixin_message/;ssh -p 22000 zhaolei@test 'export APP_OPENID=osQJkw2UHrHoPkvar90v1AK1R8pM;cd /work/test/weixin_message/;gulp mocha'
 * TODO-LIST
 ** DONE 用户计费
@@ -42,3 +43,4 @@ http://wechat.tttalk.org/wxpay/
 ** TODO 分享卡券
 ** NEXT 我要翻译做成websocket+nodejs
 ** TODO account更新batch，所有的用户都更新一遍 account信息
+**

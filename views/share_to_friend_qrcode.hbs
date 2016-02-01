@@ -1,13 +1,20 @@
-<div class="panel panel-primary">
-  <div class="panel-heading">
-   <h3 class="panel-title">TTTalk翻译秘书</h3>
+<div class="page">
+  <div class="hd">
+    <h2 class="page_title">TTTalk翻译秘书</h2>
   </div>
-  <div class="panel-body">
-    <img src="{{qrcode}}" class="img-thumbnail center-block">
-     <h3 class="text-center text-primary"><strong>{{share_msg}}</strong><h3>
-     <h5 class="text-muted">{{share_memo}}<h5>
+  <div class="bd">
+    <div class="weui_msg">
+      <div class="weui_icon_area">
+        <img src="{{qrcode}}" class="img-thumbnail center-block" />
+      </div>
+      <div class="weui_text_area">
+        <h2 class="weui_msg_title">{{share_memo}}</h2>
+        <p class="weui_msg_desc">{{share_msg}}</p>
+      </div>
+    </div>
   </div>
 </div>
+
 {{#extend "scripts"}}
 <script src="/jweixin-1.0.0.js" > </script>
 <script>

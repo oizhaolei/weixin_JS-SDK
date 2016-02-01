@@ -1,13 +1,20 @@
 {{#each card_list}}
-<div class="panel panel-primary">
+<div class="panel">
  <div class="panel-heading">
-  <h3 class="panel-title">{{card_detail.cash.base_info.brand_name}}</h3>
+  <h5>{{card_detail.cash.base_info.brand_name}}</h5>
  </div>
  <div class="panel-body">
-  <h3 class="text-center text-primary"><strong>{{card_detail.cash.base_info.title}}</strong><h3>
-  <a href="/wxcard/consume?openid={{openid}}&code={{code}}&card_id={{card_id}}" class="btn btn-primary btn-lg btn-block active" role="button">立即使用</button></a>
+  <h3 class="text-center"><strong>{{card_detail.cash.base_info.title}}</strong><h3>
   <h5 class="text-center text-muted">{{card_detail.cash.base_info.sub_title}}<h5>
+  <a href="/wxcard/consume?openid={{openid}}&code={{code}}&card_id={{card_id}}" class="weui_btn weui_btn_plain_primary">立即使用</button></a>
  </div>
 </div>
-{{else}} <h3 class="text-center text-primary"><strong>没有相关数据</strong><h3>
+{{else}}
+<div class="weui_msg">
+    <div class="weui_icon_area"><i class="weui_icon_msg weui_icon_warn"></i></i></div>
+    <div class="weui_text_area">
+        <h2 class="weui_msg_title"></h2>
+        <p class="weui_msg_desc">没有相关数据</p>
+    </div>
+</div>
 {{/each}}

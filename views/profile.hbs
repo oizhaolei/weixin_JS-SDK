@@ -1,52 +1,65 @@
-{{#if msg}}
-<div class="alert alert-info">
-  {{msg}}
-</div>
-{{/if}}
-<div class="panel panel-primary">
-  <div class="panel-heading">
-    <h3 class="panel-title">个人信息</h3>
+<div class="page">
+  {{#if msg}}
+  <div class="alert alert-info">
+    {{msg}}
   </div>
-  <div class="panel-body">
-    <h5 class="text-primary">昵称：{{account.nickname}}</h5>
-    <h5 class="text-primary">余额：{{{fen2yuan account.balance}}}元</h5>
+  {{/if}}
+  <div class="hd">
+    <h1 class="page_title">个人资料</h1>
+  </div>
+  <div class="bd">
+    <div class="weui_cells_title">个人信息</div>
+    <div class="weui_cells">
+      <div class="weui_cell">
+        <div class="weui_cell_bd weui_cell_primary">
+          <p>昵称</p>
+        </div>
+        <div class="weui_cell_ft">
+          {{account.nickname}}
+        </div>
+      </div>
+      <div class="weui_cell">
+        <div class="weui_cell_bd weui_cell_primary">
+          <p>余额</p>
+        </div>
+        <div class="weui_cell_ft">
+          {{{fen2yuan account.balance}}}元
+        </div>
+      </div>
+    </div>
+
     <form id="change_account_form" method="post" action="/change_account">
-      <div class="form-group">
-        <input type="hidden" id="openid" name="openid" value="{{openid}}" /> 
-        <div class="input-group">
-          <span class="input-group-addon">姓名</span>
-          <input type="text" id="username" name="username" class="form-control" placeholder="请输入真实姓名" value="{{account.username}}" />
+      <input type="hidden" id="openid" name="openid" value="{{openid}}" /> 
+      <div class="weui_cells weui_cells_form">
+        <div class="weui_cell">
+          <div class="weui_cell_hd"><label class="weui_label">姓名</label></div>
+          <div class="weui_cell_bd weui_cell_primary">
+            <input type="text" id="username" name="username" class="weui_input" placeholder="请输入真实姓名" value="{{account.username}}" />
+          </div>
         </div>
-        </p>
-        <div class="input-group">
-          <span class="input-group-addon">性别</span>
-          <select class="form-control" id="sex" name="sex">
-            <option value="1">男</option>
-            <option value="2">女</option>
-          </select>
+        <div class="weui_cell">
+          <div class="weui_cell_hd"><label class="weui_label">性别</label></div>
+          <div class="weui_cell_bd weui_cell_primary">
+            <select class="weui_input" id="sex" name="sex">
+              <option value="1">男</option>
+              <option value="2">女</option>
+            </select>
+          </div>
         </div>
-        </p>
-        <button type="submit" class="btn btn-primary btn-lg btn-block active">提交</button>
+        <div class="weui_cell">
+          <div class="weui_cell_hd"><label class="weui_label">手机</label></div>
+          <div class="weui_cell_bd weui_cell_primary">
+            <input class="weui_input" id="telephone" name="telephone" value="{{account.telephone}}" type="number" pattern="[0-9]*" placeholder="请输入号码" />
+          </div>
+        </div>
+      </div>
+      <div class="weui_btn_area">
+        <button type="submit" class="weui_btn weui_btn_primary">提交</button>
       </div>
     </form>
   </div>
 </div>
-<div class="panel panel-primary">
-  <div class="panel-heading">
-    <h3 class="panel-title">绑定手机号码</h3>
-  </div>
-  <div class="panel-body">
-    <form id="bind_telephone_form" method="post" action="/bind_telphone">
-      <div class="input-group">
-        <input type="hidden" id="openid" name="openid" value="{{openid}}" /> 
-        <input type="text" class="form-control" id="telephone" name="telephone" value="{{account.telephone}}"placeholder="请输入手机号码" onkeyup="this.value=this.value.replace(/\D/g,'')" />
-        <span class="input-group-btn">
-          <button class="btn btn-primary active" type="submit">{{bind_action}}</button>
-        </span>
-      </div>
-    </form>
-  </div>
-</div>
+
 {{#extend "scripts"}}
 <script>
   $("#sex").val("{{account.sex}}");

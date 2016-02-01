@@ -1,13 +1,17 @@
-<div class="panel panel-primary">
-    <div class="panel-heading">
-        <h3 class="panel-title">您当前余额为：<strong>{{{fen2yuan account.balance}}}</strong>元.</h3>
+<div class="weui_cells">
+    <div class="weui_cell">
+        <div class="weui_cell_bd weui_cell_primary">
+            <p>当前余额</p>
+        </div>
+        <div class="weui_cell_ft"><strong>{{{fen2yuan account.balance}}}</strong>元
+        </div>
     </div>
 </div>
+
 <ul class="nav nav-tabs">
     <li class="active"><a data-toggle="tab" href="#fee_history">消费履历</a></li>
     <li><a data-toggle="tab" href="#charge_history">充值履历</a></li>
 </ul>
-
 <div class="tab-content">
     <div id="fee_history" class="tab-pane fade in active">
         <table class="table table-striped">

@@ -9,7 +9,7 @@
   "translating_pls_wait": "正在人工翻译中，请稍等。。。",
   "card_consume_count_limit" : "此券每人限使用一张，多余的可赠送给朋友",
   "card_consume_error" : "该卡券不可用",
-  "share_to_friend_msg": "分享就有机会赢%s元奖励",
+  "share_to_friend_msg": "分享就会得到%s元奖励",
   "share_to_friend_memo": "您是TTTalk翻译秘书的老朋友啦，已为您备好专属邀请二维码，点击即刻分享，页面加载完成后，点击右上角分享。每成功邀请1位，即获%s元翻译费，多邀多得哦!",
   "share_to_friend_qrcode_msg": "长按二维码，点击识别即可关注公众号，关注有奖。",
   "share_to_friend_qrcode_memo": "你还在为寻找中韩翻译而苦恼吗？TTTalk翻译秘书帮您解决问题，人工翻译，专业而准确.",
