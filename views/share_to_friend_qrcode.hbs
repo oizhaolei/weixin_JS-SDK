@@ -43,7 +43,11 @@
         imgUrl: 'http://file.tttalk.org/public/weixin_logo.png'
       };
       wx.onMenuShareAppMessage(shareData);
-      wx.onMenuShareTimeline(shareData);
+      var shareDataTimeline = {
+        title: ''你还在为寻找中韩翻译而苦恼吗？TTTalk翻译秘书帮您解决问题，人工翻译，专业而准确.',
+        imgUrl: 'http://file.tttalk.org/public/weixin_logo.png'
+      };
+      wx.onMenuShareTimeline(shareDataTimeline);
     });
 </script > 
 {{/extend}}
