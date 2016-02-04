@@ -38,6 +38,9 @@ router.get('/list', function (req, res, next) {
     if (err) {
       next(err);
     } else {
+      if (!card_list) {
+        card_list = [];
+      }
       async.each(card_list, function(card, callback) {
         var card_id = card.card_id;
         var code = card.code;
