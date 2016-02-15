@@ -516,8 +516,8 @@ wx.ready(function () {
     });
   };
 
-  // 12 微信卡券接口
-  // 12.1 添加卡券
+  // 12 微信优惠券接口
+  // 12.1 添加优惠券
   document.querySelector('#addCard').onclick = function () {
     wx.addCard({
       cardList: [
@@ -531,26 +531,26 @@ wx.ready(function () {
         }
       ],
       success: function (res) {
-        _log('已添加卡券：' + JSON.stringify(res.cardList));
+        _log('已添加优惠券：' + JSON.stringify(res.cardList));
       }
     });
   };
 
-  // 12.2 选择卡券
+  // 12.2 选择优惠券
   document.querySelector('#chooseCard').onclick = function () {
     wx.chooseCard({
       cardSign: '97e9c5e58aab3bdf6fd6150e599d7e5806e5cb91',
       timestamp: 1417504553,
       nonceStr: 'k0hGdSXKZEj3Min5',
       success: function (res) {
-        _log('已选择卡券：' + JSON.stringify(res.cardList));
+        _log('已选择优惠券：' + JSON.stringify(res.cardList));
       }
     });
   };
 
-  // 12.3 查看卡券
+  // 12.3 查看优惠券
   document.querySelector('#openCard').onclick = function () {
-    _log('您没有该公众号的卡券无法打开卡券。');
+    _log('您没有该公众号的优惠券无法打开优惠券。');
     wx.openCard({
       cardList: [
       ]

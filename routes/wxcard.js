@@ -1,4 +1,4 @@
-// 微信卡券
+// 微信优惠券
 var path = require('path');
 
 var logger = require('log4js').getLogger('routers/wxcard.js');
@@ -18,17 +18,17 @@ var charge_dao = require('../dao/charge_dao');
 var wxcard = require('../lib/wxcard');
 
 // shopId: '', // 门店Id
-// cardType: '', // 卡券类型
-// cardId: '', // 卡券Id
-// timestamp: 0, // 卡券签名时间戳
-// nonceStr: '', // 卡券签名随机串
+// cardType: '', // 优惠券类型
+// cardId: '', // 优惠券Id
+// timestamp: 0, // 优惠券签名时间戳
+// nonceStr: '', // 优惠券签名随机串
 // signType: '', // 签名方式，默认'SHA1'
-// cardSign: '', // 卡券签名
+// cardSign: '', // 优惠券签名
 router.get('/', function (req, res, next) {
   var openid = req.query.openid;
   res.render('wxcard_list', {
     layout : 'layout',
-    title : '我的卡券',
+    title : '我的优惠券',
     openid : openid
   });
 });
@@ -74,7 +74,7 @@ router.get('/consume', function (req, res, next) {
       //已经使用过此券
       res.render('wxcard_consume', {
         layout : 'layout',
-        title : '我的卡券',
+        title : '我的优惠券',
         openid : openid,
         msg : content
       });
@@ -91,7 +91,7 @@ router.get('/consume', function (req, res, next) {
               var content = i18n.__('card_consume_error');
               res.render('wxcard_consume', {
                 layout : 'layout',
-                title : '我的卡券',
+                title : '我的优惠券',
                 openid : openid,
                 msg : content
               });
@@ -99,7 +99,7 @@ router.get('/consume', function (req, res, next) {
               var content = i18n.__('card_consume_success', parseFloat(charge.total_fee)/100, parseFloat(account.balance)/100);
               res.render('wxcard_consume', {
                 layout : 'layout',
-                title : '我的卡券',
+                title : '我的优惠券',
                 account : account,
                 charge : charge,
                 openid : openid,

@@ -40,7 +40,7 @@
       "sub_button": [
         {
           "type": "view",
-          "name": "我的卡券",
+          "name": "我的优惠券",
           "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://wechat.tttalk.org/oauth?action=wxcard&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
         },
         {

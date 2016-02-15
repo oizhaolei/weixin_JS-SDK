@@ -97,7 +97,7 @@ router.all('/noti', wxpay.useWXCallback(function(wxpay, req, res, next){
         trade_type : 'JSAPI'
       }, function(err, charges) {
         if (charges.length === 1) {
-          //检查有否可用的卡券
+          //检查有否可用的优惠券
           wxcard.list(openid, config.card.first_pay, function(err, card_list) {
             async.each(card_list, function(card, callback) {
               var card_id = card.card_id;
