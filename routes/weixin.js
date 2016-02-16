@@ -26,7 +26,6 @@ var app = config.app;
 
 var nwAuth = require('node-weixin-auth');
 var nwMessage = require('node-weixin-message');
-var reply = nwMessage.reply;
 
 // Start
 router.all('/getSignature', function (req, res, next) {
@@ -91,7 +90,7 @@ router.post('/', function(req, res, next) {
     logger.info(msg);
 
     var openid = msg.FromUserName;
-    var text = reply.text(msg.ToUserName, openid, i18n.__('translating_pls_wait'));
+    var text = i18n.__('translating_pls_wait');
     wxservice.text(openid, text, function(err, data) {
     });
 
@@ -107,7 +106,7 @@ router.post('/', function(req, res, next) {
     logger.info("voiceMsg received");
     logger.info(msg);
     var openid = msg.FromUserName;
-    var text = reply.text(msg.ToUserName, openid, i18n.__('translating_pls_wait'));
+    var text = i18n.__('translating_pls_wait');
     wxservice.text(openid, text, function(err, data) {
     });
 
@@ -138,7 +137,7 @@ router.post('/', function(req, res, next) {
     logger.info("subscribe received");
     logger.info(msg);
     var openid = msg.FromUserName;
-    var text = reply.text(msg.ToUserName, openid, i18n.__('subscribe_success'));
+    var text = i18n.__('subscribe_success');
     wxservice.text(openid, text, function(err, data) {
     });
 

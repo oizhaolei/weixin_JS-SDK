@@ -14,6 +14,9 @@ http://wechat.tttalk.org/wxpay/
  - cp  config.json.sample config.json
  - gulp less
  - rsync -avz --exclude ./cache.json --exclude .git  --delete -e "ssh -p 22000" ./ zhaolei@test:/work/test/weixin_message/;ssh -p 22000 zhaolei@test 'export APP_OPENID=osQJkw2UHrHoPkvar90v1AK1R8pM;cd /work/test/weixin_message/;gulp mocha'
+ - cd /works/projects/chinasms/weixin/weixin-JS-SDK/
+ - rsync -avz --exclude .git  --delete -e "ssh -p 22000" ./ zhaolei@ctalk3:/work/test/weixin_message/
+
 * TODO-LIST
 ** DONE 用户计费
    CLOSED: [2016-01-12 Tue 12:21]
