@@ -173,6 +173,11 @@ router.post('/', function(req, res, next) {
       wxservice.text(openid, text, function(err, data) {
       });
       break;
+    case 'usage_sign' :
+      var openid = msg.FromUserName;
+      on.onSign(openid);
+      
+      break;
     }
   });
   messages.event.on.view(function(msg, res) {

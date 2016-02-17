@@ -13,5 +13,7 @@
   "share_to_friend_memo": "您是TTTalk翻译秘书的老朋友啦，已为您备好专属邀请二维码，点击即刻分享，页面加载完成后，点击右上角分享。每成功邀请1位，即获%s元翻译费，多邀多得哦!",
   "share_to_friend_qrcode_msg": "长按二维码，点击识别即可关注公众号，关注有奖。",
   "share_to_friend_qrcode_memo": "你还在为寻找中韩翻译而苦恼吗？TTTalk翻译秘书帮您解决问题，人工翻译，专业而准确.",
-  "translated_fee": "翻译费用%s元"
+  "translated_fee": "翻译费用%s元",
+  "sign_ok": "签到成功.\n\n每日签到可随机获得优惠券。",
+  "sign_done": "今天您已经签到过了，明天再来吧。"
 }

@@ -81,6 +81,38 @@ AccountDao.prototype = {
       callback(err, results[0]);
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
+  },
+
+  checkSignAccount : function (openid, callback) {
+    var sql = 'SELECT * FROM tbl_user_sign where openid = ? and create_date = curdate()';
+
+    var args = [ openid ];
+    this.readonlyPool.query(sql, args, function(err, results){
+      if(err){
+        callback(err);
+      }
+      if(results && results.length === 1) {
+        var sign = results[0];
+        callback(null, sign);
+      } else {
+        callback(null, null);
+      }
+    });
+    logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
+  },
+  
+  insertSignAccount :function (openid, callback) {
+    var sql = 'insert into  tbl_user_sign (openid, create_date) values (?,curdate())';
+
+    var args = [ openid];
+    this.mainPool.query(sql, args, function(err, results) {
+      if (err) logger.error(err);
+      if (!err && results.affectedRows === 0)
+        err = 'no data change';
+
+      callback(err, results);
+    });
+    logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   }
 };
 module.exports = new AccountDao();
