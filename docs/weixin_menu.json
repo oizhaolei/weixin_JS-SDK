@@ -60,7 +60,7 @@
         },
         {
           "type": "click",
-          "key":"usage_sign",
+          "key":"usage_knock",
           "name": "会员签到"
         }
       ]

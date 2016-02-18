@@ -173,9 +173,9 @@ router.post('/', function(req, res, next) {
       wxservice.text(openid, text, function(err, data) {
       });
       break;
-    case 'usage_sign' :
+    case 'usage_knock' :
       var openid = msg.FromUserName;
-      on.onSign(openid);
+      on.onKnock(openid);
       
       break;
     }
