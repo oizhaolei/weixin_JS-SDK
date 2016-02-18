@@ -17,5 +17,10 @@
   "knock_ok": "签到成功.\n\n每日签到可随机获得金额奖励。",
   "knock_done": "今天您已经签到过了，明天再来吧。",
   "knock_pay": "恭喜您今日签到获得%s元奖励。^_^ 耶~~",
-  "knock_no_pay": "很遗憾您今天没抽中签到奖励。〒_〒  鸣~~"
+  "knock_no_pay": "很遗憾您今天没抽中签到奖励。〒_〒  鸣~~",
+  "knock_template_pay_success": "通知：TTTalk翻译为您充值成功",
+  "knock_template_account_type": "帐户余额",
+  "knock_template_result": "充值成功",
+  "knock_template_remark": "每日签到可随机获得金额奖励",
+  "knock_template_unit": "%s元"
 }
