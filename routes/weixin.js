@@ -21,6 +21,8 @@ i18n.configure({
 
 var on = require('../lib/on');
 var wxservice = require('../lib/wxservice');
+var map = require('../lib/map');
+
 
 var app = config.app;
 
@@ -162,6 +164,12 @@ router.post('/', function(req, res, next) {
   messages.event.on.location(function(msg, res) {
     logger.info("location received");
     logger.info(msg);
+    var latitude = msg.Latitude;
+    var longitude = msg.Longitude;
+    
+    map.geocoder(latitude, longitude, function(err, result) {
+      logger.info(result.address);
+    });
   });
   messages.event.on.click(function(msg, res) {
     logger.info("click received");
