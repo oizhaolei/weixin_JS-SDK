@@ -18,17 +18,9 @@
           {{account.nickname}}
         </div>
       </div>
-      <div class="weui_cell">
-        <div class="weui_cell_bd weui_cell_primary">
-          <p>余额</p>
-        </div>
-        <div class="weui_cell_ft">
-          {{{fen2yuan account.balance}}}元
-        </div>
-      </div>
     </div>
 
-    <form id="change_account_form" method="post" action="/change_account">
+    <form id="change_account_form" method="post" action="{{appname}}/change_account">
       <input type="hidden" id="openid" name="openid" value="{{openid}}" /> 
       <div class="weui_cells weui_cells_form">
         <div class="weui_cell">

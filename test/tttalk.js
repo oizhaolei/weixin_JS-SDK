@@ -19,19 +19,7 @@ var fee = 23;
 var from_content_length = 2;
 
 describe('tttalk', function () {
-  it('fee_history', function (done) {
-    var openid = process.env.APP_OPENID;
-    tttalk.fee_history(openid, function(err, account, feeHistory, chargeHistory) {
-      assert(!err);
-      assert(account);
-      assert.equal(account.openid, openid);
-      assert(feeHistory);
-      assert(feeHistory.length >= 0);
-      assert(chargeHistory);
-      assert(chargeHistory.length >= 0);
-      done();
-    });
-  });
+
   it('createAccount wxPay', function (done) {
     account_dao.createAccount(openid, up_openid, function(err, oldAccount, results, account) {
       assert(!err);

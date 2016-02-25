@@ -8,8 +8,8 @@ CREATE TABLE `ecs_weixin_account` (
   `city` varchar(50) DEFAULT NULL,
   `province` varchar(50) DEFAULT NULL,
   `country` varchar(50) DEFAULT NULL,
-  `balance` int(11) DEFAULT 500,   -- 人民币分
   `up_openid` varchar(50) NULL, -- 介绍人
+  `telephone` varchar(50) NULL,
   `username` varchar(50) DEFAULT NULL,
   `birthday` varchar(10) DEFAULT NULL,
   `delete_flag` int(1) NOT NULL DEFAULT 0,

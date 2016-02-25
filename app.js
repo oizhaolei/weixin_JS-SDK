@@ -1,6 +1,6 @@
 "use strict";
 ////set DEBUG=handle & node .\bin\www
-var config = require('../config.json');
+var config = require('./config.json');
 
 var express = require('express');
 var app = express();
@@ -90,13 +90,13 @@ var routes = require('./routes/index');
 app.use(config.appname, routes);
 
 var weixin_routes = require('./routes/weixin');
-app.use(config.appmame + '/weixin', weixin_routes);
+app.use(config.appname + '/weixin', weixin_routes);
 
 var wxpay_routes = require('./routes/wxpay');
-app.use(config.appmame + '/wxpay', wxpay_routes);
+app.use(config.appname + '/wxpay', wxpay_routes);
 
 var wxcard_routes = require('./routes/wxcard');
-app.use(config.appmame + '/wxcard', wxcard_routes);
+app.use(config.appname + '/wxcard', wxcard_routes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -52,8 +52,6 @@ AccountDao.prototype = {
     _.forEach(data, function(n, key) {
       if ('password' === key) {
         sql += key + '=password(?),';
-      } else if ('fee' === key) {
-        sql += 'balance=balance+?,';
       } else {
         sql += key + '=?,';
       }

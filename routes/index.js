@@ -66,10 +66,6 @@ router.get('/oauth', function (req, res, next) {
         res.redirect(config.appname + '/profile?openid=' + openid);
         break;
 
-      case 'fee_history' :
-        res.redirect(config.appname + '/fee_history?openid=' + openid);
-        break;
-
       }
     }
 
@@ -91,29 +87,12 @@ router.get('/profile', function (req, res, next) {
       var bind_action = accountData.telephone ? '绑定' : '更改';
       res.render('profile', {
         layout : 'layout',
+        appname: config.appname,
         title : '个人资料',
         msg : msg,
         account : accountData,
         openid : openid,
         bind_action : bind_action
-      });
-    }
-  });
-});
-
-//fee_history
-router.get('/fee_history', function (req, res, next) {
-  var openid = req.query.openid;
-  tttalk.fee_history(openid, function(err, accountData, feeHistoryData, chargeHistoryData) {
-    if (err) {
-      next(err);
-    } else {
-      res.render('fee_history', {
-        layout : 'layout',
-        title : '我的账单',
-        account : accountData,
-        feeHistory : feeHistoryData,
-        chargeHistory : chargeHistoryData
       });
     }
   });
@@ -127,6 +106,7 @@ router.get('/share_to_friend', function (req, res, next) {
   var share_memo = i18n.__('share_to_friend_memo', parseFloat(config.subscribe_reward) / 100);
   res.render('share_to_friend', {
     layout : 'layout',
+    appname: config.appname,
     title : '分享有奖',
     openid : openid,
     share_msg : share_msg,
@@ -147,6 +127,7 @@ router.get('/share_to_friend_qrcode', function (req, res, next) {
       var share_memo = i18n.__('share_to_friend_qrcode_memo');
       res.render('share_to_friend_qrcode', {
         layout : 'layout',
+        appname: config.appname,
         title : '分享给好友',
         qrcode : qrCodeUrl,
         share_msg : share_msg,
