@@ -16,7 +16,6 @@ i18n.configure({
   directory : path.join(__dirname, '../locales')
 });
 
-var charge_dao = require('../dao/charge_dao');
 var tttalk = require('../lib/tttalk');
 var wxcard = require('../lib/wxcard');
 var wxservice = require('../lib/wxservice');
@@ -92,43 +91,6 @@ router.all('/noti', wxpay.useWXCallback(function(wxpay, req, res, next){
       wxservice.text(openid, content, function(err, data) {
       });
       //初次充值?
-      charge_dao.findCharges({
-        openid : openid,
-        trade_type : 'JSAPI'
-      }, function(err, charges) {
-        if (charges.length === 1) {
-          //检查有否可用的优惠券
-          wxcard.list(openid, config.card.first_pay, function(err, card_list) {
-            async.each(card_list, function(card, callback) {
-              var card_id = card.card_id;
-              var code = card.code;
-              wxcard.detail(card_id, code, function(err, card) {
-                if (err) {
-                  callback(err);
-                } else {
-                  var card_id = card.card_id;
-                  var code = card.code;
-                  var reduce_cost = card.cash.reduce_cost;
-                  //核销
-                  wxcard.consume(card_id, code, reduce_cost, function(err, account, charge) {
-                    if (err) {
-                      callback(err);
-                    } else {
-                      //通知
-                      var content = i18n.__('card_consume_success', parseFloat(charge.total_fee)/100, parseFloat(account.balance)/100);
-                      wxservice.text(openid, content, function(err, data) {
-                      });
-                    }
-                  });
-                }
-              });
-            }, function(err) {
-              logger.error(err);
-            });
-          });
-        }
-
-      });
     }
 
   });

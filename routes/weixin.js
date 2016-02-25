@@ -83,7 +83,7 @@ router.post('/', function(req, res, next) {
     var msgid = msg.MsgId;
     var content = msg.Content;
 
-    on.onText(openid, content, msgid);
+    //on.onText(openid, content, msgid);
   });
 
   // 监听图片消息
@@ -100,7 +100,7 @@ router.post('/', function(req, res, next) {
     var mediaid = msg.MediaId;
     var picurl = msg.PicUrl;
 
-    on.onImage(openid, mediaid, picurl, msgid);
+    //on.onImage(openid, mediaid, picurl, msgid);
   });
 
   // 监听语音消息
@@ -118,7 +118,7 @@ router.post('/', function(req, res, next) {
     nwAuth.determine(app, function (err, authData) {
       var url = util.format('http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s', authData.accessToken, mediaid);
       logger.info("voice url: %s", url);
-      on.onVoice(openid, mediaid, url, msgid);
+      //on.onVoice(openid, mediaid, url, msgid);
     });
   });
 
@@ -219,12 +219,5 @@ router.post('/', function(req, res, next) {
     });
   });
 
-});
-router.post('/translate_callback', function(req, res, next) {
-  var params = req.body;
-  logger.debug('params: %s' , JSON.stringify(params));
-  res.send("success");
-
-  on.onTranslateCallback(params);
 });
 module.exports = router;

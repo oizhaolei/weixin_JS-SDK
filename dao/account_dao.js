@@ -14,7 +14,7 @@ AccountDao.prototype = {
 
   getByOpenid : function (openid, callback) {
 
-    var sql = 'SELECT * FROM tbl_account where openid = ?' ;
+    var sql = 'SELECT * FROM ecs_weixin_account where openid = ?' ;
     var args = [ openid ];
     this.readonlyPool.query(sql, args, function(err, results){
       if(results && results.length === 1) {
@@ -29,9 +29,9 @@ AccountDao.prototype = {
 
 
   createAccount : function (openid, up_penid, callback) {
-    var sql = 'SELECT * FROM tbl_account where openid = ?;' +
-          'insert into  tbl_account (openid, up_openid, delete_flag, create_date) values (?,?,?,utc_timestamp(3)) ON DUPLICATE KEY UPDATE delete_flag = ?;' +
-          'SELECT * FROM tbl_account where openid = ?' ;
+    var sql = 'SELECT * FROM ecs_weixin_account where openid = ?;' +
+          'insert into  ecs_weixin_account (openid, up_openid, delete_flag, create_date) values (?,?,?,utc_timestamp(3)) ON DUPLICATE KEY UPDATE delete_flag = ?;' +
+          'SELECT * FROM ecs_weixin_account where openid = ?' ;
 
     var args = [ openid, openid, up_penid, 0, 0, openid ];
     this.mainPool.query(sql, args, function(err, results){
@@ -59,7 +59,7 @@ AccountDao.prototype = {
       }
       args.push(data[key]);
     });
-    sql = 'update tbl_account set ' + sql.substring(0, sql.length - 1) + ' where openid = ?;SELECT * FROM tbl_account where openid = ?' ;
+    sql = 'update ecs_weixin_account set ' + sql.substring(0, sql.length - 1) + ' where openid = ?;SELECT * FROM ecs_weixin_account where openid = ?' ;
     args.push(openid);
     args.push(openid);
 
@@ -73,18 +73,18 @@ AccountDao.prototype = {
   },
 
   deleteAccount : function (openid, callback) {
-    var sql='delete from tbl_account where openid = ?;delete from tbl_message where openid=?;delete from tbl_user_charge where openid=?' ;
+    var sql='delete from ecs_weixin_account where openid = ?' ;
     var args=[ openid, openid, openid ];
 
     this.mainPool.query(sql, args, function(err, results){
       if (err) logger.error(err);
-      callback(err, results[0]);
+      callback(err, results);
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },
 
   checkKnockAccount : function (openid, callback) {
-    var sql = 'SELECT * FROM tbl_user_knock where openid = ? and create_date = curdate()';
+    var sql = 'SELECT * FROM ecs_weixin_user_knock where openid = ? and create_date = curdate()';
 
     var args = [ openid ];
     this.readonlyPool.query(sql, args, function(err, results){
@@ -102,7 +102,7 @@ AccountDao.prototype = {
   },
   
   insertKnockAccount :function (openid, callback) {
-    var sql = 'insert into  tbl_user_knock (openid, create_date) values (?,curdate())';
+    var sql = 'insert into  ecs_weixin_user_knock (openid, create_date) values (?,curdate())';
 
     var args = [ openid];
     this.mainPool.query(sql, args, function(err, results) {

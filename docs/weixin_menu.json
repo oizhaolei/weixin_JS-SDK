@@ -1,67 +1,37 @@
 {
   "button": [
     {
-      "name": "使用说明",
-      "sub_button": [
-        {
-          "type": "view",
-          "name": "分享有奖",
-          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://wechat.tttalk.org/oauth?action=share_to_friend&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
-        },
-        {
-          "type": "media_id",
-          "name": "常见问题",
-          "media_id": "tdMcgL-6TCyTfdBYdezB2w5ae0dUSOHIsOzhXDAvVh4"
-        },
-        {
-          "type": "media_id",
-          "name": "价格政策",
-          "media_id": "eIaqywRmbMmbwmU5pDuUbEuhLvR0nvUBZha-mNSCJtU"
-        },
-        {
-          "type": "media_id",
-          "name": "赚钱计划",
-          "media_id": "2ljlTrA3oaJSbaHw9LlBDFsRPbvy2LpbzRq4X17n78M"
-        },
-        {
-          "name": "APP下载",
-          "type": "media_id",
-          "media_id": "9Vmi6zM0BO1dV--aPLNwVZ2TF9aMkpjMRFW5M6DKBVw"
-        }
-      ]
+      "name": "网上商城",
+      "type": "view",
+      "url": "http://www.yuehuitao.com/mobile/"
     },
     {
-      "type": "click",
-      "key":"usage_translate",
-      "name": "我要翻译"
+      "name": "个人中心",
+      "type": "view",
+      "url": "http://www.yuehuitao.com/mobile/user.php?act=user_center"
     },
     {
-      "name": "我的中心",
+      "name": "体验店",
       "sub_button": [
         {
-          "type": "view",
-          "name": "我的优惠券",
-          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://wechat.tttalk.org/oauth?action=wxcard&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
-        },
-        {
-          "type": "view",
-          "name": "充值",
-          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://wechat.tttalk.org/oauth?action=wxpay&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
-        },
-        {
-          "type": "view",
-          "name": "我的账单",
-          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://wechat.tttalk.org/oauth?action=fee_history&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
-        },
-        {
-          "type": "view",
           "name": "完善资料",
-          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://wechat.tttalk.org/oauth?action=profile&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
+          "type": "view",
+          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0f07f0c1d14cf8f4&redirect_uri=http://test.yuehuitao.com/wechat/oauth?action=profile&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
         },
         {
-          "type": "click",
-          "key":"usage_knock",
-          "name": "会员签到"
+          "name": "最新活动",
+          "type": "view",
+          "url": "http://mp.weixin.qq.com/s?__biz=MzAxODY3NzE0Ng==&mid=401089080&idx=1&sn=b0ba62c6063cf3dd71c6596902945c0e&scene=18#wechat_redirect"
+        },
+        {
+          "name": "东城天下",
+          "type": "view",
+          "url": "http://mp.weixin.qq.com/s?__biz=MzAxODY3NzE0Ng==&mid=400695937&idx=2&sn=c114ef4baf9b89d4d7b3faa5bd35c21b&scene=18#wechat_redirect"
+        },
+        {
+          "name": "双D港店",
+          "type": "view",
+          "url": "http://mp.weixin.qq.com/s?__biz=MzAxODY3NzE0Ng==&mid=207785225&idx=3&sn=8e127de2ca4695ef4ea69b1d7462beae&scene=18#wechat_redirect"
         }
       ]
     }

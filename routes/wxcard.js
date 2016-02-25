@@ -14,7 +14,6 @@ i18n.configure({
   directory : path.join(__dirname, '../locales')
 });
 
-var charge_dao = require('../dao/charge_dao');
 var wxcard = require('../lib/wxcard');
 
 // shopId: '', // 门店Id
@@ -65,53 +64,10 @@ router.get('/consume', function (req, res, next) {
   var openid = req.query.openid;
   var card_id = req.query.card_id;
   var code = req.query.code;
-  charge_dao.findCharges({
-    openid : openid,
-    memo : card_id
-  }, function(err, charges) {
-    if (charges.length > 0) {
-      var content = i18n.__('card_consume_count_limit' );
-      //已经使用过此券
-      res.render('wxcard_consume', {
-        layout : 'layout',
-        title : '我的优惠券',
-        openid : openid,
-        msg : content
-      });
-    } else {
-      //没有使用过相关card_id
-      wxcard.detail(card_id, code, function(err, card) {
-        if (err) {
-          next(err);
-        } else {
-          var reduce_cost = card.cash.reduce_cost;
-          //核销
-          wxcard.consume(card_id, code, reduce_cost, function(err, account, charge) {
-            if (err) {
-              var content = i18n.__('card_consume_error');
-              res.render('wxcard_consume', {
-                layout : 'layout',
-                title : '我的优惠券',
-                openid : openid,
-                msg : content
-              });
-            } else {
-              var content = i18n.__('card_consume_success', parseFloat(charge.total_fee)/100, parseFloat(account.balance)/100);
-              res.render('wxcard_consume', {
-                layout : 'layout',
-                title : '我的优惠券',
-                account : account,
-                charge : charge,
-                openid : openid,
-                msg : content
-              });
-            }
-          });
-        }
-      });
 
-    }
+  res.render('wxcard_consume', {
+    layout : 'layout',
+    title : '我的优惠券'
   });
-
 });
 module.exports = router;

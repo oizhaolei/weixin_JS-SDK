@@ -51,23 +51,23 @@ router.get('/oauth', function (req, res, next) {
       logger.info("openid: ", openid);
       switch (action) {
       case 'wxpay' :
-        res.redirect('/wxpay/list?openid=' + openid);
+        res.redirect(config.appname + '/wxpay/list?openid=' + openid);
         break;
 
       case 'wxcard' :
-        res.redirect('/wxcard/?openid=' + openid);
+        res.redirect(config.appname + '/wxcard/?openid=' + openid);
         break;
 
       case 'share_to_friend' :
-        res.redirect('/share_to_friend?openid=' + openid);
+        res.redirect(config.appname + '/share_to_friend?openid=' + openid);
         break;
 
       case 'profile' :
-        res.redirect('/profile?openid=' + openid);
+        res.redirect(config.appname + '/profile?openid=' + openid);
         break;
 
       case 'fee_history' :
-        res.redirect('/fee_history?openid=' + openid);
+        res.redirect(config.appname + '/fee_history?openid=' + openid);
         break;
 
       }
@@ -171,7 +171,7 @@ router.post('/change_account', function (req, res, next) {
     if (err) {
       next(err);
     } else {
-      var url = '/profile?openid=' + openid + '&msg=' + encodeURIComponent(err ? err : 'saved');
+      var url = config.appname + '/profile?openid=' + openid + '&msg=' + encodeURIComponent(err ? err : 'saved');
       res.redirect(url);
     }
   });
