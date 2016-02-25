@@ -41,7 +41,7 @@
     "request": "*",
     "weixin-pay": "^1.1.6",
     "xml2js": "^0.4.15",
-    "connect-favicons": "git://github.com/theworkers/connect-favicons.git"
+    "connect-favicons": "theworkers/connect-favicons"
   },
   "devDependencies": {
     "gulp": "^3.9.0",
