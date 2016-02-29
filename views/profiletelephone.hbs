@@ -1,0 +1,29 @@
+<div class="page">
+  <div class="bd">
+
+    <form id="change_account_form" method="post" action="/change_account">
+      <input type="hidden" id="openid" name="openid" value="{{openid}}" />
+      <input type="hidden" id="key" name="key" value="telephone" />
+      <div class="weui_cells weui_cells_form">
+        <div class="weui_cell">
+          <div class="weui_cell_hd"><label class="weui_label">手机</label></div>
+          <div class="weui_cell_bd weui_cell_primary">
+            <input class="weui_input" id="val" name="val" value="{{account.telephone}}" type="number" pattern="[0-9]*" placeholder="请输入号码" />
+          </div>
+          <div class="weui_cell_ft">
+            <a href="javascript:;" class="weui_btn weui_btn_mini weui_btn_primary">获取验证码</a>
+          </div>
+        </div>
+        <div class="weui_cell">
+          <div class="weui_cell_hd"><label class="weui_label">验证码</label></div>
+          <div class="weui_cell_bd weui_cell_primary">
+            <input class="weui_input" id="verify" name="verify" type="number" pattern="[0-9]*" placeholder="请输入验证码" />
+          </div>
+        </div>
+      </div>
+      <div class="weui_btn_area">
+        <button type="submit" class="weui_btn weui_btn_primary">提交</button>
+      </div>
+    </form>
+  </div>
+</div>

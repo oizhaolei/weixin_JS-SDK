@@ -83,19 +83,22 @@ router.get('/', function (req, res, next) {
 // profile
 router.get('/profile', function (req, res, next) {
   var openid = req.query.openid;
+  var key = req.query.key;
+  if (!key) {
+    key = '';
+  }
   var msg = req.query.msg;
   account_dao.getByOpenid(openid, function(err, accountData) {
     if (err) {
       next(err);
     } else {
-      var bind_action = accountData.telephone ? '绑定' : '更改';
-      res.render('profile', {
+      res.render('profile' + key, {
         layout : 'layout',
         title : '个人资料',
         msg : msg,
         account : accountData,
         openid : openid,
-        bind_action : bind_action
+        key : key
       });
     }
   });
@@ -160,18 +163,15 @@ router.get('/share_to_friend_qrcode', function (req, res, next) {
 router.post('/change_account', function (req, res, next) {
   var openid = req.body.openid;
   logger.info(req.body);
-  var username = req.body.username;
-  var sex = req.body.sex;
-  var telephone = req.body.telephone;
-  account_dao.updateAccount(openid, {
-    username : username,
-    sex : sex,
-    telephone : telephone
-  }, function(err, results, account) {
+  var key = req.body.key;
+  var val = req.body.val;
+  var data = {};
+  data[key] = val;
+  account_dao.updateAccount(openid, data, function(err, results, account) {
     if (err) {
       next(err);
     } else {
-      var url = '/profile?openid=' + openid + '&msg=' + encodeURIComponent(err ? err : 'saved');
+      var url = '/profile?openid=' + openid + '&msg=' + encodeURIComponent(err ? err : '');
       res.redirect(url);
     }
   });

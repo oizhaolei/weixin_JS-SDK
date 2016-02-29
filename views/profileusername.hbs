@@ -1,0 +1,20 @@
+<div class="page">
+  <div class="bd">
+
+    <form id="change_account_form" method="post" action="/change_account">
+      <input type="hidden" id="openid" name="openid" value="{{openid}}" />
+      <input type="hidden" id="key" name="key" value="username" />
+      <div class="weui_cells weui_cells_form">
+        <div class="weui_cell">
+          <div class="weui_cell_hd"><label class="weui_label">姓名</label></div>
+          <div class="weui_cell_bd weui_cell_primary">
+            <input type="text" id="val" name="val" class="weui_input" placeholder="请输入真实姓名" value="{{account.username}}" />
+          </div>
+        </div>
+      </div>
+      <div class="weui_btn_area">
+        <button type="submit" class="weui_btn weui_btn_primary">提交</button>
+      </div>
+    </form>
+  </div>
+</div>
