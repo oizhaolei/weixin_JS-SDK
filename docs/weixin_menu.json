@@ -3,12 +3,12 @@
     {
       "name": "网上商城",
       "type": "view",
-      "url": "http://www.yuehuitao.com/mobile/"
+      "url": "http://haoshuru.tttalk.org/mobile/"
     },
     {
       "name": "个人中心",
       "type": "view",
-      "url": "http://www.yuehuitao.com/mobile/user.php?act=user_center"
+      "url": "http://haoshuru.tttalk.org/mobile/user.php?act=user_center"
     },
     {
       "name": "体验店",
@@ -16,7 +16,7 @@
         {
           "name": "完善资料",
           "type": "view",
-          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0f07f0c1d14cf8f4&redirect_uri=http://test.yuehuitao.com/wechat/oauth?action=profile&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
+          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxe25dbb9e7f692a13&redirect_uri=http://test.yuehuitao.com/wechat/oauth?action=profile&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
         },
         {
           "name": "最新活动",

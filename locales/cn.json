@@ -2,7 +2,7 @@
   "usage_translate": "感谢您使用TTTalk人工翻译。\n\n文字翻译：请在输入框输入文字\n语音翻译：请按住说话并发送\n图片翻译：请上传或拍摄照片。\n\n我们将稍后发给您翻译结果。",
   "wxpay_success": "您成功充值%s元, 您的账户余额为%s元。感谢使用。",
   "share_to_friend": "分享上面的二维码给朋友，您可以得到充值%s元，具体规则请见%s",
-  "subscribe_success": "欢迎您关注悦惠淘公众平台！\n悦惠淘是东北三省第一家O2O跨境电商贸易平台！\n\n终于等到你！曾经的曾经，我们一起海淘，被支付，语言，转运，清关，产品种类不足折磨得累觉不爱！此刻梦想变成现实，www.yuehuitao.com 悦惠淘已然上线，不仅有减免运费，力度超大的商品折扣，更有满减优惠券等你来拿哦！\n来悦惠淘，把世界带回家。",
+  "subscribe_success": "欢迎您关注好舒服家纺采供平台！\n\nhaoshufu.tttalk.org 已然上线。\n\n 后台地址：haoshufu.tttalk.org/admin/\n 登录账号：admin/aaadmin",
   "card_consume_success": "使用了优惠券%s元, 账户余额为%s。",
   "translating_pls_wait": "正在人工翻译中，请稍等。。。",
   "card_consume_count_limit" : "此券每人限使用一张，多余的可赠送给朋友",

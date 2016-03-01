@@ -19,8 +19,6 @@ i18n.configure({
   directory : path.join(__dirname, '../locales')
 });
 
-var on = require('../lib/on');
-var wxservice = require('../lib/wxservice');
 var map = require('../lib/map');
 
 
@@ -73,6 +71,7 @@ router.get('/', function (req, res, next) {
 
 router.post('/', function(req, res, next) {
   var messages = nwMessage.messages;
+  var reply = nwMessage.reply;
 
   // 监听文本消息
   messages.on.text(function(msg, res) {
@@ -80,10 +79,12 @@ router.post('/', function(req, res, next) {
     logger.info(msg);
 
     var openid = msg.FromUserName;
+    var me = msg.ToUserName;
     var msgid = msg.MsgId;
     var content = msg.Content;
 
-    //on.onText(openid, content, msgid);
+    var text = reply.text(me, openid, 'text');
+    res.send(text);
   });
 
   // 监听图片消息
@@ -92,15 +93,14 @@ router.post('/', function(req, res, next) {
     logger.info(msg);
 
     var openid = msg.FromUserName;
-    var text = i18n.__('translating_pls_wait');
-    wxservice.text(openid, text, function(err, data) {
-    });
+    var me = msg.ToUserName;
 
     var msgid = msg.MsgId;
     var mediaid = msg.MediaId;
     var picurl = msg.PicUrl;
 
-    //on.onImage(openid, mediaid, picurl, msgid);
+    var text = reply.text(me, openid, picurl);
+    res.send(text);
   });
 
   // 监听语音消息
@@ -108,9 +108,7 @@ router.post('/', function(req, res, next) {
     logger.info("voiceMsg received");
     logger.info(msg);
     var openid = msg.FromUserName;
-    var text = i18n.__('translating_pls_wait');
-    wxservice.text(openid, text, function(err, data) {
-    });
+    var me = msg.ToUserName;
 
     var msgid = msg.MsgId;
     var mediaid = msg.MediaId;
@@ -118,7 +116,9 @@ router.post('/', function(req, res, next) {
     nwAuth.determine(app, function (err, authData) {
       var url = util.format('http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s', authData.accessToken, mediaid);
       logger.info("voice url: %s", url);
-      //on.onVoice(openid, mediaid, url, msgid);
+
+      var text = reply.text(me, openid, url);
+      res.send(text);
     });
   });
 
@@ -126,12 +126,14 @@ router.post('/', function(req, res, next) {
   messages.on.location(function(msg, res) {
     logger.info("locationMsg received");
     logger.info(msg);
+    res.send('');
   });
 
   // 监听链接消息
   messages.on.link(function(msg, res) {
     logger.info("linkMsg received");
     logger.info(msg);
+    res.send('');
   });
 
   //监听事件消息
@@ -139,62 +141,61 @@ router.post('/', function(req, res, next) {
     logger.info("subscribe received");
     logger.info(msg);
     var openid = msg.FromUserName;
+    var me = msg.ToUserName;
     var text = i18n.__('subscribe_success');
-    wxservice.text(openid, text, function(err, data) {
-    });
 
-    var up_openid = '';
-    if (msg.EventKey.indexOf('qrscene_') === 0) {
-      up_openid = msg.EventKey.substring(8);
-    }
 
-    on.onSubscribe(openid, up_openid, msg.MsgId);
+    var text = reply.text(me, openid, text);
+    res.send(text);
   });
   messages.event.on.unsubscribe(function(msg, res) {
     logger.info("unsubscribe received");
     logger.info(msg);
 
-    var openid = msg.FromUserName;
-    on.onUnsubscribe(openid);
+    res.send('');
   });
   messages.event.on.scan(function(msg, res) {
     logger.info("scan received");
     logger.info(msg);
+    var openid = msg.FromUserName;
+    var me = msg.ToUserName;
+
+    var text = reply.text(me, openid, 'scan');
+    res.send(text);
   });
   messages.event.on.location(function(msg, res) {
     logger.info("location received");
     logger.info(msg);
+    var openid = msg.FromUserName;
+    var me = msg.ToUserName;
+
     var latitude = msg.Latitude;
     var longitude = msg.Longitude;
     
     map.geocoder(latitude, longitude, function(err, result) {
       logger.info(result.address);
+      var text = reply.text(me, openid, 'scan');
+      res.send(text);
     });
   });
   messages.event.on.click(function(msg, res) {
     logger.info("click received");
     logger.info(msg);
-    switch (msg.EventKey) {
-    case 'usage_translate' :
-      var openid = msg.FromUserName;
-      var text = i18n.__('usage_translate');
-      wxservice.text(openid, text, function(err, data) {
-      });
-      break;
-    case 'usage_knock' :
-      var openid = msg.FromUserName;
-      on.onKnock(openid);
-      
-      break;
-    }
+    var openid = msg.FromUserName;
+    var me = msg.ToUserName;
+
+    var text = reply.text(me, openid, msg.EventKey);
+    res.send(text);
   });
   messages.event.on.view(function(msg, res) {
     logger.info("view received");
     logger.info(msg);
+    res.send('');
   });
   messages.event.on.templatesendjobfinish(function(msg, res) {
     logger.info("templatesendjobfinish received");
     logger.info(msg);
+    res.send('');
   });
 
   // 获取XML内容
@@ -206,7 +207,6 @@ router.post('/', function(req, res, next) {
 
   // 内容接收完毕
   req.on('end', function() {
-   res.send("success");
    x2j.parseString(xml, {
       explicitArray : false,
       ignoreAttrs : true

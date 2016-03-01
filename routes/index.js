@@ -15,7 +15,6 @@ i18n.configure({
 });
 
 var account_dao = require('../dao/account_dao');
-var tttalk = require('../lib/tttalk');
 var app = config.app;
 
 var getOpenid = function(config, code, cb) {
