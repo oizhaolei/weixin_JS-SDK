@@ -35,18 +35,57 @@
         </div>
         <div class="weui_cell_ft">{{account.username}}</div>
       </a>
-      <a class="weui_cell" href="javascript:document.location='/profile?openid={{openid}}&key=sex';">
-        <div class="weui_cell_bd weui_cell_primary">
-          <p>性别</p>
-        </div>
-        <div class="weui_cell_ft">{{account.sex}}</div>
-      </a>
+      <!-- <a class="weui_cell" href="javascript:document.location='/profile?openid={{openid}}&key=sex';"> -->
+      <!--   <div class="weui_cell_bd weui_cell_primary"> -->
+      <!--     <p>性别</p> -->
+      <!--   </div> -->
+      <!--   <div class="weui_cell_ft">{{account.sex}}</div> -->
+      <!-- </a> -->
       <a class="weui_cell" href="javascript:document.location='/profile?openid={{openid}}&key=telephone';">
         <div class="weui_cell_bd weui_cell_primary">
           <p>手机</p>
         </div>
         <div class="weui_cell_ft">{{account.telephone}}</div>
       </a>
+      <a class="weui_cell" href="javascript:editAddress()">
+        <div class="weui_cell_bd weui_cell_primary">
+          <p>地址</p>
+        </div>
+        <div id="profile-address" class="weui_cell_ft"></div>
+      </a>
     </div>
   </div>
 </div>
+
+
+{{#extend "scripts"}}
+    <script src="/jweixin-1.0.0.js"></script>
+    <script>
+     function editAddress() {
+         _log('access_token: {{access_token}}');
+         $.ajax({
+             url: '/address',
+             type: 'post',
+             data: {
+                 access_token: '{{access_token}}',
+                 url: location.href.split('#')[0] // 将当前URL地址上传至服务器用于产生数字签名
+             }
+         }).then(function(data) {
+             WeixinJSBridge.invoke('editAddress', data, function(res){
+                 _log(res);
+                 $('#profile-address').text(res.addressDetailInfo);
+             });
+         });
+     };
+
+     function _log(msg) {
+         $.ajax({
+             url: '/log',
+             type: 'post',
+             data: {
+                 msg: msg
+             }
+         });
+     }
+    </script>
+{{/extend}}

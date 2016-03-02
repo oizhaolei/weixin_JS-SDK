@@ -30,7 +30,7 @@ var nwAuth = require('node-weixin-auth');
 var nwMessage = require('node-weixin-message');
 
 // Start
-router.all('/getSignature', function (req, res, next) {
+router.all('/getsignature', function (req, res, next) {
   var url = req.body.url;
   logger.info('url: %s', url);
 
