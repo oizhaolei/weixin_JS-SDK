@@ -174,15 +174,19 @@ router.post('/', function(req, res, next) {
   messages.event.on.click(function(msg, res) {
     logger.info("click received");
     logger.info(msg);
+    var openid = msg.FromUserName;
     switch (msg.EventKey) {
     case 'usage_translate' :
-      var openid = msg.FromUserName;
       var text = i18n.__('usage_translate');
       wxservice.text(openid, text, function(err, data) {
       });
       break;
+
+    case 'share_to_friend' :
+      on.onShareToFriend(openid);
+      break;
+
     case 'usage_knock' :
-      var openid = msg.FromUserName;
       on.onKnock(openid);
       
       break;

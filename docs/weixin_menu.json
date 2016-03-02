@@ -4,9 +4,9 @@
       "name": "使用说明",
       "sub_button": [
         {
-          "type": "view",
+          "type": "click",
           "name": "分享有奖",
-          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx99b8690b0397ad16&redirect_uri=http://wechat.tttalk.org/oauth?action=share_to_friend&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
+          "key": "share_to_friend"
         },
         {
           "type": "media_id",
