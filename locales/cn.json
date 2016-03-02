@@ -2,7 +2,7 @@
   "usage_translate": "感谢您使用TTTalk人工翻译。\n\n文字翻译：请在输入框输入文字\n语音翻译：请按住说话并发送\n图片翻译：请上传或拍摄照片。\n\n我们将稍后发给您翻译结果。",
   "wxpay_success": "您成功充值%s元, 您的账户余额为%s元。感谢使用。",
   "subscribe_success": "感谢您关注TTTalk翻译秘书，我们提供中韩语的人工翻译服务，您可以直接输入文字、语音、照片进行中韩翻译。",
-  "subscribe_share_fee": "您的朋友%s将得到%s元奖励，具体请见“分享有奖”%s",
+  "subscribe_share_fee": "您的朋友%s将得到%s元奖励，分享方法请见“分享有奖”%s",
   "card_consume_success": "使用了优惠券%s元, 账户余额为%s。",
   "balance_too_low": "您的当前余额为%s，请充值",
   "translating_pls_wait": "正在人工翻译中，请稍等。。。",

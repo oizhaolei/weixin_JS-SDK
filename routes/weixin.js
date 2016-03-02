@@ -143,6 +143,7 @@ router.post('/', function(req, res, next) {
     wxservice.text(openid, text, function(err, data) {
     });
 
+    //介绍人有奖
     var up_openid = '';
     if (msg.EventKey.indexOf('qrscene_') === 0) {
       up_openid = msg.EventKey.substring(8);
