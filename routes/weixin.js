@@ -28,6 +28,7 @@ var app = config.app;
 
 var nwAuth = require('node-weixin-auth');
 var nwMessage = require('node-weixin-message');
+var reply = nwMessage.reply;
 
 // Start
 router.all('/getsignature', function (req, res, next) {
@@ -76,6 +77,7 @@ router.post('/', function(req, res, next) {
 
   // 监听文本消息
   messages.on.text(function(msg, res) {
+    res.send("success");
     logger.info("textMsg received");
     logger.info(msg);
 
@@ -88,6 +90,7 @@ router.post('/', function(req, res, next) {
 
   // 监听图片消息
   messages.on.image(function(msg, res) {
+    res.send("success");
     logger.info("imageMsg received");
     logger.info(msg);
 
@@ -105,6 +108,7 @@ router.post('/', function(req, res, next) {
 
   // 监听语音消息
   messages.on.voice(function(msg, res) {
+    res.send("success");
     logger.info("voiceMsg received");
     logger.info(msg);
     var openid = msg.FromUserName;
@@ -124,18 +128,21 @@ router.post('/', function(req, res, next) {
 
   // 监听位置消息
   messages.on.location(function(msg, res) {
+    res.send("success");
     logger.info("locationMsg received");
     logger.info(msg);
   });
 
   // 监听链接消息
   messages.on.link(function(msg, res) {
+    res.send("success");
     logger.info("linkMsg received");
     logger.info(msg);
   });
 
   //监听事件消息
   messages.event.on.subscribe(function(msg, res) {
+    res.send("success");
     logger.info("subscribe received");
     logger.info(msg);
     var openid = msg.FromUserName;
@@ -152,6 +159,7 @@ router.post('/', function(req, res, next) {
     on.onSubscribe(openid, up_openid, msg.MsgId);
   });
   messages.event.on.unsubscribe(function(msg, res) {
+    res.send("success");
     logger.info("unsubscribe received");
     logger.info(msg);
 
@@ -159,10 +167,12 @@ router.post('/', function(req, res, next) {
     on.onUnsubscribe(openid);
   });
   messages.event.on.scan(function(msg, res) {
+    res.send("success");
     logger.info("scan received");
     logger.info(msg);
   });
   messages.event.on.location(function(msg, res) {
+    res.send("success");
     logger.info("location received");
     logger.info(msg);
     var latitude = msg.Latitude;
@@ -176,28 +186,36 @@ router.post('/', function(req, res, next) {
     logger.info("click received");
     logger.info(msg);
     var openid = msg.FromUserName;
+    var me = msg.ToUserName;
     switch (msg.EventKey) {
     case 'usage_translate' :
       var text = i18n.__('usage_translate');
-      wxservice.text(openid, text, function(err, data) {
-      });
+      text = reply.text(me, openid, text);
+      res.send(text);
       break;
 
     case 'share_to_friend' :
+      // send text first
+      var share_msg = i18n.__('share_to_friend_msg', parseFloat(config.subscribe_reward) / 100);
+      var text = reply.text(me, openid, share_msg);
+      res.send(text);
       on.onShareToFriend(openid);
       break;
 
     case 'usage_knock' :
+      res.send("success");
       on.onKnock(openid);
       
       break;
     }
   });
   messages.event.on.view(function(msg, res) {
+    res.send("success");
     logger.info("view received");
     logger.info(msg);
   });
   messages.event.on.templatesendjobfinish(function(msg, res) {
+    res.send("success");
     logger.info("templatesendjobfinish received");
     logger.info(msg);
   });
@@ -211,8 +229,7 @@ router.post('/', function(req, res, next) {
 
   // 内容接收完毕
   req.on('end', function() {
-   res.send("success");
-   x2j.parseString(xml, {
+    x2j.parseString(xml, {
       explicitArray : false,
       ignoreAttrs : true
     }, function(err, json) {
