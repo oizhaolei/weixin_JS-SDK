@@ -142,13 +142,12 @@ router.post('/', function(req, res, next) {
 
   //监听事件消息
   messages.event.on.subscribe(function(msg, res) {
-    res.send("success");
     logger.info("subscribe received");
     logger.info(msg);
+    var me = msg.ToUserName;
     var openid = msg.FromUserName;
-    var text = i18n.__('subscribe_success');
-    wxservice.text(openid, text, function(err, data) {
-    });
+    var text = reply.text(me, openid, i18n.__('subscribe_success'));
+    res.send(text);
 
     //介绍人有奖
     var up_openid = '';
@@ -157,6 +156,12 @@ router.post('/', function(req, res, next) {
     }
 
     on.onSubscribe(openid, up_openid, msg.MsgId);
+
+    on.onShareToFriend(openid, function() {
+      var text = i18n.__('share_to_friend_msg', parseFloat(config.subscribe_reward) / 100);
+      wxservice.text(openid, text, function(err, data) {
+      });
+    });
   });
   messages.event.on.unsubscribe(function(msg, res) {
     res.send("success");
@@ -177,7 +182,7 @@ router.post('/', function(req, res, next) {
     logger.info(msg);
     var latitude = msg.Latitude;
     var longitude = msg.Longitude;
-    
+
     map.geocoder(latitude, longitude, function(err, result) {
       logger.info(result.address);
     });
@@ -189,15 +194,13 @@ router.post('/', function(req, res, next) {
     var me = msg.ToUserName;
     switch (msg.EventKey) {
     case 'usage_translate' :
-      var text = i18n.__('usage_translate');
-      text = reply.text(me, openid, text);
+      var text = reply.text(me, openid, i18n.__('usage_translate'));
       res.send(text);
       break;
 
     case 'share_to_friend' :
       // send text first
-      var share_msg = i18n.__('share_to_friend_msg', parseFloat(config.subscribe_reward) / 100);
-      var text = reply.text(me, openid, share_msg);
+      var text = reply.text(me, openid, i18n.__('share_to_friend_waiting_msg', parseFloat(config.subscribe_reward) / 100));
       res.send(text);
       on.onShareToFriend(openid);
       break;
@@ -205,7 +208,7 @@ router.post('/', function(req, res, next) {
     case 'usage_knock' :
       res.send("success");
       on.onKnock(openid);
-      
+
       break;
     }
   });
