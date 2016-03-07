@@ -19,6 +19,8 @@ i18n.configure({
   directory : path.join(__dirname, '../locales')
 });
 
+var on = require('../lib/on');
+var wxservice = require('../lib/wxservice');
 var map = require('../lib/map');
 
 
@@ -26,9 +28,10 @@ var app = config.app;
 
 var nwAuth = require('node-weixin-auth');
 var nwMessage = require('node-weixin-message');
+var reply = nwMessage.reply;
 
 // Start
-router.all('/getSignature', function (req, res, next) {
+router.all('/getsignature', function (req, res, next) {
   var url = req.body.url;
   logger.info('url: %s', url);
 
@@ -61,6 +64,7 @@ router.get('/', function (req, res, next) {
   var timestamp = req.query.timestamp;
   var nonce = req.query.nonce;
   var echostr = req.query.echostr;
+  logger.info('signature: %s, timestamp: %s, nonce: %s', signature, timestamp, nonce);
   if(nwAuth.check(config.app.token, signature, timestamp, nonce)){
     res.send(echostr);
   }else{
@@ -140,19 +144,32 @@ router.post('/', function(req, res, next) {
   messages.event.on.subscribe(function(msg, res) {
     logger.info("subscribe received");
     logger.info(msg);
-    var openid = msg.FromUserName;
     var me = msg.ToUserName;
-    var text = i18n.__('subscribe_success');
-
-
-    var text = reply.text(me, openid, text);
+    var openid = msg.FromUserName;
+    var text = reply.text(me, openid, i18n.__('subscribe_success'));
     res.send(text);
+
+    //介绍人有奖
+    var up_openid = '';
+    if (msg.EventKey.indexOf('qrscene_') === 0) {
+      up_openid = msg.EventKey.substring(8);
+    }
+
+    on.onSubscribe(openid, up_openid, msg.MsgId);
+
+    on.onShareToFriend(openid, function() {
+      var text = i18n.__('share_to_friend_msg', parseFloat(config.subscribe_reward) / 100);
+      wxservice.text(openid, text, function(err, data) {
+      });
+    });
   });
   messages.event.on.unsubscribe(function(msg, res) {
+    res.send("success");
     logger.info("unsubscribe received");
     logger.info(msg);
 
-    res.send('');
+    var openid = msg.FromUserName;
+    on.onUnsubscribe(openid);
   });
   messages.event.on.scan(function(msg, res) {
     logger.info("scan received");
@@ -184,8 +201,20 @@ router.post('/', function(req, res, next) {
     var openid = msg.FromUserName;
     var me = msg.ToUserName;
 
-    var text = reply.text(me, openid, msg.EventKey);
-    res.send(text);
+    switch (msg.EventKey) {
+    case 'share_to_friend' :
+      // send text first
+      var text = reply.text(me, openid, i18n.__('share_to_friend_waiting_msg', parseFloat(config.subscribe_reward) / 100));
+      res.send(text);
+      on.onShareToFriend(openid);
+      break;
+
+    case 'usage_knock' :
+      res.send("success");
+      on.onKnock(openid);
+
+      break;
+    }
   });
   messages.event.on.view(function(msg, res) {
     logger.info("view received");
@@ -207,7 +236,7 @@ router.post('/', function(req, res, next) {
 
   // 内容接收完毕
   req.on('end', function() {
-   x2j.parseString(xml, {
+    x2j.parseString(xml, {
       explicitArray : false,
       ignoreAttrs : true
     }, function(err, json) {

@@ -3,35 +3,40 @@
     {
       "name": "网上商城",
       "type": "view",
-      "url": "http://haoshuru.tttalk.org/mobile/"
+      "url": "http://55595526.m.weimob.com/vshop/55595526/Index?PageId=301496"
     },
     {
-      "name": "个人中心",
+      "name": "好舒服",
       "type": "view",
-      "url": "http://haoshuru.tttalk.org/mobile/user.php?act=user_center"
+      "url": "https://mp.weixin.qq.com/s?__biz=MzA4NDY3NjY1OA==&mid=401862544&idx=1&sn=0d42912a5fc03f010c6c72a4af2d26c7&scene=1&srcid=0118QAYo7XKrhYZZsZ2z9sfu&pass_ticket=r8HHi4gzfyR7YKunTEz4cnq8pqR4tvxpDRymJGuq7WJu%2BrHMV4XMPnK5IxJkAXB5#rd"
     },
     {
-      "name": "体验店",
+      "name": "我的中心",
       "sub_button": [
         {
+          "name": "好舒服",
+          "type": "view",
+          "url": "http://haoshufu.tttalk.org/"
+        },
+        {
+          "type": "click",
+          "name": "分享有奖",
+          "key": "share_to_friend"
+        },
+        {
+          "type": "view",
+          "name": "我的订单",
+          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx3351b364e154e113&redirect_uri=http://haoshufu.tttalk.org/wechat/oauth?action=my_order&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
+        },
+        {
+          "type": "view",
           "name": "完善资料",
-          "type": "view",
-          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxe25dbb9e7f692a13&redirect_uri=http://test.yuehuitao.com/wechat/oauth?action=profile&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
+          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx3351b364e154e113&redirect_uri=http://haoshufu.tttalk.org/wechat/oauth?action=my_profile&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
         },
         {
-          "name": "最新活动",
-          "type": "view",
-          "url": "http://mp.weixin.qq.com/s?__biz=MzAxODY3NzE0Ng==&mid=401089080&idx=1&sn=b0ba62c6063cf3dd71c6596902945c0e&scene=18#wechat_redirect"
-        },
-        {
-          "name": "东城天下",
-          "type": "view",
-          "url": "http://mp.weixin.qq.com/s?__biz=MzAxODY3NzE0Ng==&mid=400695937&idx=2&sn=c114ef4baf9b89d4d7b3faa5bd35c21b&scene=18#wechat_redirect"
-        },
-        {
-          "name": "双D港店",
-          "type": "view",
-          "url": "http://mp.weixin.qq.com/s?__biz=MzAxODY3NzE0Ng==&mid=207785225&idx=3&sn=8e127de2ca4695ef4ea69b1d7462beae&scene=18#wechat_redirect"
+          "type": "click",
+          "key":"usage_knock",
+          "name": "会员签到"
         }
       ]
     }

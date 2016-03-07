@@ -1,0 +1,29 @@
+<div class="page">
+  <div class="bd">
+
+    <form id="change_account_form" method="post" action="{{appname}}/change_account">
+      <input type="hidden" id="openid" name="openid" value="{{openid}}" />
+      <input type="hidden" id="key" name="key" value="sex" />
+      <div class="weui_cells weui_cells_form">
+        <div class="weui_cell">
+          <div class="weui_cell_hd"><label class="weui_label">性别</label></div>
+          <div class="weui_cell_bd weui_cell_primary">
+            <select class="weui_input" id="sex" name="val">
+              <option value="1">男</option>
+              <option value="2">女</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="weui_btn_area">
+        <button type="submit" class="weui_btn weui_btn_primary">提交</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{{#extend "scripts"}}
+<script>
+  $("#sex").val("{{account.sex}}");
+</script>
+{{/extend}}

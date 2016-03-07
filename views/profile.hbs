@@ -1,12 +1,14 @@
 <div class="page">
+  <div class="hd">
+      <h1 class="page_title">
+          <img src="{{account.portrait}}" width="96" height="96"/>
+      </h1>
+  </div>
   {{#if msg}}
   <div class="alert alert-info">
     {{msg}}
   </div>
   {{/if}}
-  <div class="hd">
-    <h1 class="page_title">个人资料</h1>
-  </div>
   <div class="bd">
     <div class="weui_cells_title">个人信息</div>
     <div class="weui_cells">
@@ -20,40 +22,64 @@
       </div>
     </div>
 
-    <form id="change_account_form" method="post" action="{{appname}}/change_account">
-      <input type="hidden" id="openid" name="openid" value="{{openid}}" /> 
-      <div class="weui_cells weui_cells_form">
-        <div class="weui_cell">
-          <div class="weui_cell_hd"><label class="weui_label">姓名</label></div>
-          <div class="weui_cell_bd weui_cell_primary">
-            <input type="text" id="username" name="username" class="weui_input" placeholder="请输入真实姓名" value="{{account.username}}" />
-          </div>
+    <div class="weui_cells weui_cells_access">
+      <a class="weui_cell" href="javascript:document.location='{{appname}}/profile?openid={{openid}}&key=username';">
+        <div class="weui_cell_bd weui_cell_primary">
+          <p>姓名</p>
         </div>
-        <div class="weui_cell">
-          <div class="weui_cell_hd"><label class="weui_label">性别</label></div>
-          <div class="weui_cell_bd weui_cell_primary">
-            <select class="weui_input" id="sex" name="sex">
-              <option value="1">男</option>
-              <option value="2">女</option>
-            </select>
-          </div>
+        <div class="weui_cell_ft">{{account.username}}</div>
+      </a>
+      <!-- <a class="weui_cell" href="javascript:document.location='{{appname}}/profile?openid={{openid}}&key=sex';"> -->
+      <!--   <div class="weui_cell_bd weui_cell_primary"> -->
+      <!--     <p>性别</p> -->
+      <!--   </div> -->
+      <!--   <div class="weui_cell_ft">{{account.sex}}</div> -->
+      <!-- </a> -->
+      <a class="weui_cell" href="javascript:document.location='{{appname}}/profile?openid={{openid}}&key=telephone';">
+        <div class="weui_cell_bd weui_cell_primary">
+          <p>手机</p>
         </div>
-        <div class="weui_cell">
-          <div class="weui_cell_hd"><label class="weui_label">手机</label></div>
-          <div class="weui_cell_bd weui_cell_primary">
-            <input class="weui_input" id="telephone" name="telephone" value="{{account.telephone}}" type="number" pattern="[0-9]*" placeholder="请输入号码" />
-          </div>
+        <div class="weui_cell_ft">{{account.telephone}}</div>
+      </a>
+      <a class="weui_cell" href="javascript:editAddress()">
+        <div class="weui_cell_bd weui_cell_primary">
+          <p>地址</p>
         </div>
-      </div>
-      <div class="weui_btn_area">
-        <button type="submit" class="weui_btn weui_btn_primary">提交</button>
-      </div>
-    </form>
+        <div id="profile-address" class="weui_cell_ft"></div>
+      </a>
+    </div>
   </div>
 </div>
 
+
 {{#extend "scripts"}}
-<script>
-  $("#sex").val("{{account.sex}}");
-</script>
+    <script src="/jweixin-1.0.0.js"></script>
+    <script>
+     function editAddress() {
+         _log('access_token: {{access_token}}');
+         $.ajax({
+             url: '{{appname}}/address',
+             type: 'post',
+             data: {
+                 access_token: '{{access_token}}',
+                 url: location.href.split('#')[0] // 将当前URL地址上传至服务器用于产生数字签名
+             }
+         }).then(function(data) {
+             WeixinJSBridge.invoke('editAddress', data, function(res){
+                 _log(res);
+                 $('#profile-address').text(res.addressDetailInfo);
+             });
+         });
+     };
+
+     function _log(msg) {
+         $.ajax({
+             url: '{{appname}}/log',
+             type: 'post',
+             data: {
+                 msg: msg
+             }
+         });
+     }
+    </script>
 {{/extend}}

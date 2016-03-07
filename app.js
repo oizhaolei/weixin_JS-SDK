@@ -9,7 +9,7 @@ var path = require('path');
 var logger = require('log4js').getLogger('app.js');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var favicons = require('connect-favicons');
+//var favicons = require('connect-favicons');
 
 var i18n = require("i18n");
 i18n.configure({
@@ -73,7 +73,7 @@ app.set('view engine', '.hbs');
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(favicons(__dirname + '/public/img/icons'));
+//app.use(favicons(__dirname + '/public/img/icons'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components',  express.static(path.join(__dirname, 'bower_components')));
 app.use(i18n.init);
