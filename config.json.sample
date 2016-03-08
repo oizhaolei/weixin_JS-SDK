@@ -9,5 +9,7 @@
   "mch_id" : "",
   "wxpay_api_secret" : "",
 
-  "session_secret" : ""
+  "session_secret" : "",
+
+  "weixin_web_url" : "http://haoshufu.tttalk.org/mobile/"
 }

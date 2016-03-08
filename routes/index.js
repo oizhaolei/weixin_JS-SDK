@@ -56,6 +56,9 @@ router.get('/oauth', function (req, res, next) {
     } else {
       logger.info("openid: ", openid);
       switch (action) {
+      case 'my_web' :
+        res.redirect(config.weixin_web_url + '?openid=' + openid);
+        break;
       case 'my_order' :
         res.redirect(config.appname + '/my_order?openid=' + openid);
         break;
