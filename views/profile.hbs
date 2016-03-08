@@ -31,19 +31,19 @@
     </div>
 
     <div class="weui_cells weui_cells_access">
-      <a class="weui_cell" href="javascript:document.location='/profile?openid={{openid}}&key=username';">
+      <a class="weui_cell" href="javascript:document.location='{{appname}}/profile?openid={{openid}}&key=username';">
         <div class="weui_cell_bd weui_cell_primary">
           <p>姓名</p>
         </div>
         <div class="weui_cell_ft">{{account.username}}</div>
       </a>
-      <!-- <a class="weui_cell" href="javascript:document.location='/profile?openid={{openid}}&key=sex';"> -->
+      <!-- <a class="weui_cell" href="javascript:document.location='{{appname}}/profile?openid={{openid}}&key=sex';"> -->
       <!--   <div class="weui_cell_bd weui_cell_primary"> -->
       <!--     <p>性别</p> -->
       <!--   </div> -->
       <!--   <div class="weui_cell_ft">{{account.sex}}</div> -->
       <!-- </a> -->
-      <a class="weui_cell" href="javascript:document.location='/profile?openid={{openid}}&key=telephone';">
+      <a class="weui_cell" href="javascript:document.location='{{appname}}/profile?openid={{openid}}&key=telephone';">
         <div class="weui_cell_bd weui_cell_primary">
           <p>手机</p>
         </div>
@@ -66,7 +66,7 @@
      function editAddress() {
          _log('access_token: {{access_token}}');
          $.ajax({
-             url: '/address',
+             url: '{{appname}}/address',
              type: 'post',
              data: {
                  access_token: '{{access_token}}',
@@ -82,7 +82,7 @@
 
      function _log(msg) {
          $.ajax({
-             url: '/log',
+             url: '{{appname}}/log',
              type: 'post',
              data: {
                  msg: msg

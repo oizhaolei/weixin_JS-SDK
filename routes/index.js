@@ -57,15 +57,15 @@ router.get('/oauth', function (req, res, next) {
       logger.info("openid: ", openid);
       switch (action) {
       case 'wxpay' :
-        res.redirect('/wxpay/list?openid=' + openid);
+        res.redirect(config.appname + '/wxpay/list?openid=' + openid);
         break;
 
       case 'wxcard' :
-        res.redirect('/wxcard/?openid=' + openid);
+        res.redirect(config.appname + '/wxcard/?openid=' + openid);
         break;
 
       case 'profile' :
-        res.redirect('/profile?openid=' + openid + '&access_token=' + access_token);
+        res.redirect(config.appname + '/profile?openid=' + openid + '&access_token=' + access_token);
         break;
 
       case 'fee_history' :
@@ -97,6 +97,7 @@ router.get('/profile', function (req, res, next) {
     } else {
       res.render('profile' + key, {
         layout : 'layout',
+        appname: config.appname,
         title : '个人资料',
         msg : msg,
         account : accountData,
@@ -162,7 +163,7 @@ router.post('/change_account', function (req, res, next) {
     if (err) {
       next(err);
     } else {
-      var url = '/profile?openid=' + openid + '&msg=' + encodeURIComponent(err ? err : '');
+      var url = config.appname + '/profile?openid=' + openid + '&msg=' + encodeURIComponent(err ? err : '');
       res.redirect(url);
     }
   });

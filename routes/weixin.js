@@ -74,6 +74,7 @@ router.get('/', function (req, res, next) {
 
 router.post('/', function(req, res, next) {
   var messages = nwMessage.messages;
+  var reply = nwMessage.reply;
 
   // 监听文本消息
   messages.on.text(function(msg, res) {
@@ -177,14 +178,18 @@ router.post('/', function(req, res, next) {
     logger.info(msg);
   });
   messages.event.on.location(function(msg, res) {
-    res.send("success");
     logger.info("location received");
     logger.info(msg);
+    var openid = msg.FromUserName;
+    var me = msg.ToUserName;
+
     var latitude = msg.Latitude;
     var longitude = msg.Longitude;
-
+    
     map.geocoder(latitude, longitude, function(err, result) {
       logger.info(result.address);
+      var text = reply.text(me, openid, '');
+      res.send(text);
     });
   });
   messages.event.on.click(function(msg, res) {
