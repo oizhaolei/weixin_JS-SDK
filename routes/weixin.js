@@ -64,7 +64,6 @@ router.get('/', function (req, res, next) {
   var timestamp = req.query.timestamp;
   var nonce = req.query.nonce;
   var echostr = req.query.echostr;
-  logger.info('signature: %s, timestamp: %s, nonce: %s', signature, timestamp, nonce);
   if(nwAuth.check(config.app.token, signature, timestamp, nonce)){
     res.send(echostr);
   }else{
@@ -128,16 +127,16 @@ router.post('/', function(req, res, next) {
 
   // 监听位置消息
   messages.on.location(function(msg, res) {
+    res.send("success");
     logger.info("locationMsg received");
     logger.info(msg);
-    res.send('');
   });
 
   // 监听链接消息
   messages.on.link(function(msg, res) {
+    res.send("success");
     logger.info("linkMsg received");
     logger.info(msg);
-    res.send('');
   });
 
   //监听事件消息
@@ -172,13 +171,9 @@ router.post('/', function(req, res, next) {
     on.onUnsubscribe(openid);
   });
   messages.event.on.scan(function(msg, res) {
+    res.send("success");
     logger.info("scan received");
     logger.info(msg);
-    var openid = msg.FromUserName;
-    var me = msg.ToUserName;
-
-    var text = reply.text(me, openid, 'scan');
-    res.send(text);
   });
   messages.event.on.location(function(msg, res) {
     logger.info("location received");
@@ -217,14 +212,14 @@ router.post('/', function(req, res, next) {
     }
   });
   messages.event.on.view(function(msg, res) {
+    res.send("success");
     logger.info("view received");
     logger.info(msg);
-    res.send('');
   });
   messages.event.on.templatesendjobfinish(function(msg, res) {
+    res.send("success");
     logger.info("templatesendjobfinish received");
     logger.info(msg);
-    res.send('');
   });
 
   // 获取XML内容
