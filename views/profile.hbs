@@ -1,7 +1,7 @@
 <div class="page">
   <div class="hd">
       <h1 class="page_title">
-          <img src="{{account.portrait}}" width="96" height="96"/>
+          <img src="{{account.portrait}}" width="96" height="96" id="img_portrait" onclick="javascript:editPortrait()"/>
       </h1>
   </div>
   {{#if msg}}
@@ -63,6 +63,54 @@
 {{#extend "scripts"}}
     <script src="/jweixin-1.0.0.js"></script>
     <script>
+     $.ajax({
+          url: '/weixin/getsignature',
+          type: 'post',
+          data: {
+              url: location.href.split('#')[0]
+          }
+      }).done(function(r) {
+          wx.config({
+              appId: r.appId,
+              timestamp: r.timestamp,
+              nonceStr: r.nonceStr,
+              signature: r.signature,
+              jsApiList: [
+                  'chooseImage',
+                  'uploadImage',
+                  'downloadImage'
+              ]
+          });
+     });
+     function editPortrait() {
+        wx.chooseImage({
+          count: 1,
+          sizeType: ['original', 'compressed'],
+          sourceType: ['album', 'camera'],
+          success: function (res) {
+              var localIds = res.localIds;
+              wx.uploadImage({
+                  localId: localIds[0].toString(),
+                  isShowProgressTips: 1,
+                  success: function (res) {
+                      var serverId = res.serverId;
+                      $.ajax({
+                         url: '{{appname}}/change_portrait',
+                         type: 'post',
+                         data: {
+                           openid: '{{openid}}',
+                           mediaid: serverId
+                         }
+                     }).then(function(data) {
+                        if(data != null && data != ''){
+                          $("#img_portrait").attr('src',data);
+                        }
+                     });
+                  }
+              });
+          }
+        });
+     };
      function editAddress() {
          _log('access_token: {{access_token}}');
          $.ajax({

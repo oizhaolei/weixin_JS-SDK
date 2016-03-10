@@ -3,6 +3,7 @@ var logger = require('log4js').getLogger('routers/index.js');
 var crypto = require('crypto');
 var util = require('util');
 var path = require('path');
+var fs = require("fs");
 
 var request = require('request');
 var express = require('express');
@@ -19,6 +20,8 @@ var nwAuth = require('node-weixin-auth');
 
 var account_dao = require('../dao/account_dao');
 var tttalk = require('../lib/tttalk');
+var oss = require('../lib/oss');
+var app = config.app;
 
 var getWebAccessToken = function(config, code, cb) {
   var url = util.format('https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code', config.app.id, config.app.secret, code);
@@ -166,6 +169,40 @@ router.post('/change_account', function (req, res, next) {
       var url = config.appname + '/profile?openid=' + openid + '&msg=' + encodeURIComponent(err ? err : '');
       res.redirect(url);
     }
+  });
+});
+
+//change portrait
+router.post('/change_portrait', function (req, res, next) {
+  var openid = req.body.openid;
+  var mediaid = req.body.mediaid;
+  
+  nwAuth.determine(app, function (err, authData) {
+    var picurl = util.format('http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s', authData.accessToken, mediaid);
+    var filename = mediaid + '.jpg';
+    var sourceFile = fs.createWriteStream(path.join(config.tmpdir,  filename));
+    request(picurl).pipe(sourceFile);
+    sourceFile.on('finish', function() {
+      var sourceFile = path.join(config.tmpdir,  filename);
+      var dest = 'original/' + filename;
+      oss.putObject(sourceFile, dest, 'image/jpeg', function(err, data) {
+        if (err) {
+            callback(err, data);
+        } else {
+          var key = 'portrait';
+          var val = util.format('http://file.tttalk.org/original/%s', filename);
+          var data = {};
+          data[key] = val;
+          account_dao.updateAccount(openid, data, function(err, results, account) {
+            if (err) {
+              next(err);
+            } else {
+              res.send(val);
+            }
+          });
+        }
+      });
+    });
   });
 });
 
