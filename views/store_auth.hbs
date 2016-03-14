@@ -1,0 +1,85 @@
+<div class="page">
+  <div class="bd">
+   <div class="weui_cells_title">营业执照</div>
+    <div class="weui_cells weui_cells_form">
+      <div class="weui_cell">
+        <div class="weui_cell_bd weui_cell_primary">
+          <div class="weui_uploader">
+            <div class="weui_uploader_bd">
+              <ul class="weui_uploader_files">
+              </ul>
+              <div class="weui_uploader_input_wrp">
+                 <input class="weui_uploader_input" type="button"/>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{#extend "scripts"}}
+<script src="/stylesheets/jweixin-1.0.0.js" > </script>
+<script>
+   var previewUrls = [];
+   $.ajax({
+        url: '/wechat/weixin/getsignature',
+        type: 'post',
+        data: {
+            url: location.href.split('#')[0]
+        }
+    }).done(function(r) {
+        wx.config({
+            appId: r.appId,
+            timestamp: r.timestamp,
+            nonceStr: r.nonceStr,
+            signature: r.signature,
+            jsApiList: [
+                'chooseImage',
+                'uploadImage',
+                'previewImage'
+            ]
+        });
+    });
+    $('.weui_uploader_input').click(function () {
+      wx.chooseImage({
+        count: 9,
+        sizeType: ['original', 'compressed'],
+        sourceType: ['album', 'camera'],
+        success: function (res) {
+          var localIds = res.localIds;
+          for(var index in localIds){
+            wx.uploadImage({
+                localId: localIds[index].toString(),
+                isShowProgressTips: 1,
+                success: function (res) {
+                  var serverId = res.serverId;
+                  $.ajax({
+                       url: '{{appname}}/change_store_auth',
+                       type: 'post',
+                       data: {
+                         openid: '{{openid}}',
+                         mediaid: serverId
+                       }
+                   }).then(function(data) {
+                      if(data != null && data != ''){
+                        previewUrls.push(data);
+                        var insertHtml = '<li class=\"weui_uploader_file\" style=\"background-image:url(' + data + ')\" onclick=\"javascript:previewImage(\'' + data + '\');\"></li>';
+                        $('.weui_uploader_files').append(insertHtml);
+                      }
+                   });
+                }
+            });
+          }
+        }
+      });
+    });
+    
+    function previewImage(url) {
+      wx.previewImage({
+        current: url,
+        urls: previewUrls
+      });
+    };
+</script > 
+{{/extend}}

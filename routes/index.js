@@ -3,6 +3,7 @@ var logger = require('log4js').getLogger('routers/index.js');
 var crypto = require('crypto');
 var util = require('util');
 var path = require('path');
+var fs = require("fs");
 
 var request = require('request');
 var express = require('express');
@@ -19,6 +20,8 @@ var nwAuth = require('node-weixin-auth');
 
 var account_dao = require('../dao/account_dao');
 var tttalk = require('../lib/tttalk');
+var oss = require('../lib/oss');
+var app = config.app;
 
 var getWebAccessToken = function(config, code, cb) {
   var url = util.format('https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code', config.app.id, config.app.secret, code);
@@ -71,9 +74,12 @@ router.get('/oauth', function (req, res, next) {
         res.redirect(config.appname + '/profile?openid=' + openid + '&access_token=' + access_token);
         break;
 
+      case 'store_auth' :
+        res.redirect(config.appname + '/store_auth?openid=' + openid);
+        break;
+
       }
     }
-
   });
 });
 
@@ -113,6 +119,15 @@ router.get('/profile', function (req, res, next) {
   });
 });
 
+router.get('/store_auth', function (req, res, next) {
+  var openid = req.body.openid;
+  res.render('store_auth', {
+    layout : 'layout',
+    appname: config.appname,
+    title : '商户认证',
+    openid : openid
+  });
+});
 
 
 // 地址
@@ -152,6 +167,33 @@ router.post('/change_account', function (req, res, next) {
       var url = config.appname + '/profile?openid=' + openid + '&msg=' + encodeURIComponent(err ? err : '');
       res.redirect(url);
     }
+  });
+});
+
+//change store auth
+router.post('/change_store_auth', function (req, res, next) {
+  var openid = req.body.openid;
+  var mediaid = req.body.mediaid;
+  
+  nwAuth.determine(app, function (err, authData) {
+    var picurl = util.format('http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s', authData.accessToken, mediaid);
+    var filename = mediaid + '.jpg';
+    var sourceFile = fs.createWriteStream(path.join(config.tmpdir,  filename));
+    request(picurl).pipe(sourceFile);
+    sourceFile.on('finish', function() {
+      var sourceFile = path.join(config.tmpdir,  filename);
+      var dest = 'original/' + filename;
+      oss.putObject(sourceFile, dest, 'image/jpeg', function(err, data) {
+        if (err) {
+            callback(err, data);
+        } else {
+          var val = util.format('http://file2-tttalk-org.oss-cn-hangzhou.aliyuncs.com/original/%s', filename);
+          //TODO
+          //更新数据
+          res.send(val);
+        }
+      });
+    });
   });
 });
 
