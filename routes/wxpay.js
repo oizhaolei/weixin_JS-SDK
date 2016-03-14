@@ -58,6 +58,40 @@ router.post('/pay', function (req, res, next) {
     res.json(result);
   });
 });
+
+
+// 'body'=>$body,
+// 'out_trade_no'=>$out_trade_no,
+// 'total_fee'=>$total_fee,
+// 'ip'=>real_ip(),
+// 'wxid'=>$wxid,
+router.post('/pay2', function (req, res, next) {
+  var body = req.body.body;
+  var out_trade_no = req.body.out_trade_no;
+  var total_fee = req.body.total_fee;
+  var ip = req.body.ip;
+  var wxid = req.body.wxid;
+
+  var detail = parseFloat(total_fee)/100 + '元';
+
+  var requestParams = {
+    openid: wxid,
+    body: body,
+    detail: detail,
+    out_trade_no: out_trade_no,
+    total_fee: total_fee,
+    spbill_create_ip: ip,
+    notify_url: config.wxpay_noti_url
+  };
+  wxpay.getBrandWCPayRequestParams(requestParams, function(err, result){
+    logger.info("getBrandWCPayRequestParams: %s, %s", JSON.stringify(requestParams), JSON.stringify(result));
+    res.json({
+      msg : 'ok',
+      jsapi : result
+    });
+  });
+});
+
 // 回调 处理商户业务逻辑
 // { appid: 'wx99b8690b0397ad16',
 //   bank_type: 'CFT',
