@@ -59,6 +59,9 @@ router.get('/oauth', function (req, res, next) {
     } else {
       logger.info("openid: ", openid);
       switch (action) {
+      case 'redirect' :
+        res.redirect('http://haoshufu.tttalk.org/mobile/?wxid=' + openid);
+        break;
       case 'my_web' :
         res.redirect(config.weixin_web_url + '?openid=' + openid + '&password=weixin_password');
         break;
@@ -174,7 +177,7 @@ router.post('/change_account', function (req, res, next) {
 router.post('/change_store_auth', function (req, res, next) {
   var openid = req.body.openid;
   var mediaid = req.body.mediaid;
-  
+
   nwAuth.determine(app, function (err, authData) {
     var picurl = util.format('http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s', authData.accessToken, mediaid);
     var filename = mediaid + '.jpg';
