@@ -1,6 +1,7 @@
 "use strict";
 var config = require('../config.json');
 var logger = require('log4js').getLogger('dao/account_dao.js');
+var crypto = require('crypto');
 
 var _ = require('lodash');
 var mysql = require('mysql');
@@ -14,7 +15,7 @@ AccountDao.prototype = {
 
   getByOpenid : function (openid, callback) {
 
-    var sql = 'SELECT * FROM ecs_weixin_account where openid = ?' ;
+    var sql = 'SELECT * FROM ecs_users where openid = ?' ;
     var args = [ openid ];
     this.readonlyPool.query(sql, args, function(err, results){
       if(results && results.length === 1) {
@@ -28,12 +29,15 @@ AccountDao.prototype = {
   },
 
 
-  createAccount : function (openid, up_penid, callback) {
-    var sql = 'SELECT * FROM ecs_weixin_account where openid = ?;' +
-          'insert into  ecs_weixin_account (openid, up_openid, delete_flag, create_date) values (?,?,?,utc_timestamp(3)) ON DUPLICATE KEY UPDATE delete_flag = ?;' +
-          'SELECT * FROM ecs_weixin_account where openid = ?' ;
+  createAccount : function (openid, parent_admin_id, callback) {
+    var user_name = openid;
+    var password = crypto.createHash('sha1').update(openid).digest('hex');
+    var email = openid + '@yuehuitao.com';
+    var sql = 'SELECT * FROM ecs_users where openid = ?;' +
+          'insert into  ecs_users (user_name, password, email, openid, parent_admin_id) values (?,?,?,?,?) ON DUPLICATE KEY UPDATE openid = ?;' +
+          'SELECT * FROM ecs_users where openid = ?' ;
 
-    var args = [ openid, openid, up_penid, 0, 0, openid ];
+    var args = [ openid, user_name, password, email, openid, parent_admin_id, 0, 0, openid ];
     this.mainPool.query(sql, args, function(err, results){
 
       if (err) logger.error(err);
@@ -50,14 +54,10 @@ AccountDao.prototype = {
     var sql='',
         args=[];
     _.forEach(data, function(n, key) {
-      if ('password' === key) {
-        sql += key + '=password(?),';
-      } else {
-        sql += key + '=?,';
-      }
+      sql += key + '=?,';
       args.push(data[key]);
     });
-    sql = 'update ecs_weixin_account set ' + sql.substring(0, sql.length - 1) + ' where openid = ?;SELECT * FROM ecs_weixin_account where openid = ?' ;
+    sql = 'update ecs_users set ' + sql.substring(0, sql.length - 1) + ' where openid = ?;SELECT * FROM ecs_users where openid = ?' ;
     args.push(openid);
     args.push(openid);
 
@@ -71,7 +71,7 @@ AccountDao.prototype = {
   },
 
   deleteAccount : function (openid, callback) {
-    var sql='delete from ecs_weixin_account where openid = ?' ;
+    var sql='delete from ecs_users where openid = ?' ;
     var args=[ openid, openid, openid ];
 
     this.mainPool.query(sql, args, function(err, results){

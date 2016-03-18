@@ -30,3 +30,11 @@ CREATE TABLE `ecs_weixin_user_knock` (
   KEY (`openid`),
   KEY (`create_date`)
 ) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8mb4;
+
+
+
+
+
+ALTER TABLE `ecs_users` ADD `openid` CHAR(28) AFTER `passwd_answer`;  -- 用户在公众号的openid
+ALTER TABLE `ecs_users` ADD `parent_admin_id` smallint(5) unsigned DEFAULT 0 AFTER `openid`; -- 用户的管理者
+ALTER TABLE `ecs_users` ADD `portrait` varchar(200) NULL AFTER `passwd_answer`;  -- 头像
