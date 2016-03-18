@@ -187,7 +187,7 @@ router.post('/change_portrait', function (req, res, next) {
       var dest = 'original/' + filename;
       oss.putObject(sourceFile, dest, 'image/jpeg', function(err, data) {
         if (err) {
-            callback(err, data);
+          next(err);
         } else {
           var key = 'portrait';
           var val = util.format('http://file.tttalk.org/original/%s', filename);
