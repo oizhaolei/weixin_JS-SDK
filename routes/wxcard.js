@@ -60,6 +60,7 @@ router.get('/list', function (req, res, next) {
     }
   });
 });
+
 router.get('/consume', function (req, res, next) {
   var openid = req.query.openid;
   var card_id = req.query.card_id;

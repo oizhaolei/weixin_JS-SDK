@@ -28,9 +28,10 @@ var app = config.app;
 
 var nwAuth = require('node-weixin-auth');
 var nwMessage = require('node-weixin-message');
+var reply = nwMessage.reply;
 
 // Start
-router.all('/getSignature', function (req, res, next) {
+router.all('/getsignature', function (req, res, next) {
   var url = req.body.url;
   logger.info('url: %s', url);
 
@@ -73,9 +74,11 @@ router.get('/', function (req, res, next) {
 
 router.post('/', function(req, res, next) {
   var messages = nwMessage.messages;
+  var reply = nwMessage.reply;
 
   // 监听文本消息
   messages.on.text(function(msg, res) {
+    res.send("success");
     logger.info("textMsg received");
     logger.info(msg);
 
@@ -88,6 +91,7 @@ router.post('/', function(req, res, next) {
 
   // 监听图片消息
   messages.on.image(function(msg, res) {
+    res.send("success");
     logger.info("imageMsg received");
     logger.info(msg);
 
@@ -105,6 +109,7 @@ router.post('/', function(req, res, next) {
 
   // 监听语音消息
   messages.on.voice(function(msg, res) {
+    res.send("success");
     logger.info("voiceMsg received");
     logger.info(msg);
     var openid = msg.FromUserName;
@@ -124,12 +129,14 @@ router.post('/', function(req, res, next) {
 
   // 监听位置消息
   messages.on.location(function(msg, res) {
+    res.send("success");
     logger.info("locationMsg received");
     logger.info(msg);
   });
 
   // 监听链接消息
   messages.on.link(function(msg, res) {
+    res.send("success");
     logger.info("linkMsg received");
     logger.info(msg);
   });
@@ -138,19 +145,27 @@ router.post('/', function(req, res, next) {
   messages.event.on.subscribe(function(msg, res) {
     logger.info("subscribe received");
     logger.info(msg);
+    var me = msg.ToUserName;
     var openid = msg.FromUserName;
-    var text = i18n.__('subscribe_success');
-    wxservice.text(openid, text, function(err, data) {
-    });
+    var text = reply.text(me, openid, i18n.__('subscribe_success'));
+    res.send(text);
 
+    //介绍人有奖
     var up_openid = '';
     if (msg.EventKey.indexOf('qrscene_') === 0) {
       up_openid = msg.EventKey.substring(8);
     }
 
     on.onSubscribe(openid, up_openid, msg.MsgId);
+
+    on.onShareToFriend(openid, function() {
+      var text = i18n.__('share_to_friend_msg', parseFloat(config.subscribe_reward) / 100);
+      wxservice.text(openid, text, function(err, data) {
+      });
+    });
   });
   messages.event.on.unsubscribe(function(msg, res) {
+    res.send("success");
     logger.info("unsubscribe received");
     logger.info(msg);
 
@@ -158,41 +173,57 @@ router.post('/', function(req, res, next) {
     on.onUnsubscribe(openid);
   });
   messages.event.on.scan(function(msg, res) {
+    res.send("success");
     logger.info("scan received");
     logger.info(msg);
   });
   messages.event.on.location(function(msg, res) {
     logger.info("location received");
     logger.info(msg);
+    var openid = msg.FromUserName;
+    var me = msg.ToUserName;
+
     var latitude = msg.Latitude;
     var longitude = msg.Longitude;
     
     map.geocoder(latitude, longitude, function(err, result) {
       logger.info(result.address);
+      var text = reply.text(me, openid, '');
+      res.send(text);
     });
   });
   messages.event.on.click(function(msg, res) {
     logger.info("click received");
     logger.info(msg);
+    var openid = msg.FromUserName;
+    var me = msg.ToUserName;
     switch (msg.EventKey) {
     case 'usage_translate' :
-      var openid = msg.FromUserName;
-      var text = i18n.__('usage_translate');
-      wxservice.text(openid, text, function(err, data) {
-      });
+      var text = reply.text(me, openid, i18n.__('usage_translate'));
+      res.send(text);
       break;
+
+    case 'share_to_friend' :
+      // send text first
+      var text = reply.text(me, openid, i18n.__('share_to_friend_waiting_msg', parseFloat(config.subscribe_reward) / 100));
+      res.send(text);
+      on.onShareToFriend(openid);
+      break;
+
     case 'usage_knock' :
-      var openid = msg.FromUserName;
+      res.send("success");
       on.onKnock(openid);
-      
+
       break;
     }
   });
   messages.event.on.view(function(msg, res) {
+    res.send("success");
     logger.info("view received");
     logger.info(msg);
   });
   messages.event.on.templatesendjobfinish(function(msg, res) {
+    res.send("success");
     logger.info("templatesendjobfinish received");
     logger.info(msg);
   });
@@ -206,8 +237,7 @@ router.post('/', function(req, res, next) {
 
   // 内容接收完毕
   req.on('end', function() {
-   res.send("success");
-   x2j.parseString(xml, {
+    x2j.parseString(xml, {
       explicitArray : false,
       ignoreAttrs : true
     }, function(err, json) {
