@@ -30,6 +30,8 @@ var nwAuth = require('node-weixin-auth');
 var nwMessage = require('node-weixin-message');
 var reply = nwMessage.reply;
 
+var account_dao = require('../dao/account_dao');
+
 // Start
 router.all('/getsignature', function (req, res, next) {
   var url = req.body.url;
@@ -150,19 +152,34 @@ router.post('/', function(req, res, next) {
     var text = reply.text(me, openid, i18n.__('subscribe_success'));
     res.send(text);
 
-    //介绍人有奖
-    var up_openid = '';
-    if (msg.EventKey.indexOf('qrscene_') === 0) {
-      up_openid = msg.EventKey.substring(8);
-    }
+    on.onSubscribe(openid, function(err){
+      //确定代理店:代理点提供的qrcode，必须是xxx或xxx_xxxxx的格式
+      if (msg.EventKey.indexOf('qrscene_') === 0) {
+        var data = msg.EventKey.substring(8).split('_');
+        // 上级体验店
+        var parent_admin_id = data[0];
+        account_dao.updateAccount(openid, {
+          parent_admin_id : parent_admin_id
+        }, function(err, results, account) {
+        });
 
-    on.onSubscribe(openid, up_openid, msg.MsgId);
+        //商品
+        if(data.length > 1) {
+          var goods_id = data[1];
+          var text = '商品：' + goods_id;
+          wxservice.text(openid, text, function(err, data) {
+          });
+        }
 
-    on.onShareToFriend(openid, function() {
-      var text = i18n.__('share_to_friend_msg', parseFloat(config.subscribe_reward) / 100);
-      wxservice.text(openid, text, function(err, data) {
-      });
+      }
     });
+
+    //生成海报
+    // on.onShareToFriend(openid, function() {
+    //   var text = i18n.__('share_to_friend_msg', parseFloat(config.subscribe_reward) / 100);
+    //   wxservice.text(openid, text, function(err, data) {
+    //   });
+    // });
   });
   messages.event.on.unsubscribe(function(msg, res) {
     res.send("success");
@@ -174,8 +191,28 @@ router.post('/', function(req, res, next) {
   });
   messages.event.on.scan(function(msg, res) {
     res.send("success");
+
     logger.info("scan received");
     logger.info(msg);
+    var openid = msg.FromUserName;
+
+    if(msg.EventKey) {
+      var data = msg.EventKey.split('_');
+      // 上级体验店
+      var parent_admin_id = data[0];
+      account_dao.updateAccount(openid, {
+        parent_admin_id : parent_admin_id
+      }, function(err, results, account) {
+      });
+
+      //商品
+      if(data.length > 1) {
+        var goods_id = data[1];
+        var text = '商品：' + goods_id;
+        wxservice.text(openid, text, function(err, data) {
+        });
+      }
+    }
   });
   messages.event.on.location(function(msg, res) {
     logger.info("location received");

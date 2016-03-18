@@ -29,15 +29,15 @@ AccountDao.prototype = {
   },
 
 
-  createAccount : function (openid, parent_admin_id, callback) {
+  createAccount : function (openid, callback) {
     var user_name = openid;
     var password = crypto.createHash('sha1').update(openid).digest('hex');
-    var email = openid + '@yuehuitao.com';
+    var email = '-';
     var sql = 'SELECT * FROM ecs_users where openid = ?;' +
-          'insert into  ecs_users (user_name, password, email, openid, parent_admin_id) values (?,?,?,?,?) ON DUPLICATE KEY UPDATE openid = ?;' +
+          'insert into  ecs_users (user_name, password, email, openid, reg_time) values (?,?,?,?,unix_timestamp()) ON DUPLICATE KEY UPDATE openid = ?;' +
           'SELECT * FROM ecs_users where openid = ?' ;
 
-    var args = [ openid, user_name, password, email, openid, parent_admin_id, 0, 0, openid ];
+    var args = [ openid, user_name, password, email, openid, openid, openid ];
     this.mainPool.query(sql, args, function(err, results){
 
       if (err) logger.error(err);
@@ -51,6 +51,8 @@ AccountDao.prototype = {
   },
 
   updateAccount : function (openid, data, callback) {
+    var self = this;
+
     var sql='',
         args=[];
     _.forEach(data, function(n, key) {
@@ -63,9 +65,17 @@ AccountDao.prototype = {
 
     this.mainPool.query(sql, args, function(err, results){
       if (err) logger.error(err);
-      if (!err && (results[0].affectedRows === 0 || results[1].length === 0)) err = 'no data change';
+      
+      if (!err && (results[0].affectedRows === 0 || results[1].length === 0)) {
+        self.createAccount(openid, function(err, oldAccount, results, account) {
+          if (!err && account) {
+            self.updateAccount(openid, data, callback);
+          }
+        });
+      } else {
+        callback(err, results[0], results[1][0]);
+      }
 
-      callback(err, results[0], results[1][0]);
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },
