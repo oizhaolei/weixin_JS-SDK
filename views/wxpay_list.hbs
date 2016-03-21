@@ -28,13 +28,13 @@
 </div>
 
 {{#extend "scripts"}}
-    <script src="/jweixin-1.0.0.js"></script>
+    <script src="/stylesheets/jweixin-1.0.0.js"></script>
     <script>
      $(function () {
          $('.btn-pay').click(function () {
              var fee = $(this).attr("fee");
              $.ajax({
-                 url: '/wxpay/pay',
+                 url: '{{appname}}/wxpay/pay',
                  type: 'post',
                  data: {
                      openid: '{{openid}}',
@@ -52,7 +52,7 @@
 
      function _log(msg) {
          $.ajax({
-             url: '/log',
+             url: '{{appname}}/log',
              type: 'post',
              data: {
                  msg: msg

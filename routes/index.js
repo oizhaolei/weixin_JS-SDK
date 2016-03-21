@@ -74,6 +74,7 @@ router.get('/oauth', function (req, res, next) {
         break;
 
       case 'my_profile' :
+      case 'profile' :
         res.redirect(config.appname + '/profile?openid=' + openid + '&access_token=' + access_token);
         break;
 
@@ -117,6 +118,48 @@ router.get('/profile', function (req, res, next) {
         openid : openid,
         access_token : access_token,
         key : key
+      });
+    }
+  });
+});
+
+
+
+// 地址
+router.post('/address', function (req, res, next) {
+  var access_token = req.body.access_token;
+  var url = req.body.url;
+
+  var appid=config.app.id;
+  var timestamp = String((new Date().getTime() / 1000).toFixed(0));
+  var noncestr = crypto.createHash('sha1').update(timestamp).digest('hex');
+  var str = "accesstoken="+access_token+"&appid="+appid+"&noncestr="+noncestr+"&timestamp="+timestamp+"&url="+url;
+  logger.info(str);
+
+  var signature = crypto.createHash('sha1').update(str).digest('hex');
+  res.json({
+    appId: config.app.id,
+    scope:'jsapi_address',
+    signType:'SHA1',
+    addrSign:signature,
+    timeStamp: timestamp,
+    nonceStr: noncestr
+  });
+});
+
+//fee_history
+router.get('/fee_history', function (req, res, next) {
+  var openid = req.query.openid;
+  tttalk.fee_history(openid, function(err, accountData, feeHistoryData, chargeHistoryData) {
+    if (err) {
+      next(err);
+    } else {
+      res.render('fee_history', {
+        layout : 'layout',
+        title : '我的账单',
+        account : accountData,
+        feeHistory : feeHistoryData,
+        chargeHistory : chargeHistoryData
       });
     }
   });
@@ -173,8 +216,8 @@ router.post('/change_account', function (req, res, next) {
   });
 });
 
-//change store auth
-router.post('/change_store_auth', function (req, res, next) {
+//change portrait
+router.post('/change_portrait', function (req, res, next) {
   var openid = req.body.openid;
   var mediaid = req.body.mediaid;
 
@@ -188,12 +231,17 @@ router.post('/change_store_auth', function (req, res, next) {
       var dest = 'original/' + filename;
       oss.putObject(sourceFile, dest, 'image/jpeg', function(err, data) {
         if (err) {
-            callback(err, data);
+          next(err);
         } else {
-          var val = util.format('http://file2-tttalk-org.oss-cn-hangzhou.aliyuncs.com/original/%s', filename);
-          //TODO
-          //更新数据
-          res.send(val);
+          var val = util.format('http://file1-tttalk-org.oss-cn-beijing.aliyuncs.com/original/%s', filename);
+          data = {'portrait':val};
+          account_dao.updateAccount(openid, data, function(err, results, account) {
+            if (err) {
+              next(err);
+            } else {
+              res.send(val);
+            }
+          });
         }
       });
     });

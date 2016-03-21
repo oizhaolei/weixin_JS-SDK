@@ -78,6 +78,7 @@ router.post('/', function(req, res, next) {
 
   // 监听文本消息
   messages.on.text(function(msg, res) {
+    res.send("success");
     logger.info("textMsg received");
     logger.info(msg);
 
@@ -92,6 +93,7 @@ router.post('/', function(req, res, next) {
 
   // 监听图片消息
   messages.on.image(function(msg, res) {
+    res.send("success");
     logger.info("imageMsg received");
     logger.info(msg);
 
@@ -108,6 +110,7 @@ router.post('/', function(req, res, next) {
 
   // 监听语音消息
   messages.on.voice(function(msg, res) {
+    res.send("success");
     logger.info("voiceMsg received");
     logger.info(msg);
     var openid = msg.FromUserName;
@@ -186,7 +189,7 @@ router.post('/', function(req, res, next) {
     
     map.geocoder(latitude, longitude, function(err, result) {
       logger.info(result.address);
-      var text = reply.text(me, openid, 'scan');
+      var text = reply.text(me, openid, '');
       res.send(text);
     });
   });

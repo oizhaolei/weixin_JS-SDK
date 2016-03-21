@@ -16,7 +16,7 @@
         {
           "name": "好舒服网上商城",
           "type": "view",
-          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx3351b364e154e113&redirect_uri=http://haoshufu.tttalk.org/wechat/oauth?action=my_web&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
+          "url": "http://haoshufu.tttalk.org/mobile_new"
         },
         {
           "type": "click",
