@@ -62,6 +62,22 @@ hbs.registerHelper('convUtcDateString', function(UTCDateString) {
     return "";
   }
 });
+hbs.registerHelper('is_consumer', function(value, options) {
+  if(value == 'consumer') {
+    return options.fn(this);
+  } else {
+    return options.inverse(this);
+  }
+});
+hbs.registerHelper('wholesale_status', function(value) {
+  if(value == 'request') {
+    return "申请中";
+  } else if(value == 'wholesale') {
+    return "申请完成";
+  } else {
+    return "未申请";
+  }
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

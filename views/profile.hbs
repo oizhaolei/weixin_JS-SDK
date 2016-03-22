@@ -35,12 +35,6 @@
         </div>
         <div class="weui_cell_ft">{{account.real_name}}</div>
       </a>
-      <!-- <a class="weui_cell" href="javascript:document.location='{{appname}}/profile?openid={{openid}}&key=sex';"> -->
-      <!--   <div class="weui_cell_bd weui_cell_primary"> -->
-      <!--     <p>性别</p> -->
-      <!--   </div> -->
-      <!--   <div class="weui_cell_ft">{{account.sex}}</div> -->
-      <!-- </a> -->
       <a class="weui_cell" href="javascript:document.location='{{appname}}/profile?openid={{openid}}&key=mobile_phone';">
         <div class="weui_cell_bd weui_cell_primary">
           <p>手机</p>
@@ -61,9 +55,15 @@
         <div class="weui_cell_bd weui_cell_primary">
           <p>认证</p>
         </div>
-        <div class="weui_cell_ft">
-            {{account.business_flag}}
-        </div>
+        {{#is_consumer account.wholesale_status}}
+           <div id="wholesale_status_action" class="weui_cell_ft">
+              <a href="javascript:requestWholesale();" class="weui_btn weui_btn_mini weui_btn_primary">申请</a>
+           </div>
+        {{ else }}
+           <div class="weui_cell_ft">
+              {{wholesale_status account.wholesale_status}}
+           </div>
+        {{/is_consumer}}
       </div>
     </div>
       <div class="weui_cells_title">营业执照</div>
@@ -82,7 +82,6 @@
               </div>
           </div>
       </div>
-
   </div>
 </div>
 
@@ -228,6 +227,21 @@
              type: 'post',
              data:   msg
          });
-     }
+     };
+     
+     function requestWholesale() {
+        $.ajax({
+             url: '{{appname}}/change_account',
+             type: 'post',
+             data: {
+                 openid: '{{openid}}',
+                 key : 'wholesale_status',
+                 val : 'request'
+             }
+         }).then(function() {
+            $('#wholesale_status_action').hide();
+            location.reload();
+         });
+     };
     </script>
 {{/extend}}
