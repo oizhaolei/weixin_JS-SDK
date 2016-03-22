@@ -248,4 +248,32 @@ router.post('/change_portrait', function (req, res, next) {
   });
 });
 
+//change store auth
+router.post('/change_store_auth', function (req, res, next) {
+  var openid = req.body.openid;
+  var mediaid = req.body.mediaid;
+
+  nwAuth.determine(app, function (err, authData) {
+    var picurl = util.format('http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s', authData.accessToken, mediaid);
+    var filename = mediaid + '.jpg';
+    var sourceFile = fs.createWriteStream(path.join(config.tmpdir,  filename));
+    request(picurl).pipe(sourceFile);
+    sourceFile.on('finish', function() {
+      var sourceFile = path.join(config.tmpdir,  filename);
+      var dest = 'original/' + filename;
+      oss.putObject(sourceFile, dest, 'image/jpeg', function(err, data) {
+        logger.debug(err, data);
+        if (err) {
+            next(err, data);
+        } else {
+          var val = util.format('http://file1-tttalk-org.oss-cn-beijing.aliyuncs.com/original/%s', filename);
+          //TODO
+          //更新数据
+          res.send(val);
+        }
+      });
+    });
+  });
+});
+
 module.exports = router;

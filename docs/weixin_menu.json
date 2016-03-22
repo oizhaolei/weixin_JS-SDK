@@ -14,9 +14,14 @@
       "name": "我的中心",
       "sub_button": [
         {
-          "name": "好舒服网上商城",
           "type": "view",
+          "name": "好舒服网上商城",
           "url": "http://haoshufu.tttalk.org/mobile_new"
+        },
+        {
+          "type": "click",
+          "key":"usage_knock",
+          "name": "会员签到"
         },
         {
           "type": "click",
@@ -25,23 +30,8 @@
         },
         {
           "type": "view",
-          "name": "我的订单",
-          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx3351b364e154e113&redirect_uri=http://haoshufu.tttalk.org/wechat/oauth?action=my_order&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
-        },
-        {
-          "type": "view",
           "name": "完善资料",
           "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx3351b364e154e113&redirect_uri=http://haoshufu.tttalk.org/wechat/oauth?action=my_profile&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
-        },
-        {
-          "type": "click",
-          "key":"usage_knock",
-          "name": "会员签到"
-        },
-        {
-          "type": "view",
-          "name": "商户认证",
-          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx3351b364e154e113&redirect_uri=http://haoshufu.tttalk.org/wechat/oauth?action=store_auth&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
         }
       ]
     }
