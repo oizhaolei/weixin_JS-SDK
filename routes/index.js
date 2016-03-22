@@ -123,6 +123,13 @@ router.get('/profile', function (req, res, next) {
   });
 });
 
+router.get('/list_approves', function (req, res, next) {
+  var openid = req.query.openid;
+  account_dao.getApproveByOpenid(openid, function(err, approves) {
+    res.send(approves);
+  });
+});
+
 // 地址
 router.post('/address', function (req, res, next) {
   var access_token = req.body.access_token;
@@ -250,6 +257,8 @@ router.post('/change_store_auth', function (req, res, next) {
           var val = util.format('http://file1-tttalk-org.oss-cn-beijing.aliyuncs.com/original/%s', filename);
           //TODO
           //更新数据
+          account_dao.insertdApprove(openid, val, function() {
+          });
           res.send(val);
         }
       });

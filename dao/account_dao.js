@@ -126,6 +126,32 @@ AccountDao.prototype = {
       callback(err, results);
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
+  },
+  
+  insertdApprove :function (openid, pic, callback) {
+    var sql = 'insert into  ecs_user_approve (openid, pic, create_date) values (?,?,curdate())';
+
+    var args = [ openid, pic];
+    this.mainPool.query(sql, args, function(err, results) {
+      if (err) logger.error(err);
+      if (!err && results.affectedRows === 0)
+        err = 'no data change';
+
+      callback(err, results);
+    });
+    logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
+  },
+  
+  getApproveByOpenid : function (openid, callback) {
+    var sql = 'SELECT * FROM ecs_user_approve where openid = ?' ;
+    var args = [ openid ];
+    this.readonlyPool.query(sql, args, function(err, results){
+      if(results) {
+        callback(null, results);
+      }
+    });
+    logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   }
+
 };
 module.exports = new AccountDao();
