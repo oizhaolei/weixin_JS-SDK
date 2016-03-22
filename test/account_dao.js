@@ -11,7 +11,7 @@ var up_openid = process.env.APP_UP_OPENID;
 describe('account dao', function () {
   it('new', function (done) {
     async.waterfall([function(callback) {
-      account_dao.createAccount(openid, up_openid, function(err, oldAccount, results, account) {
+      account_dao.createAccount(openid, function(err, oldAccount, results, account) {
         assert(!err);
         assert(!oldAccount);
         assert.equal(results.affectedRows, 1);
@@ -20,7 +20,7 @@ describe('account dao', function () {
         callback();
       });
     }, function(callback) {
-      account_dao.createAccount(openid, up_openid, function(err, oldAccount, results, account) {
+      account_dao.createAccount(openid, function(err, oldAccount, results, account) {
         assert(!err);
         assert(oldAccount);
         assert.equal(results.affectedRows, 1);

@@ -19,7 +19,7 @@ describe('nomal test', function () {
   });
   it('onSubscribe', function (done) {
  msgid = seed++;
-    on.onSubscribe(openid, up_openid, msgid, function() {
+    on.onSubscribe(openid, msgid, function() {
       done();
     });
   });

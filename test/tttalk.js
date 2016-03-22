@@ -21,7 +21,7 @@ var from_content_length = 2;
 describe('tttalk', function () {
 
   it('createAccount wxPay', function (done) {
-    account_dao.createAccount(openid, up_openid, function(err, oldAccount, results, account) {
+    account_dao.createAccount(openid, function(err, oldAccount, results, account) {
       assert(!err);
       assert(!oldAccount);
       assert.equal(results.affectedRows, 1);

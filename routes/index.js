@@ -123,8 +123,6 @@ router.get('/profile', function (req, res, next) {
   });
 });
 
-
-
 // 地址
 router.post('/address', function (req, res, next) {
   var access_token = req.body.access_token;
@@ -147,23 +145,6 @@ router.post('/address', function (req, res, next) {
   });
 });
 
-//fee_history
-router.get('/fee_history', function (req, res, next) {
-  var openid = req.query.openid;
-  tttalk.fee_history(openid, function(err, accountData, feeHistoryData, chargeHistoryData) {
-    if (err) {
-      next(err);
-    } else {
-      res.render('fee_history', {
-        layout : 'layout',
-        title : '我的账单',
-        account : accountData,
-        feeHistory : feeHistoryData,
-        chargeHistory : chargeHistoryData
-      });
-    }
-  });
-});
 
 router.get('/store_auth', function (req, res, next) {
   var openid = req.body.openid;
