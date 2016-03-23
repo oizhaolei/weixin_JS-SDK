@@ -91,6 +91,9 @@
     <script src="/bower_components/handlebars/handlebars.min.js"></script>
     <script src="/stylesheets/jweixin-1.0.0.js"></script>
     <script>
+     
+     var previewUrls = [];
+     
      $(function () {
          var $loadingToast = $('#loadingToast');
          if ($loadingToast.css('display') != 'none') {
@@ -101,6 +104,9 @@
          $.ajax( {
              url: '{{appname}}/list_approves?openid={{openid}}'
          }).then(function(data) {
+              for(var index in data){
+                previewUrls.push(data[index].pic);
+             }
              _log(data);
              var template = Handlebars.compile($('#approve-template').html());
              $('.weui_uploader_files').html(template({ approves : data }));
@@ -175,8 +181,6 @@
              });
          });
      };
-
-     var previewUrls = [];
 
      $('.weui_uploader_input').click(function () {
          wx.chooseImage({
