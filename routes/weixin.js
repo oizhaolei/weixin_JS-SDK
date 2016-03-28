@@ -153,17 +153,18 @@ router.post('/', function(req, res, next) {
     res.send(text);
 
     on.onSubscribe(openid, function(err){
-      //确定代理店:代理点提供的qrcode，必须是xxx或xxx_xxxxx的格式
-      if (msg.EventKey.indexOf('qrscene_') === 0) {
-        var data = msg.EventKey.substring(8).split('_');
-        // 上级体验店
-        var parent_admin_id = data[0];
-        account_dao.updateAccount(openid, {
-          parent_admin_id : parent_admin_id
-        }, function(err, results, account) {
-        });
-
-      }
+      account_dao.getByOpenid(openid, function(err, account) {
+        //确定代理店:代理点提供的qrcode，必须是xxx或xxx_xxxxx的格式
+        if (!account.parent_admin_id && msg.EventKey.indexOf('qrscene_') === 0) {
+          var data = msg.EventKey.substring(8).split('_');
+          // 上级体验店
+          var parent_admin_id = data[0];
+          account_dao.updateAccount(openid, {
+            parent_admin_id : parent_admin_id
+          }, function(err, results, account) {
+          });
+        }
+      });
     });
 
     //生成海报
@@ -188,15 +189,17 @@ router.post('/', function(req, res, next) {
     logger.info(msg);
     var openid = msg.FromUserName;
 
-    if(msg.EventKey) {
-      var data = msg.EventKey.split('_');
-      // 上级体验店
-      var parent_admin_id = data[0];
-      account_dao.updateAccount(openid, {
-        parent_admin_id : parent_admin_id
-      }, function(err, results, account) {
-      });
-    }
+    account_dao.getByOpenid(openid, function(err, account) {
+      if (!account.parent_admin_id && msg.EventKey) {
+        var data = msg.EventKey.split('_');
+        // 上级体验店
+        var parent_admin_id = data[0];
+        account_dao.updateAccount(openid, {
+          parent_admin_id : parent_admin_id
+        }, function(err, results, account) {
+        });
+      }
+    });
   });
   messages.event.on.location(function(msg, res) {
     logger.info("location received");
