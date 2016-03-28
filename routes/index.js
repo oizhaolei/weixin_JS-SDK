@@ -265,4 +265,12 @@ router.post('/change_store_auth', function (req, res, next) {
   });
 });
 
+router.post('/reset_user_approve', function (req, res, next) {
+  var openid = req.body.openid;
+
+  account_dao.resetApprove(openid, function() {
+    res.send();
+  });
+});
+
 module.exports = router;

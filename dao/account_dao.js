@@ -151,6 +151,20 @@ AccountDao.prototype = {
       }
     });
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
+  },
+  
+  resetApprove : function (openid, callback) {
+    var sql = 'delete from ecs_user_approve where openid = ?';
+
+    var args = [ openid];
+    this.mainPool.query(sql, args, function(err, results) {
+      if (err) logger.error(err);
+      if (!err && results.affectedRows === 0)
+        err = 'no data change';
+
+      callback(err, results);
+    });
+    logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   }
 
 };
