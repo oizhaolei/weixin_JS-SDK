@@ -34,7 +34,7 @@
          $('.btn-pay').click(function () {
              var fee = $(this).attr("fee");
              $.ajax({
-                 url: '{{appname}}/wxpay/pay',
+                 url: '/wxpay/pay',
                  type: 'post',
                  data: {
                      openid: '{{openid}}',
@@ -52,7 +52,7 @@
 
      function _log(msg) {
          $.ajax({
-             url: '{{appname}}/log',
+             url: '/log',
              type: 'post',
              data: {
                  msg: msg

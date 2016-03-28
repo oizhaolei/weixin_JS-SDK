@@ -23,7 +23,7 @@
 <script>
    var previewUrls = [];
    $.ajax({
-        url: '{{appname}}/weixin/getsignature',
+        url: '/weixin/getsignature',
         type: 'post',
         data: {
             url: location.href.split('#')[0]
@@ -55,7 +55,7 @@
                 success: function (res) {
                   var serverId = res.serverId;
                   $.ajax({
-                       url: '{{appname}}/change_store_auth',
+                       url: '/change_store_auth',
                        type: 'post',
                        data: {
                          openid: '{{openid}}',

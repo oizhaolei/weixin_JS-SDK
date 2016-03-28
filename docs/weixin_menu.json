@@ -31,7 +31,7 @@
         {
           "type": "view",
           "name": "完善资料",
-          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx3351b364e154e113&redirect_uri=http://haoshufu.tttalk.org/wechat/oauth?action=my_profile&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
+          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx3351b364e154e113&redirect_uri=http://haoshufuwechat.tttalk.org/oauth?action=my_profile&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
         }
       ]
     }

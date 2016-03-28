@@ -59,7 +59,6 @@ router.post('/pay', function (req, res, next) {
   });
 });
 
-
 // 'body'=>$body,
 // 'out_trade_no'=>$out_trade_no,
 // 'total_fee'=>$total_fee,

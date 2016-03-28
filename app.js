@@ -103,16 +103,16 @@ app.use(function(req, res, next) {
 require('./lib/wxsettings');
 
 var routes = require('./routes/index');
-app.use(config.appname, routes);
+app.use('/', routes);
 
 var weixin_routes = require('./routes/weixin');
-app.use(config.appname + '/weixin', weixin_routes);
+app.use('/weixin', weixin_routes);
 
 var wxpay_routes = require('./routes/wxpay');
-app.use(config.appname + '/wxpay', wxpay_routes);
+app.use('/wxpay', wxpay_routes);
 
 var wxcard_routes = require('./routes/wxcard');
-app.use(config.appname + '/wxcard', wxcard_routes);
+app.use('/wxcard', wxcard_routes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

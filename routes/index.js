@@ -47,6 +47,7 @@ var getWebAccessToken = function(config, code, cb) {
 
 router.post('/log', function (req, res, next) {
   logger.info(req.body);
+  res.send('');
 });
 
 router.get('/oauth', function (req, res, next) {
@@ -66,20 +67,20 @@ router.get('/oauth', function (req, res, next) {
         res.redirect(config.weixin_web_url + '?openid=' + openid + '&password=weixin_password');
         break;
       case 'my_order' :
-        res.redirect(config.appname + '/my_order?openid=' + openid);
+        res.redirect('/my_order?openid=' + openid);
         break;
 
       case 'share_to_friend' :
-        res.redirect(config.appname + '/share_to_friend?openid=' + openid);
+        res.redirect('/share_to_friend?openid=' + openid);
         break;
 
       case 'my_profile' :
       case 'profile' :
-        res.redirect(config.appname + '/profile?openid=' + openid + '&access_token=' + access_token);
+        res.redirect('/profile?openid=' + openid + '&access_token=' + access_token);
         break;
 
       case 'store_auth' :
-        res.redirect(config.appname + '/store_auth?openid=' + openid);
+        res.redirect('/store_auth?openid=' + openid);
         break;
 
       }
@@ -111,7 +112,6 @@ router.get('/profile', function (req, res, next) {
     } else {
       res.render('profile' + key, {
         layout : 'layout',
-        appname: config.appname,
         title : '个人资料',
         msg : msg,
         account : accountData,
@@ -157,7 +157,6 @@ router.get('/store_auth', function (req, res, next) {
   var openid = req.body.openid;
   res.render('store_auth', {
     layout : 'layout',
-    appname: config.appname,
     title : '商户认证',
     openid : openid
   });
@@ -198,7 +197,7 @@ router.post('/change_account', function (req, res, next) {
     if (err) {
       next(err);
     } else {
-      var url = config.appname + '/profile?openid=' + openid + '&msg=' + encodeURIComponent(err ? err : '');
+      var url = '/profile?openid=' + openid + '&msg=' + encodeURIComponent(err ? err : '');
       res.redirect(url);
     }
   });
