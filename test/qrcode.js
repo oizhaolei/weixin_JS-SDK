@@ -16,7 +16,6 @@ require('../lib/wxsettings');
 var nwLink = require('node-weixin-link');
 
 console.log('注意：代理店二维码为数字，必须是999的格式，才能生成正确的二维码');
-console.log('注意：商品二维码格式999_99900');
 
 var genQrcode = function(param, destdir) {
 
@@ -40,7 +39,6 @@ var genQrcode = function(param, destdir) {
 
 
 // node test/qrcode.js  10 /tmp/
-// node test/qrcode.js  10 12345 /tmp/
 var param, destdir;
 process.argv.forEach(function (val, index, array) {
   //console.log(index + ': ' + val);
@@ -49,10 +47,6 @@ process.argv.forEach(function (val, index, array) {
     param = val;
     break;
   case 3:
-    destdir = val;
-    break;
-  case 3:
-    param += '_' + destdir;
     destdir = val;
     break;
   }

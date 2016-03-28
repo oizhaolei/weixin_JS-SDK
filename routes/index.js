@@ -19,7 +19,6 @@ i18n.configure({
 var nwAuth = require('node-weixin-auth');
 
 var account_dao = require('../dao/account_dao');
-var tttalk = require('../lib/tttalk');
 var oss = require('../lib/oss');
 var app = config.app;
 

@@ -163,14 +163,6 @@ router.post('/', function(req, res, next) {
         }, function(err, results, account) {
         });
 
-        //商品
-        if(data.length > 1) {
-          var goods_id = data[1];
-          var text = '商品：' + goods_id;
-          wxservice.text(openid, text, function(err, data) {
-          });
-        }
-
       }
     });
 
@@ -204,14 +196,6 @@ router.post('/', function(req, res, next) {
         parent_admin_id : parent_admin_id
       }, function(err, results, account) {
       });
-
-      //商品
-      if(data.length > 1) {
-        var goods_id = data[1];
-        var text = '商品：' + goods_id;
-        wxservice.text(openid, text, function(err, data) {
-        });
-      }
     }
   });
   messages.event.on.location(function(msg, res) {
