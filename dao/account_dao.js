@@ -128,10 +128,10 @@ AccountDao.prototype = {
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },
   
-  insertdApprove :function (openid, pic, callback) {
-    var sql = 'insert into  ecs_user_approve (openid, pic, create_date) values (?,?,curdate())';
+  insertdApprove :function (openid, pic, type, callback) {
+    var sql = 'insert into  ecs_user_approve (openid, pic, type, create_date) values (?,?,?,curdate())';
 
-    var args = [ openid, pic];
+    var args = [ openid, pic, type];
     this.mainPool.query(sql, args, function(err, results) {
       if (err) logger.error(err);
       if (!err && results.affectedRows === 0)
@@ -142,9 +142,9 @@ AccountDao.prototype = {
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },
   
-  getApproveByOpenid : function (openid, callback) {
-    var sql = 'SELECT * FROM ecs_user_approve where openid = ?' ;
-    var args = [ openid ];
+  getApproveByOpenid : function (openid, type, callback) {
+    var sql = 'SELECT * FROM ecs_user_approve where openid = ? and type = ?' ;
+    var args = [ openid, type ];
     this.readonlyPool.query(sql, args, function(err, results){
       if(results) {
         callback(null, results);
@@ -153,10 +153,10 @@ AccountDao.prototype = {
     logger.debug('[sql:]%s, %s', sql, JSON.stringify(args));
   },
   
-  resetApprove : function (openid, callback) {
-    var sql = 'delete from ecs_user_approve where openid = ?';
+  resetApprove : function (openid, type, callback) {
+    var sql = 'delete from ecs_user_approve where openid = ? and type = ?';
 
-    var args = [ openid];
+    var args = [ openid, type];
     this.mainPool.query(sql, args, function(err, results) {
       if (err) logger.error(err);
       if (!err && results.affectedRows === 0)

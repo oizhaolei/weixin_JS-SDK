@@ -125,7 +125,8 @@ router.get('/profile', function (req, res, next) {
 
 router.get('/list_approves', function (req, res, next) {
   var openid = req.query.openid;
-  account_dao.getApproveByOpenid(openid, function(err, approves) {
+  var type = req.query.type;
+  account_dao.getApproveByOpenid(openid, type, function(err, approves) {
     res.send(approves);
   });
 });
@@ -238,6 +239,7 @@ router.post('/change_portrait', function (req, res, next) {
 //change store auth
 router.post('/change_store_auth', function (req, res, next) {
   var openid = req.body.openid;
+  var type = req.body.type;
   var mediaid = req.body.mediaid;
 
   nwAuth.determine(app, function (err, authData) {
@@ -254,9 +256,7 @@ router.post('/change_store_auth', function (req, res, next) {
             next(err, data);
         } else {
           var val = util.format('http://file1-tttalk-org.oss-cn-beijing.aliyuncs.com/original/%s', filename);
-          //TODO
-          //更新数据
-          account_dao.insertdApprove(openid, val, function() {
+          account_dao.insertdApprove(openid, val, type, function() {
           });
           res.send(val);
         }
@@ -267,8 +267,9 @@ router.post('/change_store_auth', function (req, res, next) {
 
 router.post('/reset_user_approve', function (req, res, next) {
   var openid = req.body.openid;
+  var type = req.body.type;
 
-  account_dao.resetApprove(openid, function() {
+  account_dao.resetApprove(openid, type, function() {
     res.send();
   });
 });

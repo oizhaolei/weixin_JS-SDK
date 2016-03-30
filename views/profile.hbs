@@ -1,6 +1,6 @@
 <script id="approve-template" type="text/x-handlebars-template">
     \{{#each approves}}
-    <li class="weui_uploader_file" style="background-image:url('\{{pic}}')" onclick="javascript:previewImage('\{{pic}}');"></li>
+    <li class="weui_uploader_file" style="background-image:url('\{{pic}}')" onclick="javascript:previewImage('\{{pic}}', '\{{type}}');"></li>
     \{{/each}}
 </script>
 
@@ -69,18 +69,18 @@
     <div class="weui_cells">
       <div class="weui_cell">
         <div class="weui_cell_bd weui_cell_primary">
-          <p>营业执照</p>
+          <p>店铺照片</p>
         </div>
         <div class="weui_cell_ft">
-          <a href="javascript:resetImage();" class="weui_btn weui_btn_mini weui_btn_primary">重置</a>
-          <div class="weui_dialog_confirm" id="reset_dialog" style="display: none;">
+          <a href="javascript:resetImage(1);" class="weui_btn weui_btn_mini weui_btn_primary">重置</a>
+          <div class="weui_dialog_confirm" id="reset_dialog1" style="display: none;">
             <div class="weui_mask"></div>
             <div class="weui_dialog">
-              <div class="weui_dialog_hd"><strong class="weui_dialog_title">营业执照</strong></div>
-              <div class="weui_dialog_bd">确定重置营业执照图片？</div>
+              <div class="weui_dialog_hd"><strong class="weui_dialog_title">店铺图片</strong></div>
+              <div class="weui_dialog_bd">确定重置店铺图片？</div>
               <div class="weui_dialog_ft">
                   <a href="javascript:;" class="weui_btn_dialog default">取消</a>
-                  <a href="javascript:resetUserApprove();" class="weui_btn_dialog primary">确定</a>
+                  <a href="javascript:resetUserApprove(1);" class="weui_btn_dialog primary">确定</a>
               </div>
             </div>
           </div>
@@ -90,10 +90,44 @@
         <div class="weui_cell_bd weui_cell_primary">
           <div class="weui_uploader">
             <div class="weui_uploader_bd">
-              <ul class="weui_uploader_files">
+              <ul class="weui_uploader_files" id="weui_uploader_files1">
               </ul>
               <div class="weui_uploader_input_wrp">
-                  <input class="weui_uploader_input" type="button"/>
+                  <input class="weui_uploader_input" type="button" onclick="javascript:chooseImage(1)"/>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="weui_cells">
+      <div class="weui_cell">
+        <div class="weui_cell_bd weui_cell_primary">
+          <p>营业执照</p>
+        </div>
+        <div class="weui_cell_ft">
+          <a href="javascript:resetImage(2);" class="weui_btn weui_btn_mini weui_btn_primary">重置</a>
+          <div class="weui_dialog_confirm" id="reset_dialog2" style="display: none;">
+            <div class="weui_mask"></div>
+            <div class="weui_dialog">
+              <div class="weui_dialog_hd"><strong class="weui_dialog_title">营业执照</strong></div>
+              <div class="weui_dialog_bd">确定重置营业执照图片？</div>
+              <div class="weui_dialog_ft">
+                  <a href="javascript:;" class="weui_btn_dialog default">取消</a>
+                  <a href="javascript:resetUserApprove(2);" class="weui_btn_dialog primary">确定</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="weui_cell">
+        <div class="weui_cell_bd weui_cell_primary">
+          <div class="weui_uploader">
+            <div class="weui_uploader_bd">
+              <ul class="weui_uploader_files" id="weui_uploader_files2">
+              </ul>
+              <div class="weui_uploader_input_wrp">
+                  <input class="weui_uploader_input" type="button" onclick="javascript:chooseImage(2)"/>
               </div>
             </div>
           </div>
@@ -105,185 +139,217 @@
 
 
 {{#extend "scripts"}}
-    <script src="/bower_components/async/dist/async.min.js"></script>
-    <script src="/bower_components/handlebars/handlebars.min.js"></script>
-    <script src="/jweixin-1.0.0.js"></script>
-    <script>
+<script src="/bower_components/async/dist/async.min.js"></script>
+<script src="/bower_components/handlebars/handlebars.min.js"></script>
+<script src="/jweixin-1.0.0.js"></script>
+<script>
+    var previewUrls1 = [];
+    var previewUrls2 = [];
 
-     var previewUrls = [];
+    $(function() {
+        var $loadingToast = $('#loadingToast');
+        if ($loadingToast.css('display') != 'none') {
+            return;
+        }
 
-     $(function () {
-         var $loadingToast = $('#loadingToast');
-         if ($loadingToast.css('display') != 'none') {
-             return;
-         }
-
-         $loadingToast.show();
-         $.ajax( {
-             url: '/list_approves?openid={{openid}}'
-         }).then(function(data) {
-              for(var index in data){
-                previewUrls.push(data[index].pic);
-             }
-             _log(data);
-             var template = Handlebars.compile($('#approve-template').html());
-             $('.weui_uploader_files').html(template({ approves : data }));
-
-             $loadingToast.hide();
-         });
-     });
-
-
-     $.ajax({
-          url: '/weixin/getsignature',
-          type: 'post',
-          data: {
-              url: location.href.split('#')[0]
-          }
-      }).done(function(r) {
-          wx.config({
-              appId: r.appId,
-              timestamp: r.timestamp,
-              nonceStr: r.nonceStr,
-              signature: r.signature,
-              jsApiList: [
-                  'chooseImage',
-                  'uploadImage',
-                  'downloadImage',
-                  'previewImage'
-              ]
-          });
-     });
-     function editPortrait() {
-        wx.chooseImage({
-          count: 1,
-          sizeType: ['original', 'compressed'],
-          sourceType: ['album', 'camera'],
-          success: function (res) {
-              var localIds = res.localIds;
-              wx.uploadImage({
-                  localId: localIds[0].toString(),
-                  isShowProgressTips: 1,
-                  success: function (res) {
-                      var serverId = res.serverId;
-                      $.ajax({
-                         url: '/change_portrait',
-                         type: 'post',
-                         data: {
-                           openid: '{{openid}}',
-                           mediaid: serverId
-                         }
-                     }).then(function(data) {
-                        if(data != null && data != ''){
-                          $("#img_portrait").attr('src',data);
-                        }
-                     });
-                  }
-              });
-          }
-        });
-     };
-     function editAddress() {
-         _log('access_token: {{access_token}}');
-         $.ajax({
-             url: '/address',
-             type: 'post',
-             data: {
-                 access_token: '{{access_token}}',
-                 url: location.href.split('#')[0] // 将当前URL地址上传至服务器用于产生数字签名
-             }
-         }).then(function(data) {
-             WeixinJSBridge.invoke('editAddress', data, function(res){
-                 _log(res);
-                 $('#profile-address').text(res.addressDetailInfo);
-             });
-         });
-     };
-
-     $('.weui_uploader_input').click(function () {
-         wx.chooseImage({
-             count: 9,
-             sizeType: ['original', 'compressed'],
-             sourceType: ['album', 'camera'],
-             success: function (res) {
-                 var localIds = res.localIds;
-                 async.eachSeries(localIds, function iteratee(localId, callback) {
-                     _log(localId);
-                     wx.uploadImage({
-                         localId: localId,
-                         isShowProgressTips: 1,
-                         success: function (res) {
-                             var serverId = res.serverId;
-                             $.ajax({
-                                 url: '/change_store_auth',
-                                 type: 'post',
-                                 data: {
-                                     openid: '{{openid}}',
-                                     mediaid: serverId
-                                 }
-                             }).then(function(data) {
-                                 if(data != null && data != ''){
-                                     previewUrls.push(data);
-                                     var insertHtml = '<li class=\"weui_uploader_file\" style=\"background-image:url(' + data + ')\" onclick=\"javascript:previewImage(\'' + data + '\');\"></li>';
-                                     $('.weui_uploader_files').append(insertHtml);
-                                 }
-                                 callback();
-                             });
-                         }
-                     });
-                 });
-             }
-         });
-     });
-
-     function previewImage(url) {
-         wx.previewImage({
-             current: url,
-             urls: previewUrls
-         });
-     };
-
-     function _log(msg) {
-         $.ajax({
-             url: '/log',
-             type: 'post',
-             data:   msg
-         });
-     };
-
-     function requestWholesale() {
+        $loadingToast.show();
         $.ajax({
-             url: '/change_account',
-             type: 'post',
-             data: {
-                 openid: '{{openid}}',
-                 key : 'wholesale_status',
-                 val : 'request'
-             }
-         }).then(function() {
+            url: '/list_approves?openid={{openid}}&type=1'
+        }).then(function(data) {
+            for (var index in data) {
+                previewUrls1.push(data[index].pic);
+            }
+            _log(data);
+            var template1 = Handlebars.compile($('#approve-template').html());
+            $('#weui_uploader_files1').html(template1({
+                approves: data
+            }));
+            $.ajax({
+                url: '/list_approves?openid={{openid}}&type=2'
+            }).then(function(data) {
+                for (var index in data) {
+                    previewUrls2.push(data[index].pic);
+                }
+                _log(data);
+                var template2 = Handlebars.compile($('#approve-template').html());
+                $('#weui_uploader_files2').html(template2({
+                    approves: data
+                }));
+            });
+            $loadingToast.hide();
+        });
+    });
+
+    $.ajax({
+        url: '/weixin/getsignature',
+        type: 'post',
+        data: {
+            url: location.href.split('#')[0]
+        }
+    }).done(function(r) {
+        wx.config({
+            appId: r.appId,
+            timestamp: r.timestamp,
+            nonceStr: r.nonceStr,
+            signature: r.signature,
+            jsApiList: ['chooseImage', 'uploadImage', 'downloadImage', 'previewImage']
+        });
+    });
+    function editPortrait() {
+        wx.chooseImage({
+            count: 1,
+            sizeType: ['original', 'compressed'],
+            sourceType: ['album', 'camera'],
+            success: function(res) {
+                var localIds = res.localIds;
+                wx.uploadImage({
+                    localId: localIds[0].toString(),
+                    isShowProgressTips: 1,
+                    success: function(res) {
+                        var serverId = res.serverId;
+                        $.ajax({
+                            url: '/change_portrait',
+                            type: 'post',
+                            data: {
+                                openid: '{{openid}}',
+                                mediaid: serverId
+                            }
+                        }).then(function(data) {
+                            if (data != null && data != '') {
+                                $("#img_portrait").attr('src', data);
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    };
+    function editAddress() {
+        _log('access_token: {{access_token}}');
+        $.ajax({
+            url: '/address',
+            type: 'post',
+            data: {
+                access_token: '{{access_token}}',
+                url: location.href.split('#')[0] // 将当前URL地址上传至服务器用于产生数字签名
+            }
+        }).then(function(data) {
+            WeixinJSBridge.invoke('editAddress', data,
+            function(res) {
+                _log(res);
+                $('#profile-address').text(res.addressDetailInfo);
+            });
+        });
+    };
+
+    function chooseImage(type) {
+        wx.chooseImage({
+            count: 9,
+            sizeType: ['original', 'compressed'],
+            sourceType: ['album', 'camera'],
+            success: function(res) {
+                var localIds = res.localIds;
+                async.eachSeries(localIds,
+                function iteratee(localId, callback) {
+                    _log(localId);
+                    wx.uploadImage({
+                        localId: localId,
+                        isShowProgressTips: 1,
+                        success: function(res) {
+                            var serverId = res.serverId;
+                            $.ajax({
+                                url: '/change_store_auth',
+                                type: 'post',
+                                data: {
+                                    openid: '{{openid}}',
+                                    type: type,
+                                    mediaid: serverId
+                                }
+                            }).then(function(data) {
+                                if (data != null && data != '') {
+                                    var insertHtml = '<li class=\"weui_uploader_file\" style=\"background-image:url(' + data + ')\" onclick=\"javascript:previewImage(\'' + data + '\', \'' + type + '\');\"></li>';
+                                    if(type == 1) {
+                                        previewUrls1.push(data);
+                                        $('#weui_uploader_files1').append(insertHtml);
+                                    } else if(type == 2) {
+                                        previewUrls2.push(data);
+                                        $('#weui_uploader_files2').append(insertHtml);
+                                    }
+                                }
+                                callback();
+                            });
+                        }
+                    });
+                });
+            }
+        });
+    };
+
+    function previewImage(url, type) {
+        var previewUrls;
+        if(type == 1) {
+            previewUrls = previewUrls1;
+        } else if(type == 2) {
+            previewUrls = previewUrls2;
+        }
+        wx.previewImage({
+            current: url,
+            urls: previewUrls
+        });
+    };
+
+    function _log(msg) {
+        $.ajax({
+            url: '/log',
+            type: 'post',
+            data: msg
+        });
+    };
+
+    function requestWholesale() {
+        $.ajax({
+            url: '/change_account',
+            type: 'post',
+            data: {
+                openid: '{{openid}}',
+                key: 'wholesale_status',
+                val: 'request'
+            }
+        }).then(function() {
             $('#wholesale_status_action').hide();
             location.reload();
-         });
-     };
+        });
+    };
 
-     function resetImage(){
-        var $dialog = $('#reset_dialog');
+    function resetImage(type) {
+        var $dialog;
+        if (type == 1) {
+            $dialog = $('#reset_dialog1');
+        } else if (type == 2) {
+            $dialog = $('#reset_dialog2');
+        }
         $dialog.show();
-        $dialog.find('.weui_btn_dialog').one('click', function () {
+        $dialog.find('.weui_btn_dialog').one('click',
+        function() {
             $dialog.hide();
         });
-     };
+    };
 
-     function resetUserApprove(){
+    function resetUserApprove(type) {
         $.ajax({
-             url: '/reset_user_approve',
-             type: 'post',
-             data: {
-                 openid: '{{openid}}'
-             }
-         }).then(function() {
-            $('.weui_uploader_files').html('');
-         });
-     };
-    </script>
+            url: '/reset_user_approve',
+            type: 'post',
+            data: {
+                openid: '{{openid}}',
+                type: type
+            }
+        }).then(function() {
+            if(type == 1){
+                $('#weui_uploader_files1').html('');
+            } else if(type == 2){
+                $('#weui_uploader_files2').html('');
+            }
+        });
+    };
+</script>
 {{/extend}}
