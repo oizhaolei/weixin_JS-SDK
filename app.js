@@ -22,6 +22,8 @@ var hbs = require("hbs");
 hbs.registerPartials(path.join(__dirname, 'views/partials'));
 hbs.registerHelper("equal", require("handlebars-helper-equal"));
 hbs.localsAsTemplateData(app);
+app.locals.appname = config.appname;
+
 // {{blocks}} {{extend}}
 var blocks = {};
 hbs.registerHelper('extend', function(name, context) {
@@ -90,8 +92,8 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 //app.use(favicons(__dirname + '/public/img/icons'));
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/bower_components',  express.static(path.join(__dirname, 'bower_components')));
+app.use(config.appname, express.static(path.join(__dirname, 'public')));
+app.use(config.appname + '/bower_components',  express.static(path.join(__dirname, 'bower_components')));
 app.use(i18n.init);
 
 
@@ -103,16 +105,16 @@ app.use(function(req, res, next) {
 require('./lib/wxsettings');
 
 var routes = require('./routes/index');
-app.use('/', routes);
+app.use(config.appname + '/', routes);
 
 var weixin_routes = require('./routes/weixin');
-app.use('/weixin', weixin_routes);
+app.use(config.appname + '/weixin', weixin_routes);
 
 var wxpay_routes = require('./routes/wxpay');
-app.use('/wxpay', wxpay_routes);
+app.use(config.appname + '/wxpay', wxpay_routes);
 
 var wxcard_routes = require('./routes/wxcard');
-app.use('/wxcard', wxcard_routes);
+app.use(config.appname + '/wxcard', wxcard_routes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

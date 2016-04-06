@@ -63,24 +63,21 @@ router.get('/oauth', function (req, res, next) {
       case 'redirect' :
         res.redirect('http://haoshufu.tttalk.org/mobile/?wxid=' + openid);
         break;
-      case 'my_web' :
-        res.redirect(config.weixin_web_url + '?openid=' + openid + '&password=weixin_password');
-        break;
       case 'my_order' :
-        res.redirect('/my_order?openid=' + openid);
+        res.redirect(config.appname + '/my_order?openid=' + openid);
         break;
 
       case 'share_to_friend' :
-        res.redirect('/share_to_friend?openid=' + openid);
+        res.redirect(config.appname + '/share_to_friend?openid=' + openid);
         break;
 
       case 'my_profile' :
       case 'profile' :
-        res.redirect('/profile?openid=' + openid + '&access_token=' + access_token);
+        res.redirect(config.appname + '/profile?openid=' + openid + '&access_token=' + access_token);
         break;
 
       case 'store_auth' :
-        res.redirect('/store_auth?openid=' + openid);
+        res.redirect(config.appname + '/store_auth?openid=' + openid);
         break;
 
       }
@@ -198,7 +195,7 @@ router.post('/change_account', function (req, res, next) {
     if (err) {
       next(err);
     } else {
-      var url = '/profile?openid=' + openid + '&msg=' + encodeURIComponent(err ? err : '');
+      var url = config.appname + '/profile?openid=' + openid + '&msg=' + encodeURIComponent(err ? err : '');
       res.redirect(url);
     }
   });

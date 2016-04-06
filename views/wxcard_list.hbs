@@ -8,7 +8,7 @@
                 <div class="panel-body">
                     <h3 class="text-center"><strong>\{{card_detail.cash.base_info.title}}</strong></h3>
                     <h5 class="text-center text-muted">\{{card_detail.cash.base_info.sub_title}}</h5>
-                    <a href="/wxcard/consume?openid=\{{openid}}&code=\{{code}}&card_id=\{{card_id}}" class="weui_btn weui_btn_plain_primary">立即使用</a>
+                    <a href="{{appname}}/wxcard/consume?openid=\{{openid}}&code=\{{code}}&card_id=\{{card_id}}" class="weui_btn weui_btn_plain_primary">立即使用</a>
                 </div>
             </div>
         \{{/each}}
@@ -28,7 +28,7 @@
 </div>
 
 {{#extend "scripts"}}
-    <script src="/bower_components/handlebars/handlebars.min.js"></script>
+    <script src="{{appname}}/bower_components/handlebars/handlebars.min.js"></script>
     <script>
      $(function () {
          var $loadingToast = $('#loadingToast');
@@ -38,7 +38,7 @@
 
          $loadingToast.show();
          $.ajax( {
-             url: '/wxcard/list?openid={{openid}}'
+             url: '{{appname}}/wxcard/list?openid={{openid}}'
          }).then(function(data) {
              var template = Handlebars.compile($('#card-template').html());
              $('#cards').html(template({ card_list : data }));

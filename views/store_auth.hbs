@@ -19,11 +19,11 @@
   </div>
 </div>
 {{#extend "scripts"}}
- <script src="/jweixin-1.0.0.js"></script>
+ <script src="{{appname}}/jweixin-1.0.0.js"></script>
 <script>
    var previewUrls = [];
    $.ajax({
-        url: '/weixin/getsignature',
+        url: '{{appname}}/weixin/getsignature',
         type: 'post',
         data: {
             url: location.href.split('#')[0]
@@ -55,7 +55,7 @@
                 success: function (res) {
                   var serverId = res.serverId;
                   $.ajax({
-                       url: '/change_store_auth',
+                       url: '{{appname}}/change_store_auth',
                        type: 'post',
                        data: {
                          openid: '{{openid}}',
