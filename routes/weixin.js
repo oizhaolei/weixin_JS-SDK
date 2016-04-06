@@ -155,7 +155,7 @@ router.post('/', function(req, res, next) {
     on.onSubscribe(openid, function(err){
       account_dao.getByOpenid(openid, function(err, account) {
         //确定代理店:代理点提供的qrcode，必须是xxx或xxx_xxxxx的格式
-        if (!account.parent_admin_id && msg.EventKey.indexOf('qrscene_') === 0) {
+        if (!account.parent_admin_id && msg.EventKey.indexOf('qrscene_') === 0 && account.user_id != 486 && account.user_id != 1221 && account.user_id != 1151) {
           var data = msg.EventKey.substring(8).split('_');
           // 上级体验店
           var parent_admin_id = data[0];
