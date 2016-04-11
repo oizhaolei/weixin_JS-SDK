@@ -3,7 +3,7 @@
     {
       "name": "网上商城",
       "type": "view",
-      "url": "http://55595526.m.weimob.com/vshop/55595526/Index?PageId=301496"
+      "url": "http://haoshufu.tttalk.org"
     },
     {
       "name": "好舒服",
@@ -13,11 +13,6 @@
     {
       "name": "我的中心",
       "sub_button": [
-        {
-          "type": "view",
-          "name": "好舒服网上商城",
-          "url": "http://haoshufu.tttalk.org/mobile"
-        },
         {
           "type": "click",
           "key":"usage_knock",
@@ -30,8 +25,8 @@
         },
         {
           "type": "view",
-          "name": "完善资料",
-          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx3351b364e154e113&redirect_uri=http://haoshufu.tttalk.org/wechat/oauth?action=my_profile&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
+          "name": "商户认证",
+          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx4b650e0fcd914918&redirect_uri=http://haoshufu.tttalk.org/wechat/oauth?action=my_profile&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
         }
       ]
     }
